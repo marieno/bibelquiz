@@ -1,0 +1,5810 @@
+{
+  "version": "1.0",
+  "languages": [
+    "de",
+    "fr"
+  ],
+  "questions_per_game": 5,
+  "questions": [
+    {
+      "id": 1,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Wer schuf Himmel und Erde?",
+        "fr": "Qui a créé le ciel et la terre ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Gott",
+          "B": "Licht",
+          "C": "Eva",
+          "D": "Der Mond"
+        },
+        "fr": {
+          "A": "Dieu",
+          "B": "La lumière",
+          "C": "Ève",
+          "D": "La lune"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 1,1",
+        "fr": "Genèse 1:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 2,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Was ließ Gott am ersten Tag entstehen?",
+        "fr": "Que Dieu fit-il apparaître le premier jour ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Adam",
+          "B": "Licht",
+          "C": "Eden",
+          "D": "Der siebte Tag"
+        },
+        "fr": {
+          "A": "Adam",
+          "B": "La lumière",
+          "C": "Éden",
+          "D": "Le septième jour"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Mose 1,3",
+        "fr": "Genèse 1:3"
+      },
+      "points": 5
+    },
+    {
+      "id": 3,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Wie hieß der erste Mann?",
+        "fr": "Comment s'appelait le premier homme ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Eva",
+          "B": "Die Sonne",
+          "C": "Adam",
+          "D": "Der Regenbogen"
+        },
+        "fr": {
+          "A": "Ève",
+          "B": "Le soleil",
+          "C": "Adam",
+          "D": "L'arc-en-ciel"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 2,7",
+        "fr": "Genèse 2:7"
+      },
+      "points": 5
+    },
+    {
+      "id": 4,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Wie hieß die erste Frau?",
+        "fr": "Comment s'appelait la première femme ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Eden",
+          "B": "Der Mond",
+          "C": "Kain und Abel",
+          "D": "Eva"
+        },
+        "fr": {
+          "A": "Éden",
+          "B": "La lune",
+          "C": "Caïn et Abel",
+          "D": "Ève"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Mose 3,20",
+        "fr": "Genèse 3:20"
+      },
+      "points": 5
+    },
+    {
+      "id": 5,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Wie hieß der Garten, in den Gott den Menschen setzte?",
+        "fr": "Comment s'appelait le jardin où Dieu plaça l'homme ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Eden",
+          "B": "Die Sonne",
+          "C": "Der siebte Tag",
+          "D": "Gott"
+        },
+        "fr": {
+          "A": "Éden",
+          "B": "Le soleil",
+          "C": "Le septième jour",
+          "D": "Dieu"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 2,8",
+        "fr": "Genèse 2:8"
+      },
+      "points": 5
+    },
+    {
+      "id": 6,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Was schuf Gott, um den Tag zu beherrschen?",
+        "fr": "Qu'est-ce que Dieu créa pour présider au jour ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der Mond",
+          "B": "Die Sonne",
+          "C": "Der Regenbogen",
+          "D": "Licht"
+        },
+        "fr": {
+          "A": "La lune",
+          "B": "Le soleil",
+          "C": "L'arc-en-ciel",
+          "D": "La lumière"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Mose 1,16",
+        "fr": "Genèse 1:16"
+      },
+      "points": 5
+    },
+    {
+      "id": 7,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Was schuf Gott, um die Nacht zu beherrschen?",
+        "fr": "Qu'est-ce que Dieu créa pour présider à la nuit ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der siebte Tag",
+          "B": "Kain und Abel",
+          "C": "Der Mond",
+          "D": "Adam"
+        },
+        "fr": {
+          "A": "Le septième jour",
+          "B": "Caïn et Abel",
+          "C": "La lune",
+          "D": "Adam"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 1,16",
+        "fr": "Genèse 1:16"
+      },
+      "points": 5
+    },
+    {
+      "id": 8,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "An welchem Tag ruhte Gott von seinem Werk?",
+        "fr": "Quel jour Dieu se reposa-t-il de son œuvre ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der Regenbogen",
+          "B": "Gott",
+          "C": "Eva",
+          "D": "Der siebte Tag"
+        },
+        "fr": {
+          "A": "L'arc-en-ciel",
+          "B": "Dieu",
+          "C": "Ève",
+          "D": "Le septième jour"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Mose 2,2",
+        "fr": "Genèse 2:2"
+      },
+      "points": 5
+    },
+    {
+      "id": 9,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Welches Zeichen setzte Gott nach der Flut in die Wolken?",
+        "fr": "Quel signe Dieu plaça-t-il dans les nuages après le déluge ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der Regenbogen",
+          "B": "Kain und Abel",
+          "C": "Licht",
+          "D": "Eden"
+        },
+        "fr": {
+          "A": "L'arc-en-ciel",
+          "B": "Caïn et Abel",
+          "C": "La lumière",
+          "D": "Éden"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 9,13",
+        "fr": "Genèse 9:13"
+      },
+      "points": 5
+    },
+    {
+      "id": 10,
+      "niveau": "enfant",
+      "categorie": "creation",
+      "question": {
+        "de": "Wie hießen die beiden ersten Söhne von Adam und Eva?",
+        "fr": "Comment s'appelaient les deux premiers fils d'Adam et Ève ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Gott",
+          "B": "Kain und Abel",
+          "C": "Adam",
+          "D": "Die Sonne"
+        },
+        "fr": {
+          "A": "Dieu",
+          "B": "Caïn et Abel",
+          "C": "Adam",
+          "D": "Le soleil"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Mose 4,1-2",
+        "fr": "Genèse 4:1-2"
+      },
+      "points": 5
+    },
+    {
+      "id": 11,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer baute die Arche?",
+        "fr": "Qui construisit l'arche ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "David",
+          "B": "Mose",
+          "C": "Noah",
+          "D": "Jona"
+        },
+        "fr": {
+          "A": "David",
+          "B": "Moïse",
+          "C": "Noé",
+          "D": "Jonas"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 6,14",
+        "fr": "Genèse 6:14"
+      },
+      "points": 5
+    },
+    {
+      "id": 12,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer besiegte Goliath?",
+        "fr": "Qui vainquit Goliath ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josef",
+          "B": "Sara",
+          "C": "Isaak",
+          "D": "David"
+        },
+        "fr": {
+          "A": "Joseph",
+          "B": "Sara",
+          "C": "Isaac",
+          "D": "David"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Samuel 17,50",
+        "fr": "1 Samuel 17:50"
+      },
+      "points": 5
+    },
+    {
+      "id": 13,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer wurde von seinen Brüdern nach Ägypten verkauft?",
+        "fr": "Qui fut vendu en Égypte par ses frères ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josef",
+          "B": "Mose",
+          "C": "Daniel",
+          "D": "Simson"
+        },
+        "fr": {
+          "A": "Joseph",
+          "B": "Moïse",
+          "C": "Daniel",
+          "D": "Samson"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 37,28",
+        "fr": "Genèse 37:28"
+      },
+      "points": 5
+    },
+    {
+      "id": 14,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer führte das Volk Israel aus Ägypten?",
+        "fr": "Qui conduisit le peuple d'Israël hors d'Égypte ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Sara",
+          "B": "Mose",
+          "C": "Jona",
+          "D": "Rut"
+        },
+        "fr": {
+          "A": "Sara",
+          "B": "Moïse",
+          "C": "Jonas",
+          "D": "Ruth"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Mose 3,10",
+        "fr": "Exode 3:10"
+      },
+      "points": 5
+    },
+    {
+      "id": 15,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wie hieß Abrahams Frau?",
+        "fr": "Comment s'appelait la femme d'Abraham ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Daniel",
+          "B": "Isaak",
+          "C": "Sara",
+          "D": "Noah"
+        },
+        "fr": {
+          "A": "Daniel",
+          "B": "Isaac",
+          "C": "Sara",
+          "D": "Noé"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 17,15",
+        "fr": "Genèse 17:15"
+      },
+      "points": 5
+    },
+    {
+      "id": 16,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer wurde in die Löwengrube geworfen?",
+        "fr": "Qui fut jeté dans la fosse aux lions ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jona",
+          "B": "Simson",
+          "C": "David",
+          "D": "Daniel"
+        },
+        "fr": {
+          "A": "Jonas",
+          "B": "Samson",
+          "C": "David",
+          "D": "Daniel"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Daniel 6,17",
+        "fr": "Daniel 6:17"
+      },
+      "points": 5
+    },
+    {
+      "id": 17,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer wurde von einem großen Fisch verschlungen?",
+        "fr": "Qui fut englouti par un grand poisson ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jona",
+          "B": "Isaak",
+          "C": "Rut",
+          "D": "Josef"
+        },
+        "fr": {
+          "A": "Jonas",
+          "B": "Isaac",
+          "C": "Ruth",
+          "D": "Joseph"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Jona 2,1",
+        "fr": "Jonas 2:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 18,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wie hieß der Sohn von Abraham und Sara?",
+        "fr": "Comment s'appelait le fils d'Abraham et Sara ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Simson",
+          "B": "Isaak",
+          "C": "Noah",
+          "D": "Mose"
+        },
+        "fr": {
+          "A": "Samson",
+          "B": "Isaac",
+          "C": "Noé",
+          "D": "Moïse"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Mose 21,3",
+        "fr": "Genèse 21:3"
+      },
+      "points": 5
+    },
+    {
+      "id": 19,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Wer war für seine außergewöhnliche Kraft bekannt?",
+        "fr": "Qui était connu pour sa force extraordinaire ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Rut",
+          "B": "David",
+          "C": "Simson",
+          "D": "Sara"
+        },
+        "fr": {
+          "A": "Ruth",
+          "B": "David",
+          "C": "Samson",
+          "D": "Sara"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Richter 14,6",
+        "fr": "Juges 14:6"
+      },
+      "points": 5
+    },
+    {
+      "id": 20,
+      "niveau": "enfant",
+      "categorie": "personnes",
+      "question": {
+        "de": "Welche Frau blieb bei ihrer Schwiegermutter Noomi?",
+        "fr": "Quelle femme resta auprès de sa belle-mère Noémi ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Noah",
+          "B": "Josef",
+          "C": "Daniel",
+          "D": "Rut"
+        },
+        "fr": {
+          "A": "Noé",
+          "B": "Joseph",
+          "C": "Daniel",
+          "D": "Ruth"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Rut 1,16",
+        "fr": "Ruth 1:16"
+      },
+      "points": 5
+    },
+    {
+      "id": 21,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "In welcher Stadt wurde Jesus geboren?",
+        "fr": "Dans quelle ville Jésus est-il né ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bethlehem",
+          "B": "Maria",
+          "C": "Nazareth",
+          "D": "Zwölf Apostel"
+        },
+        "fr": {
+          "A": "Bethléem",
+          "B": "Marie",
+          "C": "Nazareth",
+          "D": "Douze apôtres"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 2,1",
+        "fr": "Matthieu 2:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 22,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wie hieß die Mutter von Jesus?",
+        "fr": "Comment s'appelait la mère de Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josef",
+          "B": "Maria",
+          "C": "Johannes der Täufer",
+          "D": "Petrus"
+        },
+        "fr": {
+          "A": "Joseph",
+          "B": "Marie",
+          "C": "Jean-Baptiste",
+          "D": "Pierre"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Lukas 1,31",
+        "fr": "Luc 1:31"
+      },
+      "points": 5
+    },
+    {
+      "id": 23,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wie hieß Marias Mann?",
+        "fr": "Comment s'appelait le mari de Marie ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Nazareth",
+          "B": "Jordan",
+          "C": "Josef",
+          "D": "Ein Esel"
+        },
+        "fr": {
+          "A": "Nazareth",
+          "B": "Jourdain",
+          "C": "Joseph",
+          "D": "Un âne"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 1,19",
+        "fr": "Matthieu 1:19"
+      },
+      "points": 5
+    },
+    {
+      "id": 24,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "In welcher Stadt wuchs Jesus auf?",
+        "fr": "Dans quelle ville Jésus grandit-il ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Johannes der Täufer",
+          "B": "Zwölf Apostel",
+          "C": "Auferstehung",
+          "D": "Nazareth"
+        },
+        "fr": {
+          "A": "Jean-Baptiste",
+          "B": "Douze apôtres",
+          "C": "Résurrection",
+          "D": "Nazareth"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Lukas 2,39",
+        "fr": "Luc 2:39"
+      },
+      "points": 5
+    },
+    {
+      "id": 25,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wer taufte Jesus?",
+        "fr": "Qui baptisa Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Johannes der Täufer",
+          "B": "Jordan",
+          "C": "Petrus",
+          "D": "Bethlehem"
+        },
+        "fr": {
+          "A": "Jean-Baptiste",
+          "B": "Jourdain",
+          "C": "Pierre",
+          "D": "Bethléem"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 3,13",
+        "fr": "Matthieu 3:13"
+      },
+      "points": 5
+    },
+    {
+      "id": 26,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "In welchem Fluss wurde Jesus getauft?",
+        "fr": "Dans quel fleuve Jésus fut-il baptisé ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zwölf Apostel",
+          "B": "Jordan",
+          "C": "Ein Esel",
+          "D": "Maria"
+        },
+        "fr": {
+          "A": "Douze apôtres",
+          "B": "Jourdain",
+          "C": "Un âne",
+          "D": "Marie"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 3,13",
+        "fr": "Matthieu 3:13"
+      },
+      "points": 5
+    },
+    {
+      "id": 27,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wie viele Apostel wählte Jesus?",
+        "fr": "Combien d'apôtres Jésus choisit-il ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Petrus",
+          "B": "Auferstehung",
+          "C": "Zwölf Apostel",
+          "D": "Josef"
+        },
+        "fr": {
+          "A": "Pierre",
+          "B": "Résurrection",
+          "C": "Douze apôtres",
+          "D": "Joseph"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 10,1",
+        "fr": "Matthieu 10:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 28,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Welcher Jünger sagte, dass Jesus der Christus ist?",
+        "fr": "Quel disciple déclara que Jésus est le Christ ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ein Esel",
+          "B": "Bethlehem",
+          "C": "Nazareth",
+          "D": "Petrus"
+        },
+        "fr": {
+          "A": "Un âne",
+          "B": "Bethléem",
+          "C": "Nazareth",
+          "D": "Pierre"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 16,16",
+        "fr": "Matthieu 16:16"
+      },
+      "points": 5
+    },
+    {
+      "id": 29,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Auf welchem Tier ritt Jesus nach Jerusalem?",
+        "fr": "Sur quel animal Jésus entra-t-il à Jérusalem ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ein Esel",
+          "B": "Auferstehung",
+          "C": "Maria",
+          "D": "Johannes der Täufer"
+        },
+        "fr": {
+          "A": "Un âne",
+          "B": "Résurrection",
+          "C": "Marie",
+          "D": "Jean-Baptiste"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 21,5",
+        "fr": "Matthieu 21:5"
+      },
+      "points": 5
+    },
+    {
+      "id": 30,
+      "niveau": "enfant",
+      "categorie": "jesus",
+      "question": {
+        "de": "Was geschah mit Jesus am dritten Tag nach seinem Tod?",
+        "fr": "Qu'arriva-t-il à Jésus le troisième jour après sa mort ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bethlehem",
+          "B": "Auferstehung",
+          "C": "Josef",
+          "D": "Jordan"
+        },
+        "fr": {
+          "A": "Bethléem",
+          "B": "Résurrection",
+          "C": "Joseph",
+          "D": "Jourdain"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Korinther 15,4",
+        "fr": "1 Corinthiens 15:4"
+      },
+      "points": 5
+    },
+    {
+      "id": 31,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Was verwandelte Jesus bei der Hochzeit zu Kana in Wein?",
+        "fr": "Qu'est-ce que Jésus transforma en vin aux noces de Cana ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Fünf Brote",
+          "B": "Gehen auf dem Wasser",
+          "C": "Wasser zu Wein",
+          "D": "Bartimäus"
+        },
+        "fr": {
+          "A": "Cinq pains",
+          "B": "Marche sur l'eau",
+          "C": "L'eau changée en vin",
+          "D": "Bartimée"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Johannes 2,9",
+        "fr": "Jean 2:9"
+      },
+      "points": 5
+    },
+    {
+      "id": 32,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Wie viele Brote hatte man bei der Speisung der Fünftausend?",
+        "fr": "Combien de pains avait-on lors du repas des cinq mille ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zwei Fische",
+          "B": "Lazarus",
+          "C": "Zehn Aussätzige",
+          "D": "Fünf Brote"
+        },
+        "fr": {
+          "A": "Deux poissons",
+          "B": "Lazare",
+          "C": "Dix lépreux",
+          "D": "Cinq pains"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 14,17",
+        "fr": "Matthieu 14:17"
+      },
+      "points": 5
+    },
+    {
+      "id": 33,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Wie viele Fische hatte man bei der Speisung der Fünftausend?",
+        "fr": "Combien de poissons avait-on lors du repas des cinq mille ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zwei Fische",
+          "B": "Gehen auf dem Wasser",
+          "C": "Stillung des Sturms",
+          "D": "Tochter des Jairus"
+        },
+        "fr": {
+          "A": "Deux poissons",
+          "B": "Marche sur l'eau",
+          "C": "Tempête apaisée",
+          "D": "Fille de Jaïrus"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 14,17",
+        "fr": "Matthieu 14:17"
+      },
+      "points": 5
+    },
+    {
+      "id": 34,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Worauf ging Jesus zu seinen Jüngern?",
+        "fr": "Sur quoi Jésus marcha-t-il pour rejoindre ses disciples ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Lazarus",
+          "B": "Gehen auf dem Wasser",
+          "C": "Bartimäus",
+          "D": "Ein Gelähmter"
+        },
+        "fr": {
+          "A": "Lazare",
+          "B": "Marche sur l'eau",
+          "C": "Bartimée",
+          "D": "Un paralysé"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 14,25",
+        "fr": "Matthieu 14:25"
+      },
+      "points": 5
+    },
+    {
+      "id": 35,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Wen rief Jesus aus dem Grab heraus?",
+        "fr": "Qui Jésus appela-t-il hors du tombeau ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Stillung des Sturms",
+          "B": "Zehn Aussätzige",
+          "C": "Lazarus",
+          "D": "Wasser zu Wein"
+        },
+        "fr": {
+          "A": "Tempête apaisée",
+          "B": "Dix lépreux",
+          "C": "Lazare",
+          "D": "L'eau changée en vin"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Johannes 11,43",
+        "fr": "Jean 11:43"
+      },
+      "points": 5
+    },
+    {
+      "id": 36,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Was beruhigte Jesus auf dem See?",
+        "fr": "Qu'est-ce que Jésus calma sur le lac ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bartimäus",
+          "B": "Tochter des Jairus",
+          "C": "Fünf Brote",
+          "D": "Stillung des Sturms"
+        },
+        "fr": {
+          "A": "Bartimée",
+          "B": "Fille de Jaïrus",
+          "C": "Cinq pains",
+          "D": "Tempête apaisée"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Markus 4,39",
+        "fr": "Marc 4:39"
+      },
+      "points": 5
+    },
+    {
+      "id": 37,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Welchen blinden Mann heilte Jesus bei Jericho?",
+        "fr": "Quel aveugle Jésus guérit-il près de Jéricho ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bartimäus",
+          "B": "Zehn Aussätzige",
+          "C": "Ein Gelähmter",
+          "D": "Zwei Fische"
+        },
+        "fr": {
+          "A": "Bartimée",
+          "B": "Dix lépreux",
+          "C": "Un paralysé",
+          "D": "Deux poissons"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Markus 10,52",
+        "fr": "Marc 10:52"
+      },
+      "points": 5
+    },
+    {
+      "id": 38,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Wie viele Aussätzige heilte Jesus auf einmal?",
+        "fr": "Combien de lépreux Jésus guérit-il en une fois ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Tochter des Jairus",
+          "B": "Zehn Aussätzige",
+          "C": "Wasser zu Wein",
+          "D": "Gehen auf dem Wasser"
+        },
+        "fr": {
+          "A": "Fille de Jaïrus",
+          "B": "Dix lépreux",
+          "C": "L'eau changée en vin",
+          "D": "Marche sur l'eau"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Lukas 17,12-14",
+        "fr": "Luc 17:12-14"
+      },
+      "points": 5
+    },
+    {
+      "id": 39,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Wessen Tochter erweckte Jesus wieder zum Leben?",
+        "fr": "De qui était la fille que Jésus ramena à la vie ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ein Gelähmter",
+          "B": "Fünf Brote",
+          "C": "Tochter des Jairus",
+          "D": "Lazarus"
+        },
+        "fr": {
+          "A": "Un paralysé",
+          "B": "Cinq pains",
+          "C": "Fille de Jaïrus",
+          "D": "Lazare"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Markus 5,41-42",
+        "fr": "Marc 5:41-42"
+      },
+      "points": 5
+    },
+    {
+      "id": 40,
+      "niveau": "enfant",
+      "categorie": "miracles",
+      "question": {
+        "de": "Welchen Mann ließ Jesus aufstehen und gehen?",
+        "fr": "Quel homme Jésus fit-il se lever et marcher ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Wasser zu Wein",
+          "B": "Zwei Fische",
+          "C": "Stillung des Sturms",
+          "D": "Ein Gelähmter"
+        },
+        "fr": {
+          "A": "L'eau changée en vin",
+          "B": "Deux poissons",
+          "C": "Tempête apaisée",
+          "D": "Un paralysé"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Markus 2,11-12",
+        "fr": "Marc 2:11-12"
+      },
+      "points": 5
+    },
+    {
+      "id": 41,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wie heißt das erste Buch der Bibel?",
+        "fr": "Quel est le premier livre de la Bible ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Genesis / 1. Mose",
+          "B": "Offenbarung",
+          "C": "Psalmen",
+          "D": "Petrus"
+        },
+        "fr": {
+          "A": "Genèse",
+          "B": "Apocalypse",
+          "C": "Psaumes",
+          "D": "Pierre"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 1,1",
+        "fr": "Genèse 1:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 42,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wie heißt das letzte Buch des Neuen Testaments?",
+        "fr": "Quel est le dernier livre du Nouveau Testament ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Mose",
+          "B": "Offenbarung",
+          "C": "Saul",
+          "D": "Judas Iskariot"
+        },
+        "fr": {
+          "A": "Moïse",
+          "B": "Apocalypse",
+          "C": "Saül",
+          "D": "Judas Iscariot"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Offenbarung 1,1",
+        "fr": "Apocalypse 1:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 43,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wer erhielt die Zehn Gebote von Gott?",
+        "fr": "Qui reçut les dix commandements de Dieu ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Psalmen",
+          "B": "Salomo",
+          "C": "Mose",
+          "D": "Matthäus"
+        },
+        "fr": {
+          "A": "Psaumes",
+          "B": "Salomon",
+          "C": "Moïse",
+          "D": "Matthieu"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Mose 20,1",
+        "fr": "Exode 20:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 44,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Welches Buch der Bibel enthält viele Lieder und Gebete?",
+        "fr": "Quel livre de la Bible contient de nombreux chants et prières ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Saul",
+          "B": "Petrus",
+          "C": "Vaterunser",
+          "D": "Psalmen"
+        },
+        "fr": {
+          "A": "Saül",
+          "B": "Pierre",
+          "C": "Notre Père",
+          "D": "Psaumes"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Psalm 1,1",
+        "fr": "Psaume 1:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 45,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wer war der erste König Israels?",
+        "fr": "Qui fut le premier roi d'Israël ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Saul",
+          "B": "Salomo",
+          "C": "Judas Iskariot",
+          "D": "Genesis / 1. Mose"
+        },
+        "fr": {
+          "A": "Saül",
+          "B": "Salomon",
+          "C": "Judas Iscariot",
+          "D": "Genèse"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Samuel 10,1",
+        "fr": "1 Samuel 10:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 46,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wer baute den ersten Tempel in Jerusalem?",
+        "fr": "Qui construisit le premier temple à Jérusalem ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Petrus",
+          "B": "Salomo",
+          "C": "Matthäus",
+          "D": "Offenbarung"
+        },
+        "fr": {
+          "A": "Pierre",
+          "B": "Salomon",
+          "C": "Matthieu",
+          "D": "Apocalypse"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Könige 6,1",
+        "fr": "1 Rois 6:1"
+      },
+      "points": 5
+    },
+    {
+      "id": 47,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Welcher Jünger verleugnete Jesus dreimal?",
+        "fr": "Quel disciple renia Jésus trois fois ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Judas Iskariot",
+          "B": "Vaterunser",
+          "C": "Petrus",
+          "D": "Mose"
+        },
+        "fr": {
+          "A": "Judas Iscariot",
+          "B": "Notre Père",
+          "C": "Pierre",
+          "D": "Moïse"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 26,75",
+        "fr": "Matthieu 26:75"
+      },
+      "points": 5
+    },
+    {
+      "id": 48,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wer verriet Jesus?",
+        "fr": "Qui trahit Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthäus",
+          "B": "Genesis / 1. Mose",
+          "C": "Psalmen",
+          "D": "Judas Iskariot"
+        },
+        "fr": {
+          "A": "Matthieu",
+          "B": "Genèse",
+          "C": "Psaumes",
+          "D": "Judas Iscariot"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 26,14-16",
+        "fr": "Matthieu 26:14-16"
+      },
+      "points": 5
+    },
+    {
+      "id": 49,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Welcher Apostel war früher Zöllner?",
+        "fr": "Quel apôtre était auparavant collecteur d'impôts ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthäus",
+          "B": "Vaterunser",
+          "C": "Offenbarung",
+          "D": "Saul"
+        },
+        "fr": {
+          "A": "Matthieu",
+          "B": "Notre Père",
+          "C": "Apocalypse",
+          "D": "Saül"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 9,9",
+        "fr": "Matthieu 9:9"
+      },
+      "points": 5
+    },
+    {
+      "id": 50,
+      "niveau": "enfant",
+      "categorie": "general",
+      "question": {
+        "de": "Wie heißt das Gebet, das Jesus seine Jünger lehrte?",
+        "fr": "Comment appelle-t-on la prière que Jésus enseigna à ses disciples ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Genesis / 1. Mose",
+          "B": "Vaterunser",
+          "C": "Mose",
+          "D": "Salomo"
+        },
+        "fr": {
+          "A": "Genèse",
+          "B": "Notre Père",
+          "C": "Moïse",
+          "D": "Salomon"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 6,9",
+        "fr": "Matthieu 6:9"
+      },
+      "points": 5
+    },
+    {
+      "id": 51,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Wie viele Tage und Nächte regnete es während der Sintflut?",
+        "fr": "Combien de jours et de nuits plut-il pendant le déluge ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Israel",
+          "B": "Rotes Meer",
+          "C": "40 Tage",
+          "D": "Jericho"
+        },
+        "fr": {
+          "A": "Israël",
+          "B": "Mer Rouge",
+          "C": "40 jours",
+          "D": "Jéricho"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 7,12",
+        "fr": "Genèse 7:12"
+      },
+      "points": 10
+    },
+    {
+      "id": 52,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Welchen neuen Namen gab Gott Jakob?",
+        "fr": "Quel nouveau nom Dieu donna-t-il à Jacob ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zwölf Stämme",
+          "B": "Manna",
+          "C": "Gideon",
+          "D": "Israel"
+        },
+        "fr": {
+          "A": "Douze tribus",
+          "B": "Manne",
+          "C": "Gédéon",
+          "D": "Israël"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Mose 32,29",
+        "fr": "Genèse 32:29"
+      },
+      "points": 10
+    },
+    {
+      "id": 53,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Wie viele Stämme hatte Israel?",
+        "fr": "Combien de tribus Israël comptait-il ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zwölf Stämme",
+          "B": "Rotes Meer",
+          "C": "Josua",
+          "D": "Samuel"
+        },
+        "fr": {
+          "A": "Douze tribus",
+          "B": "Mer Rouge",
+          "C": "Josué",
+          "D": "Samuel"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 49,28",
+        "fr": "Genèse 49:28"
+      },
+      "points": 10
+    },
+    {
+      "id": 54,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Welches Meer teilte sich, als Israel aus Ägypten floh?",
+        "fr": "Quelle mer s'ouvrit lorsque les Israélites quittèrent l'Égypte ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Manna",
+          "B": "Rotes Meer",
+          "C": "Jericho",
+          "D": "Salomo"
+        },
+        "fr": {
+          "A": "Manne",
+          "B": "Mer Rouge",
+          "C": "Jéricho",
+          "D": "Salomon"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Mose 14,21",
+        "fr": "Exode 14:21"
+      },
+      "points": 10
+    },
+    {
+      "id": 55,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Wie hieß die Nahrung, die Gott Israel in der Wüste gab?",
+        "fr": "Comment s'appelait la nourriture que Dieu donna à Israël dans le désert ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josua",
+          "B": "Gideon",
+          "C": "Manna",
+          "D": "40 Tage"
+        },
+        "fr": {
+          "A": "Josué",
+          "B": "Gédéon",
+          "C": "Manne",
+          "D": "40 jours"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Mose 16,31",
+        "fr": "Exode 16:31"
+      },
+      "points": 10
+    },
+    {
+      "id": 56,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Wer wurde nach Mose der Führer Israels?",
+        "fr": "Qui devint le chef d'Israël après Moïse ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jericho",
+          "B": "Samuel",
+          "C": "Israel",
+          "D": "Josua"
+        },
+        "fr": {
+          "A": "Jéricho",
+          "B": "Samuel",
+          "C": "Israël",
+          "D": "Josué"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Josua 1,1-2",
+        "fr": "Josué 1:1-2"
+      },
+      "points": 10
+    },
+    {
+      "id": 57,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Welche Stadt fiel, nachdem Israel sieben Tage um sie gezogen war?",
+        "fr": "Quelle ville tomba après qu'Israël en eut fait le tour pendant sept jours ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jericho",
+          "B": "Gideon",
+          "C": "Salomo",
+          "D": "Zwölf Stämme"
+        },
+        "fr": {
+          "A": "Jéricho",
+          "B": "Gédéon",
+          "C": "Salomon",
+          "D": "Douze tribus"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Josua 6,20",
+        "fr": "Josué 6:20"
+      },
+      "points": 10
+    },
+    {
+      "id": 58,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Welchen Richter berief Gott, um Israel von Midian zu befreien?",
+        "fr": "Quel juge Dieu appela-t-il pour délivrer Israël de Madian ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Samuel",
+          "B": "Gideon",
+          "C": "40 Tage",
+          "D": "Rotes Meer"
+        },
+        "fr": {
+          "A": "Samuel",
+          "B": "Gédéon",
+          "C": "40 jours",
+          "D": "Mer Rouge"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Richter 6,14",
+        "fr": "Juges 6:14"
+      },
+      "points": 10
+    },
+    {
+      "id": 59,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Welcher Junge hörte nachts Gottes Stimme im Heiligtum?",
+        "fr": "Quel garçon entendit la voix de Dieu pendant la nuit dans le sanctuaire ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Salomo",
+          "B": "Israel",
+          "C": "Samuel",
+          "D": "Manna"
+        },
+        "fr": {
+          "A": "Salomon",
+          "B": "Israël",
+          "C": "Samuel",
+          "D": "Manne"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Samuel 3,10",
+        "fr": "1 Samuel 3:10"
+      },
+      "points": 10
+    },
+    {
+      "id": 60,
+      "niveau": "facile",
+      "categorie": "ancien_testament",
+      "question": {
+        "de": "Welcher König bat Gott um Weisheit?",
+        "fr": "Quel roi demanda à Dieu la sagesse ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "40 Tage",
+          "B": "Zwölf Stämme",
+          "C": "Josua",
+          "D": "Salomo"
+        },
+        "fr": {
+          "A": "40 jours",
+          "B": "Douze tribus",
+          "C": "Josué",
+          "D": "Salomon"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Könige 3,12",
+        "fr": "1 Rois 3:12"
+      },
+      "points": 10
+    },
+    {
+      "id": 61,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Welches Evangelium steht als erstes im Neuen Testament?",
+        "fr": "Quel Évangile est placé en premier dans le Nouveau Testament ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthäus",
+          "B": "Markus",
+          "C": "Johannes",
+          "D": "Paulus"
+        },
+        "fr": {
+          "A": "Matthieu",
+          "B": "Marc",
+          "C": "Jean",
+          "D": "Paul"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 1,1",
+        "fr": "Matthieu 1:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 62,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Welches Evangelium beginnt mit den Worten über den Anfang des Evangeliums Jesu Christi?",
+        "fr": "Quel Évangile commence en annonçant le commencement de l'Évangile de Jésus-Christ ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Lukas",
+          "B": "Markus",
+          "C": "Apostelgeschichte",
+          "D": "Stephanus"
+        },
+        "fr": {
+          "A": "Luc",
+          "B": "Marc",
+          "C": "Actes",
+          "D": "Étienne"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Markus 1,1",
+        "fr": "Marc 1:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 63,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Welcher Evangelist schrieb auch die Apostelgeschichte?",
+        "fr": "Quel évangéliste écrivit aussi le livre des Actes ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Johannes",
+          "B": "Pfingsten",
+          "C": "Lukas",
+          "D": "Barnabas"
+        },
+        "fr": {
+          "A": "Jean",
+          "B": "Pentecôte",
+          "C": "Luc",
+          "D": "Barnabas"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Lukas 1,3",
+        "fr": "Luc 1:3"
+      },
+      "points": 10
+    },
+    {
+      "id": 64,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Welches Evangelium beginnt mit „Im Anfang war das Wort“?",
+        "fr": "Quel Évangile commence par « Au commencement était la Parole » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Apostelgeschichte",
+          "B": "Paulus",
+          "C": "Timotheus",
+          "D": "Johannes"
+        },
+        "fr": {
+          "A": "Actes",
+          "B": "Paul",
+          "C": "Timothée",
+          "D": "Jean"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Johannes 1,1",
+        "fr": "Jean 1:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 65,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Welches Buch erzählt die Geschichte der ersten Christen nach Jesu Himmelfahrt?",
+        "fr": "Quel livre raconte l'histoire des premiers chrétiens après l'ascension de Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Apostelgeschichte",
+          "B": "Pfingsten",
+          "C": "Stephanus",
+          "D": "Matthäus"
+        },
+        "fr": {
+          "A": "Actes",
+          "B": "Pentecôte",
+          "C": "Étienne",
+          "D": "Matthieu"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Apostelgeschichte 1,1",
+        "fr": "Actes 1:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 66,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "An welchem Fest kam der Heilige Geist auf die Jünger?",
+        "fr": "Lors de quelle fête le Saint-Esprit descendit-il sur les disciples ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Paulus",
+          "B": "Pfingsten",
+          "C": "Barnabas",
+          "D": "Markus"
+        },
+        "fr": {
+          "A": "Paul",
+          "B": "Pentecôte",
+          "C": "Barnabas",
+          "D": "Marc"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Apostelgeschichte 2,1",
+        "fr": "Actes 2:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 67,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Wer begegnete Jesus auf dem Weg nach Damaskus?",
+        "fr": "Qui rencontra Jésus sur le chemin de Damas ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Stephanus",
+          "B": "Timotheus",
+          "C": "Paulus",
+          "D": "Lukas"
+        },
+        "fr": {
+          "A": "Étienne",
+          "B": "Timothée",
+          "C": "Paul",
+          "D": "Luc"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Apostelgeschichte 9,3-6",
+        "fr": "Actes 9:3-6"
+      },
+      "points": 10
+    },
+    {
+      "id": 68,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Wer gilt als der erste christliche Märtyrer in der Apostelgeschichte?",
+        "fr": "Qui est présenté comme le premier martyr chrétien dans les Actes ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Barnabas",
+          "B": "Matthäus",
+          "C": "Johannes",
+          "D": "Stephanus"
+        },
+        "fr": {
+          "A": "Barnabas",
+          "B": "Matthieu",
+          "C": "Jean",
+          "D": "Étienne"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Apostelgeschichte 7,59",
+        "fr": "Actes 7:59"
+      },
+      "points": 10
+    },
+    {
+      "id": 69,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Wer wurde zusammen mit Paulus zur Missionsarbeit ausgesandt?",
+        "fr": "Qui fut envoyé en mission avec Paul ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Barnabas",
+          "B": "Timotheus",
+          "C": "Markus",
+          "D": "Apostelgeschichte"
+        },
+        "fr": {
+          "A": "Barnabas",
+          "B": "Timothée",
+          "C": "Marc",
+          "D": "Actes"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Apostelgeschichte 13,2",
+        "fr": "Actes 13:2"
+      },
+      "points": 10
+    },
+    {
+      "id": 70,
+      "niveau": "facile",
+      "categorie": "nouveau_testament",
+      "question": {
+        "de": "Welchen jungen Mitarbeiter nennt Paulus sein echtes Kind im Glauben?",
+        "fr": "Quel jeune collaborateur Paul appelle-t-il son véritable enfant dans la foi ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthäus",
+          "B": "Timotheus",
+          "C": "Lukas",
+          "D": "Pfingsten"
+        },
+        "fr": {
+          "A": "Matthieu",
+          "B": "Timothée",
+          "C": "Luc",
+          "D": "Pentecôte"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Timotheus 1,2",
+        "fr": "1 Timothée 1:2"
+      },
+      "points": 10
+    },
+    {
+      "id": 71,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wie lange fastete Jesus in der Wüste?",
+        "fr": "Combien de temps Jésus jeûna-t-il dans le désert ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Kapernaum",
+          "B": "Nikodemus",
+          "C": "Vierzig Tage",
+          "D": "Gethsemane"
+        },
+        "fr": {
+          "A": "Capernaüm",
+          "B": "Nicodème",
+          "C": "Quarante jours",
+          "D": "Gethsémané"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 4,2",
+        "fr": "Matthieu 4:2"
+      },
+      "points": 10
+    },
+    {
+      "id": 72,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "In welcher Stadt wohnte Jesus nach dem Verlassen von Nazareth?",
+        "fr": "Dans quelle ville Jésus habita-t-il après avoir quitté Nazareth ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bergpredigt",
+          "B": "Zachäus",
+          "C": "Pilatus",
+          "D": "Kapernaum"
+        },
+        "fr": {
+          "A": "Sermon sur la montagne",
+          "B": "Zachée",
+          "C": "Pilate",
+          "D": "Capernaüm"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 4,13",
+        "fr": "Matthieu 4:13"
+      },
+      "points": 10
+    },
+    {
+      "id": 73,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wie nennt man Jesu bekannte Rede in Matthäus 5 bis 7?",
+        "fr": "Comment appelle-t-on le célèbre discours de Jésus dans Matthieu 5 à 7 ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bergpredigt",
+          "B": "Nikodemus",
+          "C": "Marta und Maria",
+          "D": "Golgatha"
+        },
+        "fr": {
+          "A": "Sermon sur la montagne",
+          "B": "Nicodème",
+          "C": "Marthe et Marie",
+          "D": "Golgotha"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 5,1-2",
+        "fr": "Matthieu 5:1-2"
+      },
+      "points": 10
+    },
+    {
+      "id": 74,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Welcher Pharisäer besuchte Jesus bei Nacht?",
+        "fr": "Quel pharisien vint voir Jésus de nuit ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zachäus",
+          "B": "Nikodemus",
+          "C": "Gethsemane",
+          "D": "Emmaus"
+        },
+        "fr": {
+          "A": "Zachée",
+          "B": "Nicodème",
+          "C": "Gethsémané",
+          "D": "Emmaüs"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Johannes 3,1-2",
+        "fr": "Jean 3:1-2"
+      },
+      "points": 10
+    },
+    {
+      "id": 75,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Welcher kleine Zöllner kletterte auf einen Baum, um Jesus zu sehen?",
+        "fr": "Quel petit collecteur d'impôts monta dans un arbre pour voir Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Marta und Maria",
+          "B": "Pilatus",
+          "C": "Zachäus",
+          "D": "Vierzig Tage"
+        },
+        "fr": {
+          "A": "Marthe et Marie",
+          "B": "Pilate",
+          "C": "Zachée",
+          "D": "Quarante jours"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Lukas 19,5",
+        "fr": "Luc 19:5"
+      },
+      "points": 10
+    },
+    {
+      "id": 76,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Welche beiden Schwestern empfingen Jesus in ihrem Haus?",
+        "fr": "Quelles deux sœurs accueillirent Jésus dans leur maison ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Gethsemane",
+          "B": "Golgatha",
+          "C": "Kapernaum",
+          "D": "Marta und Maria"
+        },
+        "fr": {
+          "A": "Gethsémané",
+          "B": "Golgotha",
+          "C": "Capernaüm",
+          "D": "Marthe et Marie"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Lukas 10,38-39",
+        "fr": "Luc 10:38-39"
+      },
+      "points": 10
+    },
+    {
+      "id": 77,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "In welchem Garten betete Jesus vor seiner Verhaftung?",
+        "fr": "Dans quel jardin Jésus pria-t-il avant son arrestation ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Gethsemane",
+          "B": "Pilatus",
+          "C": "Emmaus",
+          "D": "Bergpredigt"
+        },
+        "fr": {
+          "A": "Gethsémané",
+          "B": "Pilate",
+          "C": "Emmaüs",
+          "D": "Sermon sur la montagne"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 26,36",
+        "fr": "Matthieu 26:36"
+      },
+      "points": 10
+    },
+    {
+      "id": 78,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Welcher römische Statthalter verurteilte Jesus?",
+        "fr": "Quel gouverneur romain condamna Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Golgatha",
+          "B": "Pilatus",
+          "C": "Vierzig Tage",
+          "D": "Nikodemus"
+        },
+        "fr": {
+          "A": "Golgotha",
+          "B": "Pilate",
+          "C": "Quarante jours",
+          "D": "Nicodème"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 27,2",
+        "fr": "Matthieu 27:2"
+      },
+      "points": 10
+    },
+    {
+      "id": 79,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Wie hieß der Ort, an dem Jesus gekreuzigt wurde?",
+        "fr": "Comment s'appelait le lieu où Jésus fut crucifié ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Emmaus",
+          "B": "Kapernaum",
+          "C": "Golgatha",
+          "D": "Zachäus"
+        },
+        "fr": {
+          "A": "Emmaüs",
+          "B": "Capernaüm",
+          "C": "Golgotha",
+          "D": "Zachée"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Johannes 19,17",
+        "fr": "Jean 19:17"
+      },
+      "points": 10
+    },
+    {
+      "id": 80,
+      "niveau": "facile",
+      "categorie": "jesus",
+      "question": {
+        "de": "Zu welchem Dorf gingen zwei Jünger nach der Auferstehung Jesu?",
+        "fr": "Vers quel village deux disciples se rendaient-ils après la résurrection de Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Vierzig Tage",
+          "B": "Bergpredigt",
+          "C": "Marta und Maria",
+          "D": "Emmaus"
+        },
+        "fr": {
+          "A": "Quarante jours",
+          "B": "Sermon sur la montagne",
+          "C": "Marthe et Marie",
+          "D": "Emmaüs"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Lukas 24,13",
+        "fr": "Luc 24:13"
+      },
+      "points": 10
+    },
+    {
+      "id": 81,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Wer war der erste König Israels?",
+        "fr": "Qui fut le premier roi d'Israël ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Saul",
+          "B": "David",
+          "C": "Rehabeam",
+          "D": "Hiskia"
+        },
+        "fr": {
+          "A": "Saül",
+          "B": "David",
+          "C": "Roboam",
+          "D": "Ézéchias"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Samuel 10,1",
+        "fr": "1 Samuel 10:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 82,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher König folgte Saul auf den Thron?",
+        "fr": "Quel roi succéda à Saül ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Salomo",
+          "B": "David",
+          "C": "Jerobeam",
+          "D": "Josia"
+        },
+        "fr": {
+          "A": "Salomon",
+          "B": "David",
+          "C": "Jéroboam",
+          "D": "Josias"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Samuel 5,3",
+        "fr": "2 Samuel 5:3"
+      },
+      "points": 10
+    },
+    {
+      "id": 83,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher Sohn Davids wurde nach ihm König?",
+        "fr": "Quel fils de David devint roi après lui ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Rehabeam",
+          "B": "Ahab",
+          "C": "Salomo",
+          "D": "Nebukadnezar"
+        },
+        "fr": {
+          "A": "Roboam",
+          "B": "Achab",
+          "C": "Salomon",
+          "D": "Nebucadnetsar"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Könige 2,12",
+        "fr": "1 Rois 2:12"
+      },
+      "points": 10
+    },
+    {
+      "id": 84,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher Sohn Salomos wurde König von Juda?",
+        "fr": "Quel fils de Salomon devint roi de Juda ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jerobeam",
+          "B": "Hiskia",
+          "C": "Kyrus",
+          "D": "Rehabeam"
+        },
+        "fr": {
+          "A": "Jéroboam",
+          "B": "Ézéchias",
+          "C": "Cyrus",
+          "D": "Roboam"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Könige 12,1",
+        "fr": "1 Rois 12:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 85,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Wer wurde erster König des Nordreichs Israel nach der Teilung?",
+        "fr": "Qui devint le premier roi du royaume du Nord après la division ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jerobeam",
+          "B": "Ahab",
+          "C": "Josia",
+          "D": "Saul"
+        },
+        "fr": {
+          "A": "Jéroboam",
+          "B": "Achab",
+          "C": "Josias",
+          "D": "Saül"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Könige 12,20",
+        "fr": "1 Rois 12:20"
+      },
+      "points": 10
+    },
+    {
+      "id": 86,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher König von Israel war mit Isebel verheiratet?",
+        "fr": "Quel roi d'Israël était marié à Jézabel ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Hiskia",
+          "B": "Ahab",
+          "C": "Nebukadnezar",
+          "D": "David"
+        },
+        "fr": {
+          "A": "Ézéchias",
+          "B": "Achab",
+          "C": "Nebucadnetsar",
+          "D": "David"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Könige 16,29",
+        "fr": "1 Rois 16:29"
+      },
+      "points": 10
+    },
+    {
+      "id": 87,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher König von Juda vertraute Gott während der assyrischen Bedrohung?",
+        "fr": "Quel roi de Juda fit confiance à Dieu face à la menace assyrienne ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josia",
+          "B": "Kyrus",
+          "C": "Hiskia",
+          "D": "Salomo"
+        },
+        "fr": {
+          "A": "Josias",
+          "B": "Cyrus",
+          "C": "Ézéchias",
+          "D": "Salomon"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Könige 18,1",
+        "fr": "2 Rois 18:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 88,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher junge König ließ das Gesetzbuch im Tempel lesen und führte Reformen durch?",
+        "fr": "Quel jeune roi fit lire le livre de la Loi et mena des réformes ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Nebukadnezar",
+          "B": "Saul",
+          "C": "Rehabeam",
+          "D": "Josia"
+        },
+        "fr": {
+          "A": "Nebucadnetsar",
+          "B": "Saül",
+          "C": "Roboam",
+          "D": "Josias"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Könige 22,1",
+        "fr": "2 Rois 22:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 89,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher babylonische König eroberte Jerusalem?",
+        "fr": "Quel roi babylonien conquit Jérusalem ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Nebukadnezar",
+          "B": "Kyrus",
+          "C": "David",
+          "D": "Jerobeam"
+        },
+        "fr": {
+          "A": "Nebucadnetsar",
+          "B": "Cyrus",
+          "C": "David",
+          "D": "Jéroboam"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Könige 24,1",
+        "fr": "2 Rois 24:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 90,
+      "niveau": "facile",
+      "categorie": "rois",
+      "question": {
+        "de": "Welcher persische König erlaubte den Juden die Rückkehr und den Wiederaufbau des Tempels?",
+        "fr": "Quel roi perse permit aux Juifs de retourner et de reconstruire le temple ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Saul",
+          "B": "Kyrus",
+          "C": "Salomo",
+          "D": "Ahab"
+        },
+        "fr": {
+          "A": "Saül",
+          "B": "Cyrus",
+          "C": "Salomon",
+          "D": "Achab"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Esra 1,1",
+        "fr": "Esdras 1:1"
+      },
+      "points": 10
+    },
+    {
+      "id": 91,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel hieß ursprünglich Simon?",
+        "fr": "Quel apôtre s'appelait à l'origine Simon ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Andreas",
+          "B": "Johannes",
+          "C": "Petrus",
+          "D": "Philippus"
+        },
+        "fr": {
+          "A": "André",
+          "B": "Jean",
+          "C": "Pierre",
+          "D": "Philippe"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 4,18",
+        "fr": "Matthieu 4:18"
+      },
+      "points": 10
+    },
+    {
+      "id": 92,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel war der Bruder von Petrus?",
+        "fr": "Quel apôtre était le frère de Pierre ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jakobus",
+          "B": "Matthäus",
+          "C": "Bartholomäus",
+          "D": "Andreas"
+        },
+        "fr": {
+          "A": "Jacques",
+          "B": "Matthieu",
+          "C": "Barthélemy",
+          "D": "André"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 4,18",
+        "fr": "Matthieu 4:18"
+      },
+      "points": 10
+    },
+    {
+      "id": 93,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Sohn des Zebedäus war der Bruder von Johannes?",
+        "fr": "Quel fils de Zébédée était le frère de Jean ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jakobus",
+          "B": "Johannes",
+          "C": "Thomas",
+          "D": "Simon der Zelot"
+        },
+        "fr": {
+          "A": "Jacques",
+          "B": "Jean",
+          "C": "Thomas",
+          "D": "Simon le Zélote"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 4,21",
+        "fr": "Matthieu 4:21"
+      },
+      "points": 10
+    },
+    {
+      "id": 94,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel war der Bruder von Jakobus, dem Sohn des Zebedäus?",
+        "fr": "Quel apôtre était le frère de Jacques, fils de Zébédée ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthäus",
+          "B": "Johannes",
+          "C": "Philippus",
+          "D": "Matthias"
+        },
+        "fr": {
+          "A": "Matthieu",
+          "B": "Jean",
+          "C": "Philippe",
+          "D": "Matthias"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 4,21",
+        "fr": "Matthieu 4:21"
+      },
+      "points": 10
+    },
+    {
+      "id": 95,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel war vor seiner Berufung Zöllner?",
+        "fr": "Quel apôtre était collecteur d'impôts avant son appel ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Thomas",
+          "B": "Bartholomäus",
+          "C": "Matthäus",
+          "D": "Petrus"
+        },
+        "fr": {
+          "A": "Thomas",
+          "B": "Barthélemy",
+          "C": "Matthieu",
+          "D": "Pierre"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 9,9",
+        "fr": "Matthieu 9:9"
+      },
+      "points": 10
+    },
+    {
+      "id": 96,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel wollte die Wunden des auferstandenen Jesus sehen?",
+        "fr": "Quel apôtre voulut voir les blessures de Jésus ressuscité ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Philippus",
+          "B": "Simon der Zelot",
+          "C": "Andreas",
+          "D": "Thomas"
+        },
+        "fr": {
+          "A": "Philippe",
+          "B": "Simon le Zélote",
+          "C": "André",
+          "D": "Thomas"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Johannes 20,27",
+        "fr": "Jean 20:27"
+      },
+      "points": 10
+    },
+    {
+      "id": 97,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welchen Jünger rief Jesus mit den Worten „Folge mir nach“ und der später Nathanael zu Jesus brachte?",
+        "fr": "Quel disciple Jésus appela-t-il par « Suis-moi » et qui amena ensuite Nathanaël à Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Philippus",
+          "B": "Bartholomäus",
+          "C": "Matthias",
+          "D": "Jakobus"
+        },
+        "fr": {
+          "A": "Philippe",
+          "B": "Barthélemy",
+          "C": "Matthias",
+          "D": "Jacques"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Johannes 1,43",
+        "fr": "Jean 1:43"
+      },
+      "points": 10
+    },
+    {
+      "id": 98,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel wird in der Liste der Zwölf direkt nach Philippus genannt?",
+        "fr": "Quel apôtre est nommé juste après Philippe dans la liste des Douze ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Simon der Zelot",
+          "B": "Bartholomäus",
+          "C": "Petrus",
+          "D": "Johannes"
+        },
+        "fr": {
+          "A": "Simon le Zélote",
+          "B": "Barthélemy",
+          "C": "Pierre",
+          "D": "Jean"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 10,3",
+        "fr": "Matthieu 10:3"
+      },
+      "points": 10
+    },
+    {
+      "id": 99,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Welcher Apostel trug den Beinamen „der Zelot“?",
+        "fr": "Quel apôtre portait le surnom « le Zélote » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthias",
+          "B": "Andreas",
+          "C": "Simon der Zelot",
+          "D": "Matthäus"
+        },
+        "fr": {
+          "A": "Matthias",
+          "B": "André",
+          "C": "Simon le Zélote",
+          "D": "Matthieu"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Lukas 6,15",
+        "fr": "Luc 6:15"
+      },
+      "points": 10
+    },
+    {
+      "id": 100,
+      "niveau": "facile",
+      "categorie": "apotres",
+      "question": {
+        "de": "Wer wurde als Ersatz für Judas Iskariot zu den elf Aposteln hinzugezählt?",
+        "fr": "Qui fut choisi pour remplacer Judas Iscariot parmi les apôtres ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Petrus",
+          "B": "Jakobus",
+          "C": "Thomas",
+          "D": "Matthias"
+        },
+        "fr": {
+          "A": "Pierre",
+          "B": "Jacques",
+          "C": "Thomas",
+          "D": "Matthias"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Apostelgeschichte 1,26",
+        "fr": "Actes 1:26"
+      },
+      "points": 10
+    },
+    {
+      "id": 101,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 3,2 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 3:2 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Brennender Dornbusch",
+          "B": "Aaron",
+          "C": "Zehn Plagen",
+          "D": "Manna"
+        },
+        "fr": {
+          "A": "Buisson ardent",
+          "B": "Aaron",
+          "C": "Dix plaies",
+          "D": "Manne"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Mose 3,2",
+        "fr": "Exode 3:2"
+      },
+      "points": 20
+    },
+    {
+      "id": 102,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 4,14 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 4:14 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Pharao",
+          "B": "Aaron",
+          "C": "Passah",
+          "D": "Sinai"
+        },
+        "fr": {
+          "A": "Pharaon",
+          "B": "Aaron",
+          "C": "Pâque",
+          "D": "Sinaï"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Mose 4,14",
+        "fr": "Exode 4:14"
+      },
+      "points": 20
+    },
+    {
+      "id": 103,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 5,1 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 5:1 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zehn Plagen",
+          "B": "Rotes Meer",
+          "C": "Pharao",
+          "D": "Goldenes Kalb"
+        },
+        "fr": {
+          "A": "Dix plaies",
+          "B": "Mer Rouge",
+          "C": "Pharaon",
+          "D": "Veau d'or"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Mose 5,1",
+        "fr": "Exode 5:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 104,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 7-12 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 7-12 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Passah",
+          "B": "Manna",
+          "C": "Josua",
+          "D": "Zehn Plagen"
+        },
+        "fr": {
+          "A": "Pâque",
+          "B": "Manne",
+          "C": "Josué",
+          "D": "Dix plaies"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Mose 7-12",
+        "fr": "Exode 7-12"
+      },
+      "points": 20
+    },
+    {
+      "id": 105,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 12,11 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 12:11 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Passah",
+          "B": "Rotes Meer",
+          "C": "Sinai",
+          "D": "Brennender Dornbusch"
+        },
+        "fr": {
+          "A": "Pâque",
+          "B": "Mer Rouge",
+          "C": "Sinaï",
+          "D": "Buisson ardent"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Mose 12,11",
+        "fr": "Exode 12:11"
+      },
+      "points": 20
+    },
+    {
+      "id": 106,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 14,21 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 14:21 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Manna",
+          "B": "Rotes Meer",
+          "C": "Goldenes Kalb",
+          "D": "Aaron"
+        },
+        "fr": {
+          "A": "Manne",
+          "B": "Mer Rouge",
+          "C": "Veau d'or",
+          "D": "Aaron"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Mose 14,21",
+        "fr": "Exode 14:21"
+      },
+      "points": 20
+    },
+    {
+      "id": 107,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 16,15 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 16:15 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Sinai",
+          "B": "Josua",
+          "C": "Manna",
+          "D": "Pharao"
+        },
+        "fr": {
+          "A": "Sinaï",
+          "B": "Josué",
+          "C": "Manne",
+          "D": "Pharaon"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Mose 16,15",
+        "fr": "Exode 16:15"
+      },
+      "points": 20
+    },
+    {
+      "id": 108,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 19,20 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 19:20 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Goldenes Kalb",
+          "B": "Brennender Dornbusch",
+          "C": "Zehn Plagen",
+          "D": "Sinai"
+        },
+        "fr": {
+          "A": "Veau d'or",
+          "B": "Buisson ardent",
+          "C": "Dix plaies",
+          "D": "Sinaï"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Mose 19,20",
+        "fr": "Exode 19:20"
+      },
+      "points": 20
+    },
+    {
+      "id": 109,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 32,4 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Exode 32:4 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Goldenes Kalb",
+          "B": "Josua",
+          "C": "Aaron",
+          "D": "Passah"
+        },
+        "fr": {
+          "A": "Veau d'or",
+          "B": "Josué",
+          "C": "Aaron",
+          "D": "Pâque"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Mose 32,4",
+        "fr": "Exode 32:4"
+      },
+      "points": 20
+    },
+    {
+      "id": 110,
+      "niveau": "moyen",
+      "categorie": "moise_exode",
+      "question": {
+        "de": "Welche Antwort passt zu 5. Mose 31,23 in der Kategorie „Mose & Exodus“?",
+        "fr": "Quelle réponse correspond à Deutéronome 31:23 dans la catégorie « Moïse & Exode » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Brennender Dornbusch",
+          "B": "Josua",
+          "C": "Pharao",
+          "D": "Rotes Meer"
+        },
+        "fr": {
+          "A": "Buisson ardent",
+          "B": "Josué",
+          "C": "Pharaon",
+          "D": "Mer Rouge"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "5. Mose 31,23",
+        "fr": "Deutéronome 31:23"
+      },
+      "points": 20
+    },
+    {
+      "id": 111,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 18,36 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à 1 Rois 18:36 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Elisa",
+          "B": "Jeremia",
+          "C": "Elia",
+          "D": "Hosea"
+        },
+        "fr": {
+          "A": "Élisée",
+          "B": "Jérémie",
+          "C": "Élie",
+          "D": "Osée"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Könige 18,36",
+        "fr": "1 Rois 18:36"
+      },
+      "points": 20
+    },
+    {
+      "id": 112,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 2,15 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à 2 Rois 2:15 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jesaja",
+          "B": "Hesekiel",
+          "C": "Amos",
+          "D": "Elisa"
+        },
+        "fr": {
+          "A": "Ésaïe",
+          "B": "Ézéchiel",
+          "C": "Amos",
+          "D": "Élisée"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Könige 2,15",
+        "fr": "2 Rois 2:15"
+      },
+      "points": 20
+    },
+    {
+      "id": 113,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Jesaja 6,8 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Ésaïe 6:8 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jesaja",
+          "B": "Jeremia",
+          "C": "Daniel",
+          "D": "Micha"
+        },
+        "fr": {
+          "A": "Ésaïe",
+          "B": "Jérémie",
+          "C": "Daniel",
+          "D": "Michée"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Jesaja 6,8",
+        "fr": "Ésaïe 6:8"
+      },
+      "points": 20
+    },
+    {
+      "id": 114,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Jeremia 1,5 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Jérémie 1:5 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Hesekiel",
+          "B": "Jeremia",
+          "C": "Hosea",
+          "D": "Maleachi"
+        },
+        "fr": {
+          "A": "Ézéchiel",
+          "B": "Jérémie",
+          "C": "Osée",
+          "D": "Malachie"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Jeremia 1,5",
+        "fr": "Jérémie 1:5"
+      },
+      "points": 20
+    },
+    {
+      "id": 115,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Hesekiel 2,3 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Ézéchiel 2:3 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Daniel",
+          "B": "Amos",
+          "C": "Hesekiel",
+          "D": "Elia"
+        },
+        "fr": {
+          "A": "Daniel",
+          "B": "Amos",
+          "C": "Ézéchiel",
+          "D": "Élie"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Hesekiel 2,3",
+        "fr": "Ézéchiel 2:3"
+      },
+      "points": 20
+    },
+    {
+      "id": 116,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Daniel 6,22 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Daniel 6:22 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Hosea",
+          "B": "Micha",
+          "C": "Elisa",
+          "D": "Daniel"
+        },
+        "fr": {
+          "A": "Osée",
+          "B": "Michée",
+          "C": "Élisée",
+          "D": "Daniel"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Daniel 6,22",
+        "fr": "Daniel 6:22"
+      },
+      "points": 20
+    },
+    {
+      "id": 117,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Hosea 1,2 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Osée 1:2 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Hosea",
+          "B": "Amos",
+          "C": "Maleachi",
+          "D": "Jesaja"
+        },
+        "fr": {
+          "A": "Osée",
+          "B": "Amos",
+          "C": "Malachie",
+          "D": "Ésaïe"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Hosea 1,2",
+        "fr": "Osée 1:2"
+      },
+      "points": 20
+    },
+    {
+      "id": 118,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Amos 1,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Amos 1:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Micha",
+          "B": "Amos",
+          "C": "Elia",
+          "D": "Jeremia"
+        },
+        "fr": {
+          "A": "Michée",
+          "B": "Amos",
+          "C": "Élie",
+          "D": "Jérémie"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Amos 1,1",
+        "fr": "Amos 1:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 119,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Micha 5,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Michée 5:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Maleachi",
+          "B": "Elisa",
+          "C": "Micha",
+          "D": "Hesekiel"
+        },
+        "fr": {
+          "A": "Malachie",
+          "B": "Élisée",
+          "C": "Michée",
+          "D": "Ézéchiel"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Micha 5,1",
+        "fr": "Michée 5:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 120,
+      "niveau": "moyen",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Maleachi 1,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Malachie 1:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Elia",
+          "B": "Jesaja",
+          "C": "Daniel",
+          "D": "Maleachi"
+        },
+        "fr": {
+          "A": "Élie",
+          "B": "Ésaïe",
+          "C": "Daniel",
+          "D": "Malachie"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Maleachi 1,1",
+        "fr": "Malachie 1:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 121,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 13,3 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 13:3 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der Sämann",
+          "B": "Das Unkraut",
+          "C": "Der verborgene Schatz",
+          "D": "Der verlorene Sohn"
+        },
+        "fr": {
+          "A": "Le semeur",
+          "B": "L'ivraie",
+          "C": "Le trésor caché",
+          "D": "Le fils prodigue"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 13,3",
+        "fr": "Matthieu 13:3"
+      },
+      "points": 20
+    },
+    {
+      "id": 122,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 13,24-30 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 13:24-30 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Das Senfkorn",
+          "B": "Das Unkraut",
+          "C": "Die kostbare Perle",
+          "D": "Das verlorene Schaf"
+        },
+        "fr": {
+          "A": "Le grain de moutarde",
+          "B": "L'ivraie",
+          "C": "La perle de grand prix",
+          "D": "La brebis perdue"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 13,24-30",
+        "fr": "Matthieu 13:24-30"
+      },
+      "points": 20
+    },
+    {
+      "id": 123,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 13,31 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 13:31 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der verborgene Schatz",
+          "B": "Der barmherzige Samariter",
+          "C": "Das Senfkorn",
+          "D": "Die zehn Jungfrauen"
+        },
+        "fr": {
+          "A": "Le trésor caché",
+          "B": "Le bon Samaritain",
+          "C": "Le grain de moutarde",
+          "D": "Les dix vierges"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 13,31",
+        "fr": "Matthieu 13:31"
+      },
+      "points": 20
+    },
+    {
+      "id": 124,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 13,44 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 13:44 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Die kostbare Perle",
+          "B": "Der verlorene Sohn",
+          "C": "Die Talente",
+          "D": "Der verborgene Schatz"
+        },
+        "fr": {
+          "A": "La perle de grand prix",
+          "B": "Le fils prodigue",
+          "C": "Les talents",
+          "D": "Le trésor caché"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 13,44",
+        "fr": "Matthieu 13:44"
+      },
+      "points": 20
+    },
+    {
+      "id": 125,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 13,45-46 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 13:45-46 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Die kostbare Perle",
+          "B": "Der barmherzige Samariter",
+          "C": "Das verlorene Schaf",
+          "D": "Der Sämann"
+        },
+        "fr": {
+          "A": "La perle de grand prix",
+          "B": "Le bon Samaritain",
+          "C": "La brebis perdue",
+          "D": "Le semeur"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 13,45-46",
+        "fr": "Matthieu 13:45-46"
+      },
+      "points": 20
+    },
+    {
+      "id": 126,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Lukas 10,30-37 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Luc 10:30-37 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der verlorene Sohn",
+          "B": "Der barmherzige Samariter",
+          "C": "Die zehn Jungfrauen",
+          "D": "Das Unkraut"
+        },
+        "fr": {
+          "A": "Le fils prodigue",
+          "B": "Le bon Samaritain",
+          "C": "Les dix vierges",
+          "D": "L'ivraie"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Lukas 10,30-37",
+        "fr": "Luc 10:30-37"
+      },
+      "points": 20
+    },
+    {
+      "id": 127,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Lukas 15,11-32 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Luc 15:11-32 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Das verlorene Schaf",
+          "B": "Die Talente",
+          "C": "Der verlorene Sohn",
+          "D": "Das Senfkorn"
+        },
+        "fr": {
+          "A": "La brebis perdue",
+          "B": "Les talents",
+          "C": "Le fils prodigue",
+          "D": "Le grain de moutarde"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Lukas 15,11-32",
+        "fr": "Luc 15:11-32"
+      },
+      "points": 20
+    },
+    {
+      "id": 128,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Lukas 15,4-7 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Luc 15:4-7 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Die zehn Jungfrauen",
+          "B": "Der Sämann",
+          "C": "Der verborgene Schatz",
+          "D": "Das verlorene Schaf"
+        },
+        "fr": {
+          "A": "Les dix vierges",
+          "B": "Le semeur",
+          "C": "Le trésor caché",
+          "D": "La brebis perdue"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Lukas 15,4-7",
+        "fr": "Luc 15:4-7"
+      },
+      "points": 20
+    },
+    {
+      "id": 129,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 25,1-13 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 25:1-13 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Die zehn Jungfrauen",
+          "B": "Die Talente",
+          "C": "Das Unkraut",
+          "D": "Die kostbare Perle"
+        },
+        "fr": {
+          "A": "Les dix vierges",
+          "B": "Les talents",
+          "C": "L'ivraie",
+          "D": "La perle de grand prix"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 25,1-13",
+        "fr": "Matthieu 25:1-13"
+      },
+      "points": 20
+    },
+    {
+      "id": 130,
+      "niveau": "moyen",
+      "categorie": "paraboles",
+      "question": {
+        "de": "Welche Antwort passt zu Matthäus 25,14-30 in der Kategorie „Gleichnisse“?",
+        "fr": "Quelle réponse correspond à Matthieu 25:14-30 dans la catégorie « Paraboles » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Der Sämann",
+          "B": "Die Talente",
+          "C": "Das Senfkorn",
+          "D": "Der barmherzige Samariter"
+        },
+        "fr": {
+          "A": "Le semeur",
+          "B": "Les talents",
+          "C": "Le grain de moutarde",
+          "D": "Le bon Samaritain"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Matthäus 25,14-30",
+        "fr": "Matthieu 25:14-30"
+      },
+      "points": 20
+    },
+    {
+      "id": 131,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 12,20 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 12:20 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Israel",
+          "B": "Jerusalem",
+          "C": "Juda",
+          "D": "Jehu"
+        },
+        "fr": {
+          "A": "Israël",
+          "B": "Jérusalem",
+          "C": "Juda",
+          "D": "Jéhu"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Könige 12,20",
+        "fr": "1 Rois 12:20"
+      },
+      "points": 20
+    },
+    {
+      "id": 132,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 12,20 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 12:20 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Samaria",
+          "B": "Omri",
+          "C": "Joasch",
+          "D": "Israel"
+        },
+        "fr": {
+          "A": "Samarie",
+          "B": "Omri",
+          "C": "Joas",
+          "D": "Israël"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Könige 12,20",
+        "fr": "1 Rois 12:20"
+      },
+      "points": 20
+    },
+    {
+      "id": 133,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 16,24 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 16:24 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Samaria",
+          "B": "Jerusalem",
+          "C": "Josaphat",
+          "D": "Manasse"
+        },
+        "fr": {
+          "A": "Samarie",
+          "B": "Jérusalem",
+          "C": "Josaphat",
+          "D": "Manassé"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Könige 16,24",
+        "fr": "1 Rois 16:24"
+      },
+      "points": 20
+    },
+    {
+      "id": 134,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 11,36 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 11:36 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Omri",
+          "B": "Jerusalem",
+          "C": "Jehu",
+          "D": "Zedekia"
+        },
+        "fr": {
+          "A": "Omri",
+          "B": "Jérusalem",
+          "C": "Jéhu",
+          "D": "Sédécias"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Könige 11,36",
+        "fr": "1 Rois 11:36"
+      },
+      "points": 20
+    },
+    {
+      "id": 135,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 16,23 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 16:23 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josaphat",
+          "B": "Joasch",
+          "C": "Omri",
+          "D": "Juda"
+        },
+        "fr": {
+          "A": "Josaphat",
+          "B": "Joas",
+          "C": "Omri",
+          "D": "Juda"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Könige 16,23",
+        "fr": "1 Rois 16:23"
+      },
+      "points": 20
+    },
+    {
+      "id": 136,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 22,41 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 22:41 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jehu",
+          "B": "Manasse",
+          "C": "Israel",
+          "D": "Josaphat"
+        },
+        "fr": {
+          "A": "Jéhu",
+          "B": "Manassé",
+          "C": "Israël",
+          "D": "Josaphat"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Könige 22,41",
+        "fr": "1 Rois 22:41"
+      },
+      "points": 20
+    },
+    {
+      "id": 137,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 9,6 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 9:6 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jehu",
+          "B": "Joasch",
+          "C": "Zedekia",
+          "D": "Samaria"
+        },
+        "fr": {
+          "A": "Jéhu",
+          "B": "Joas",
+          "C": "Sédécias",
+          "D": "Samarie"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Könige 9,6",
+        "fr": "2 Rois 9:6"
+      },
+      "points": 20
+    },
+    {
+      "id": 138,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 12,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 12:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Manasse",
+          "B": "Joasch",
+          "C": "Juda",
+          "D": "Jerusalem"
+        },
+        "fr": {
+          "A": "Manassé",
+          "B": "Joas",
+          "C": "Juda",
+          "D": "Jérusalem"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Könige 12,1",
+        "fr": "2 Rois 12:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 139,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 21,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 21:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zedekia",
+          "B": "Israel",
+          "C": "Manasse",
+          "D": "Omri"
+        },
+        "fr": {
+          "A": "Sédécias",
+          "B": "Israël",
+          "C": "Manassé",
+          "D": "Omri"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Könige 21,1",
+        "fr": "2 Rois 21:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 140,
+      "niveau": "moyen",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 24,18 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 24:18 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Juda",
+          "B": "Samaria",
+          "C": "Josaphat",
+          "D": "Zedekia"
+        },
+        "fr": {
+          "A": "Juda",
+          "B": "Samarie",
+          "C": "Josaphat",
+          "D": "Sédécias"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Könige 24,18",
+        "fr": "2 Rois 24:18"
+      },
+      "points": 20
+    },
+    {
+      "id": 141,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 2,1-4 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 2:1-4 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Pfingsten",
+          "B": "Petrus",
+          "C": "Philippus",
+          "D": "Antiochia"
+        },
+        "fr": {
+          "A": "Pentecôte",
+          "B": "Pierre",
+          "C": "Philippe",
+          "D": "Antioche"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Apostelgeschichte 2,1-4",
+        "fr": "Actes 2:1-4"
+      },
+      "points": 20
+    },
+    {
+      "id": 142,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 2,14 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 2:14 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Stephanus",
+          "B": "Petrus",
+          "C": "Saulus",
+          "D": "Kornelius"
+        },
+        "fr": {
+          "A": "Étienne",
+          "B": "Pierre",
+          "C": "Saul",
+          "D": "Corneille"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Apostelgeschichte 2,14",
+        "fr": "Actes 2:14"
+      },
+      "points": 20
+    },
+    {
+      "id": 143,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 7,59 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 7:59 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Philippus",
+          "B": "Barnabas",
+          "C": "Stephanus",
+          "D": "Silas"
+        },
+        "fr": {
+          "A": "Philippe",
+          "B": "Barnabas",
+          "C": "Étienne",
+          "D": "Silas"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Apostelgeschichte 7,59",
+        "fr": "Actes 7:59"
+      },
+      "points": 20
+    },
+    {
+      "id": 144,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 8,5 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 8:5 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Saulus",
+          "B": "Antiochia",
+          "C": "Lydia",
+          "D": "Philippus"
+        },
+        "fr": {
+          "A": "Saul",
+          "B": "Antioche",
+          "C": "Lydie",
+          "D": "Philippe"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Apostelgeschichte 8,5",
+        "fr": "Actes 8:5"
+      },
+      "points": 20
+    },
+    {
+      "id": 145,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 9,4 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 9:4 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Saulus",
+          "B": "Barnabas",
+          "C": "Kornelius",
+          "D": "Pfingsten"
+        },
+        "fr": {
+          "A": "Saul",
+          "B": "Barnabas",
+          "C": "Corneille",
+          "D": "Pentecôte"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Apostelgeschichte 9,4",
+        "fr": "Actes 9:4"
+      },
+      "points": 20
+    },
+    {
+      "id": 146,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 11,22 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 11:22 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Antiochia",
+          "B": "Barnabas",
+          "C": "Silas",
+          "D": "Petrus"
+        },
+        "fr": {
+          "A": "Antioche",
+          "B": "Barnabas",
+          "C": "Silas",
+          "D": "Pierre"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Apostelgeschichte 11,22",
+        "fr": "Actes 11:22"
+      },
+      "points": 20
+    },
+    {
+      "id": 147,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 11,26 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 11:26 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Kornelius",
+          "B": "Lydia",
+          "C": "Antiochia",
+          "D": "Stephanus"
+        },
+        "fr": {
+          "A": "Corneille",
+          "B": "Lydie",
+          "C": "Antioche",
+          "D": "Étienne"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Apostelgeschichte 11,26",
+        "fr": "Actes 11:26"
+      },
+      "points": 20
+    },
+    {
+      "id": 148,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 10,1 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 10:1 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Silas",
+          "B": "Pfingsten",
+          "C": "Philippus",
+          "D": "Kornelius"
+        },
+        "fr": {
+          "A": "Silas",
+          "B": "Pentecôte",
+          "C": "Philippe",
+          "D": "Corneille"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Apostelgeschichte 10,1",
+        "fr": "Actes 10:1"
+      },
+      "points": 20
+    },
+    {
+      "id": 149,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 15,40 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 15:40 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Silas",
+          "B": "Lydia",
+          "C": "Petrus",
+          "D": "Saulus"
+        },
+        "fr": {
+          "A": "Silas",
+          "B": "Lydie",
+          "C": "Pierre",
+          "D": "Saul"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Apostelgeschichte 15,40",
+        "fr": "Actes 15:40"
+      },
+      "points": 20
+    },
+    {
+      "id": 150,
+      "niveau": "moyen",
+      "categorie": "eglise_primitive",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 16,14 in der Kategorie „Frühe Kirche“?",
+        "fr": "Quelle réponse correspond à Actes 16:14 dans la catégorie « Église primitive » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Pfingsten",
+          "B": "Lydia",
+          "C": "Stephanus",
+          "D": "Barnabas"
+        },
+        "fr": {
+          "A": "Pentecôte",
+          "B": "Lydie",
+          "C": "Étienne",
+          "D": "Barnabas"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Apostelgeschichte 16,14",
+        "fr": "Actes 16:14"
+      },
+      "points": 20
+    },
+    {
+      "id": 151,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Jesaja 6,2 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Ésaïe 6:2 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Schear-Jaschub",
+          "B": "Baruch",
+          "C": "Seraphim",
+          "D": "Gomer"
+        },
+        "fr": {
+          "A": "Shear-Jashub",
+          "B": "Baruc",
+          "C": "Séraphins",
+          "D": "Gomer"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Jesaja 6,2",
+        "fr": "Ésaïe 6:2"
+      },
+      "points": 30
+    },
+    {
+      "id": 152,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Jesaja 7,3 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Ésaïe 7:3 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Anatot",
+          "B": "Tal der Totengebeine",
+          "C": "Tekoa",
+          "D": "Schear-Jaschub"
+        },
+        "fr": {
+          "A": "Anathoth",
+          "B": "Vallée des ossements",
+          "C": "Tekoa",
+          "D": "Shear-Jashub"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Jesaja 7,3",
+        "fr": "Ésaïe 7:3"
+      },
+      "points": 30
+    },
+    {
+      "id": 153,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Jeremia 1,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Jérémie 1:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Anatot",
+          "B": "Baruch",
+          "C": "Belsazar",
+          "D": "Ninive"
+        },
+        "fr": {
+          "A": "Anathoth",
+          "B": "Baruc",
+          "C": "Belschatsar",
+          "D": "Ninive"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Jeremia 1,1",
+        "fr": "Jérémie 1:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 154,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Jeremia 36,4 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Jérémie 36:4 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Tal der Totengebeine",
+          "B": "Baruch",
+          "C": "Gomer",
+          "D": "Zerubbabel"
+        },
+        "fr": {
+          "A": "Vallée des ossements",
+          "B": "Baruc",
+          "C": "Gomer",
+          "D": "Zorobabel"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Jeremia 36,4",
+        "fr": "Jérémie 36:4"
+      },
+      "points": 30
+    },
+    {
+      "id": 155,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Hesekiel 37,1-14 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Ézéchiel 37:1-14 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Belsazar",
+          "B": "Tekoa",
+          "C": "Tal der Totengebeine",
+          "D": "Seraphim"
+        },
+        "fr": {
+          "A": "Belschatsar",
+          "B": "Tekoa",
+          "C": "Vallée des ossements",
+          "D": "Séraphins"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Hesekiel 37,1-14",
+        "fr": "Ézéchiel 37:1-14"
+      },
+      "points": 30
+    },
+    {
+      "id": 156,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Daniel 5,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Daniel 5:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Gomer",
+          "B": "Ninive",
+          "C": "Schear-Jaschub",
+          "D": "Belsazar"
+        },
+        "fr": {
+          "A": "Gomer",
+          "B": "Ninive",
+          "C": "Shear-Jashub",
+          "D": "Belschatsar"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Daniel 5,1",
+        "fr": "Daniel 5:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 157,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Hosea 1,3 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Osée 1:3 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Gomer",
+          "B": "Tekoa",
+          "C": "Zerubbabel",
+          "D": "Anatot"
+        },
+        "fr": {
+          "A": "Gomer",
+          "B": "Tekoa",
+          "C": "Zorobabel",
+          "D": "Anathoth"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Hosea 1,3",
+        "fr": "Osée 1:3"
+      },
+      "points": 30
+    },
+    {
+      "id": 158,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Amos 1,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Amos 1:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ninive",
+          "B": "Tekoa",
+          "C": "Seraphim",
+          "D": "Baruch"
+        },
+        "fr": {
+          "A": "Ninive",
+          "B": "Tekoa",
+          "C": "Séraphins",
+          "D": "Baruc"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Amos 1,1",
+        "fr": "Amos 1:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 159,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Nahum 1,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Nahum 1:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Zerubbabel",
+          "B": "Schear-Jaschub",
+          "C": "Ninive",
+          "D": "Tal der Totengebeine"
+        },
+        "fr": {
+          "A": "Zorobabel",
+          "B": "Shear-Jashub",
+          "C": "Ninive",
+          "D": "Vallée des ossements"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Nahum 1,1",
+        "fr": "Nahum 1:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 160,
+      "niveau": "difficile",
+      "categorie": "prophetes",
+      "question": {
+        "de": "Welche Antwort passt zu Haggai 1,1 in der Kategorie „Propheten“?",
+        "fr": "Quelle réponse correspond à Aggée 1:1 dans la catégorie « Prophètes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Seraphim",
+          "B": "Anatot",
+          "C": "Belsazar",
+          "D": "Zerubbabel"
+        },
+        "fr": {
+          "A": "Séraphins",
+          "B": "Anathoth",
+          "C": "Belschatsar",
+          "D": "Zorobabel"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Haggai 1,1",
+        "fr": "Aggée 1:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 161,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 15,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 15:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Abija",
+          "B": "Asa",
+          "C": "Simri",
+          "D": "Amazja"
+        },
+        "fr": {
+          "A": "Abija",
+          "B": "Asa",
+          "C": "Zimri",
+          "D": "Amatsia"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Könige 15,1",
+        "fr": "1 Rois 15:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 162,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 15,9 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 15:9 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Baesa",
+          "B": "Asa",
+          "C": "Ahasja",
+          "D": "Usija"
+        },
+        "fr": {
+          "A": "Baescha",
+          "B": "Asa",
+          "C": "Achazia",
+          "D": "Ozias"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Könige 15,9",
+        "fr": "1 Rois 15:9"
+      },
+      "points": 30
+    },
+    {
+      "id": 163,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 15,33 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 15:33 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Simri",
+          "B": "Atalja",
+          "C": "Baesa",
+          "D": "Ahas"
+        },
+        "fr": {
+          "A": "Zimri",
+          "B": "Athalie",
+          "C": "Baescha",
+          "D": "Achaz"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Könige 15,33",
+        "fr": "1 Rois 15:33"
+      },
+      "points": 30
+    },
+    {
+      "id": 164,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 16,15 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 16:15 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ahasja",
+          "B": "Amazja",
+          "C": "Jojakim",
+          "D": "Simri"
+        },
+        "fr": {
+          "A": "Achazia",
+          "B": "Amatsia",
+          "C": "Jojakim",
+          "D": "Zimri"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Könige 16,15",
+        "fr": "1 Rois 16:15"
+      },
+      "points": 30
+    },
+    {
+      "id": 165,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 22,52 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 1 Rois 22:52 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ahasja",
+          "B": "Atalja",
+          "C": "Usija",
+          "D": "Abija"
+        },
+        "fr": {
+          "A": "Achazia",
+          "B": "Athalie",
+          "C": "Ozias",
+          "D": "Abija"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Könige 22,52",
+        "fr": "1 Rois 22:52"
+      },
+      "points": 30
+    },
+    {
+      "id": 166,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 11,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 11:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Amazja",
+          "B": "Atalja",
+          "C": "Ahas",
+          "D": "Asa"
+        },
+        "fr": {
+          "A": "Amatsia",
+          "B": "Athalie",
+          "C": "Achaz",
+          "D": "Asa"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Könige 11,1",
+        "fr": "2 Rois 11:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 167,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 14,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 14:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Usija",
+          "B": "Jojakim",
+          "C": "Amazja",
+          "D": "Baesa"
+        },
+        "fr": {
+          "A": "Ozias",
+          "B": "Jojakim",
+          "C": "Amatsia",
+          "D": "Baescha"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "2. Könige 14,1",
+        "fr": "2 Rois 14:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 168,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Chronik 26,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Chroniques 26:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ahas",
+          "B": "Abija",
+          "C": "Simri",
+          "D": "Usija"
+        },
+        "fr": {
+          "A": "Achaz",
+          "B": "Abija",
+          "C": "Zimri",
+          "D": "Ozias"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Chronik 26,1",
+        "fr": "2 Chroniques 26:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 169,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 16,1 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 16:1 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Ahas",
+          "B": "Jojakim",
+          "C": "Asa",
+          "D": "Ahasja"
+        },
+        "fr": {
+          "A": "Achaz",
+          "B": "Jojakim",
+          "C": "Asa",
+          "D": "Achazia"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Könige 16,1",
+        "fr": "2 Rois 16:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 170,
+      "niveau": "difficile",
+      "categorie": "rois_royaumes",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 23,36 in der Kategorie „Könige & Reiche“?",
+        "fr": "Quelle réponse correspond à 2 Rois 23:36 dans la catégorie « Rois & royaumes » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Abija",
+          "B": "Jojakim",
+          "C": "Baesa",
+          "D": "Atalja"
+        },
+        "fr": {
+          "A": "Abija",
+          "B": "Jojakim",
+          "C": "Baescha",
+          "D": "Athalie"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Könige 23,36",
+        "fr": "2 Rois 23:36"
+      },
+      "points": 30
+    },
+    {
+      "id": 171,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu Römer 5,1 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à Romains 5:1 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Leib Christi",
+          "B": "Waffenrüstung Gottes",
+          "C": "Rechtfertigung aus Glauben",
+          "D": "Tag des Herrn"
+        },
+        "fr": {
+          "A": "Corps du Christ",
+          "B": "Armure de Dieu",
+          "C": "Justification par la foi",
+          "D": "Jour du Seigneur"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Römer 5,1",
+        "fr": "Romains 5:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 172,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Korinther 12,27 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à 1 Corinthiens 12:27 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Frucht des Geistes",
+          "B": "Christushymnus",
+          "C": "Mensch der Gesetzlosigkeit",
+          "D": "Leib Christi"
+        },
+        "fr": {
+          "A": "Fruit de l'Esprit",
+          "B": "Hymne au Christ",
+          "C": "Homme de l'impiété",
+          "D": "Corps du Christ"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Korinther 12,27",
+        "fr": "1 Corinthiens 12:27"
+      },
+      "points": 30
+    },
+    {
+      "id": 173,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu Galater 5,22 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à Galates 5:22 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Frucht des Geistes",
+          "B": "Waffenrüstung Gottes",
+          "C": "Christus als Haupt",
+          "D": "Liebe zum Geld"
+        },
+        "fr": {
+          "A": "Fruit de l'Esprit",
+          "B": "Armure de Dieu",
+          "C": "Christ comme tête",
+          "D": "Amour de l'argent"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Galater 5,22",
+        "fr": "Galates 5:22"
+      },
+      "points": 30
+    },
+    {
+      "id": 174,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu Epheser 6,11 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à Éphésiens 6:11 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Christushymnus",
+          "B": "Waffenrüstung Gottes",
+          "C": "Tag des Herrn",
+          "D": "Kampf des Glaubens"
+        },
+        "fr": {
+          "A": "Hymne au Christ",
+          "B": "Armure de Dieu",
+          "C": "Jour du Seigneur",
+          "D": "Combat de la foi"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Epheser 6,11",
+        "fr": "Éphésiens 6:11"
+      },
+      "points": 30
+    },
+    {
+      "id": 175,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu Philipper 2,6-11 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à Philippiens 2:6-11 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Christus als Haupt",
+          "B": "Mensch der Gesetzlosigkeit",
+          "C": "Christushymnus",
+          "D": "Rechtfertigung aus Glauben"
+        },
+        "fr": {
+          "A": "Christ comme tête",
+          "B": "Homme de l'impiété",
+          "C": "Hymne au Christ",
+          "D": "Justification par la foi"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Philipper 2,6-11",
+        "fr": "Philippiens 2:6-11"
+      },
+      "points": 30
+    },
+    {
+      "id": 176,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu Kolosser 1,18 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à Colossiens 1:18 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Tag des Herrn",
+          "B": "Liebe zum Geld",
+          "C": "Leib Christi",
+          "D": "Christus als Haupt"
+        },
+        "fr": {
+          "A": "Jour du Seigneur",
+          "B": "Amour de l'argent",
+          "C": "Corps du Christ",
+          "D": "Christ comme tête"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Kolosser 1,18",
+        "fr": "Colossiens 1:18"
+      },
+      "points": 30
+    },
+    {
+      "id": 177,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Thessalonicher 5,2 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à 1 Thessaloniciens 5:2 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Tag des Herrn",
+          "B": "Mensch der Gesetzlosigkeit",
+          "C": "Kampf des Glaubens",
+          "D": "Frucht des Geistes"
+        },
+        "fr": {
+          "A": "Jour du Seigneur",
+          "B": "Homme de l'impiété",
+          "C": "Combat de la foi",
+          "D": "Fruit de l'Esprit"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Thessalonicher 5,2",
+        "fr": "1 Thessaloniciens 5:2"
+      },
+      "points": 30
+    },
+    {
+      "id": 178,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Thessalonicher 2,3 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à 2 Thessaloniciens 2:3 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Liebe zum Geld",
+          "B": "Mensch der Gesetzlosigkeit",
+          "C": "Rechtfertigung aus Glauben",
+          "D": "Waffenrüstung Gottes"
+        },
+        "fr": {
+          "A": "Amour de l'argent",
+          "B": "Homme de l'impiété",
+          "C": "Justification par la foi",
+          "D": "Armure de Dieu"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Thessalonicher 2,3",
+        "fr": "2 Thessaloniciens 2:3"
+      },
+      "points": 30
+    },
+    {
+      "id": 179,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Timotheus 6,10 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à 1 Timothée 6:10 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Kampf des Glaubens",
+          "B": "Leib Christi",
+          "C": "Liebe zum Geld",
+          "D": "Christushymnus"
+        },
+        "fr": {
+          "A": "Combat de la foi",
+          "B": "Corps du Christ",
+          "C": "Amour de l'argent",
+          "D": "Hymne au Christ"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Timotheus 6,10",
+        "fr": "1 Timothée 6:10"
+      },
+      "points": 30
+    },
+    {
+      "id": 180,
+      "niveau": "difficile",
+      "categorie": "epitres",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Timotheus 4,7 in der Kategorie „Briefe“?",
+        "fr": "Quelle réponse correspond à 2 Timothée 4:7 dans la catégorie « Épîtres » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Rechtfertigung aus Glauben",
+          "B": "Frucht des Geistes",
+          "C": "Christus als Haupt",
+          "D": "Kampf des Glaubens"
+        },
+        "fr": {
+          "A": "Justification par la foi",
+          "B": "Fruit de l'Esprit",
+          "C": "Christ comme tête",
+          "D": "Combat de la foi"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Timotheus 4,7",
+        "fr": "2 Timothée 4:7"
+      },
+      "points": 30
+    },
+    {
+      "id": 181,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Mose 12,1 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Genèse 12:1 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Abraham",
+          "B": "Isaak",
+          "C": "Josef",
+          "D": "Samuel"
+        },
+        "fr": {
+          "A": "Abraham",
+          "B": "Isaac",
+          "C": "Joseph",
+          "D": "Samuel"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Mose 12,1",
+        "fr": "Genèse 12:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 182,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Mose 21,3 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Genèse 21:3 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jakob",
+          "B": "Isaak",
+          "C": "Mose",
+          "D": "David"
+        },
+        "fr": {
+          "A": "Jacob",
+          "B": "Isaac",
+          "C": "Moïse",
+          "D": "David"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Mose 21,3",
+        "fr": "Genèse 21:3"
+      },
+      "points": 30
+    },
+    {
+      "id": 183,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Mose 25,26 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Genèse 25:26 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josef",
+          "B": "Josua",
+          "C": "Jakob",
+          "D": "Salomo"
+        },
+        "fr": {
+          "A": "Joseph",
+          "B": "Josué",
+          "C": "Jacob",
+          "D": "Salomon"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 25,26",
+        "fr": "Genèse 25:26"
+      },
+      "points": 30
+    },
+    {
+      "id": 184,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Mose 30,24 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Genèse 30:24 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Mose",
+          "B": "Samuel",
+          "C": "Esra",
+          "D": "Josef"
+        },
+        "fr": {
+          "A": "Moïse",
+          "B": "Samuel",
+          "C": "Esdras",
+          "D": "Joseph"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Mose 30,24",
+        "fr": "Genèse 30:24"
+      },
+      "points": 30
+    },
+    {
+      "id": 185,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 2,10 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Exode 2:10 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Mose",
+          "B": "Josua",
+          "C": "David",
+          "D": "Abraham"
+        },
+        "fr": {
+          "A": "Moïse",
+          "B": "Josué",
+          "C": "David",
+          "D": "Abraham"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Mose 2,10",
+        "fr": "Exode 2:10"
+      },
+      "points": 30
+    },
+    {
+      "id": 186,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu Josua 1,1-2 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Josué 1:1-2 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Samuel",
+          "B": "Josua",
+          "C": "Salomo",
+          "D": "Isaak"
+        },
+        "fr": {
+          "A": "Samuel",
+          "B": "Josué",
+          "C": "Salomon",
+          "D": "Isaac"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Josua 1,1-2",
+        "fr": "Josué 1:1-2"
+      },
+      "points": 30
+    },
+    {
+      "id": 187,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Samuel 3,20 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à 1 Samuel 3:20 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "David",
+          "B": "Esra",
+          "C": "Samuel",
+          "D": "Jakob"
+        },
+        "fr": {
+          "A": "David",
+          "B": "Esdras",
+          "C": "Samuel",
+          "D": "Jacob"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Samuel 3,20",
+        "fr": "1 Samuel 3:20"
+      },
+      "points": 30
+    },
+    {
+      "id": 188,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Samuel 16,13 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à 1 Samuel 16:13 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Salomo",
+          "B": "Abraham",
+          "C": "Josef",
+          "D": "David"
+        },
+        "fr": {
+          "A": "Salomon",
+          "B": "Abraham",
+          "C": "Joseph",
+          "D": "David"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Samuel 16,13",
+        "fr": "1 Samuel 16:13"
+      },
+      "points": 30
+    },
+    {
+      "id": 189,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Könige 2,12 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à 1 Rois 2:12 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Salomo",
+          "B": "Esra",
+          "C": "Isaak",
+          "D": "Mose"
+        },
+        "fr": {
+          "A": "Salomon",
+          "B": "Esdras",
+          "C": "Isaac",
+          "D": "Moïse"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "1. Könige 2,12",
+        "fr": "1 Rois 2:12"
+      },
+      "points": 30
+    },
+    {
+      "id": 190,
+      "niveau": "difficile",
+      "categorie": "chronologie",
+      "question": {
+        "de": "Welche Antwort passt zu Esra 7,6 in der Kategorie „Chronologie“?",
+        "fr": "Quelle réponse correspond à Esdras 7:6 dans la catégorie « Chronologie » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Abraham",
+          "B": "Esra",
+          "C": "Jakob",
+          "D": "Josua"
+        },
+        "fr": {
+          "A": "Abraham",
+          "B": "Esdras",
+          "C": "Jacob",
+          "D": "Josué"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Esra 7,6",
+        "fr": "Esdras 7:6"
+      },
+      "points": 30
+    },
+    {
+      "id": 191,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Mose 14,18 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Genèse 14:18 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bezalel",
+          "B": "Rahab",
+          "C": "Melchisedek",
+          "D": "Mephiboschet"
+        },
+        "fr": {
+          "A": "Betsaleel",
+          "B": "Rahab",
+          "C": "Melchisédek",
+          "D": "Mephibosheth"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 14,18",
+        "fr": "Genèse 14:18"
+      },
+      "points": 30
+    },
+    {
+      "id": 192,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Mose 31,2 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Exode 31:2 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bileam",
+          "B": "Boas",
+          "C": "Naaman",
+          "D": "Bezalel"
+        },
+        "fr": {
+          "A": "Balaam",
+          "B": "Booz",
+          "C": "Naaman",
+          "D": "Betsaleel"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "2. Mose 31,2",
+        "fr": "Exode 31:2"
+      },
+      "points": 30
+    },
+    {
+      "id": 193,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu 4. Mose 22,5 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Nombres 22:5 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bileam",
+          "B": "Rahab",
+          "C": "Abigail",
+          "D": "Mordechai"
+        },
+        "fr": {
+          "A": "Balaam",
+          "B": "Rahab",
+          "C": "Abigaïl",
+          "D": "Mardochée"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "4. Mose 22,5",
+        "fr": "Nombres 22:5"
+      },
+      "points": 30
+    },
+    {
+      "id": 194,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu Josua 2,1 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Josué 2:1 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Boas",
+          "B": "Rahab",
+          "C": "Mephiboschet",
+          "D": "Priscilla und Aquila"
+        },
+        "fr": {
+          "A": "Booz",
+          "B": "Rahab",
+          "C": "Mephibosheth",
+          "D": "Priscille et Aquilas"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "Josua 2,1",
+        "fr": "Josué 2:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 195,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu Rut 2,1 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Ruth 2:1 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Abigail",
+          "B": "Naaman",
+          "C": "Boas",
+          "D": "Melchisedek"
+        },
+        "fr": {
+          "A": "Abigaïl",
+          "B": "Naaman",
+          "C": "Booz",
+          "D": "Melchisédek"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Rut 2,1",
+        "fr": "Ruth 2:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 196,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu 1. Samuel 25,3 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à 1 Samuel 25:3 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Mephiboschet",
+          "B": "Mordechai",
+          "C": "Bezalel",
+          "D": "Abigail"
+        },
+        "fr": {
+          "A": "Mephibosheth",
+          "B": "Mardochée",
+          "C": "Betsaleel",
+          "D": "Abigaïl"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Samuel 25,3",
+        "fr": "1 Samuel 25:3"
+      },
+      "points": 30
+    },
+    {
+      "id": 197,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Samuel 9,6 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à 2 Samuel 9:6 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Mephiboschet",
+          "B": "Naaman",
+          "C": "Priscilla und Aquila",
+          "D": "Bileam"
+        },
+        "fr": {
+          "A": "Mephibosheth",
+          "B": "Naaman",
+          "C": "Priscille et Aquilas",
+          "D": "Balaam"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "2. Samuel 9,6",
+        "fr": "2 Samuel 9:6"
+      },
+      "points": 30
+    },
+    {
+      "id": 198,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu 2. Könige 5,1 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à 2 Rois 5:1 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Mordechai",
+          "B": "Naaman",
+          "C": "Melchisedek",
+          "D": "Rahab"
+        },
+        "fr": {
+          "A": "Mardochée",
+          "B": "Naaman",
+          "C": "Melchisédek",
+          "D": "Rahab"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "2. Könige 5,1",
+        "fr": "2 Rois 5:1"
+      },
+      "points": 30
+    },
+    {
+      "id": 199,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu Ester 2,5 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Esther 2:5 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Priscilla und Aquila",
+          "B": "Bezalel",
+          "C": "Mordechai",
+          "D": "Boas"
+        },
+        "fr": {
+          "A": "Priscille et Aquilas",
+          "B": "Betsaleel",
+          "C": "Mardochée",
+          "D": "Booz"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Ester 2,5",
+        "fr": "Esther 2:5"
+      },
+      "points": 30
+    },
+    {
+      "id": 200,
+      "niveau": "difficile",
+      "categorie": "connaissance",
+      "question": {
+        "de": "Welche Antwort passt zu Apostelgeschichte 18,2 in der Kategorie „Bibelwissen“?",
+        "fr": "Quelle réponse correspond à Actes 18:2 dans la catégorie « Connaissance biblique » ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Melchisedek",
+          "B": "Bileam",
+          "C": "Abigail",
+          "D": "Priscilla und Aquila"
+        },
+        "fr": {
+          "A": "Melchisédek",
+          "B": "Balaam",
+          "C": "Abigaïl",
+          "D": "Priscille et Aquilas"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Apostelgeschichte 18,2",
+        "fr": "Actes 18:2"
+      },
+      "points": 30
+    }
+  ]
+}

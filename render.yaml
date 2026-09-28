@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: bibelquiz
+    runtime: docker
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bibelquiz-db
+          property: connectionString
+databases:
+  - name: bibelquiz-db
+    databaseName: bibelquiz
+    user: bibelquiz
