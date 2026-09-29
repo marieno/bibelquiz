@@ -17,6 +17,32 @@ def init():
   c.execute(text("CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id BIGINT NOT NULL,expires_at TEXT NOT NULL,created_at TEXT NOT NULL)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS rewards(user_id BIGINT NOT NULL,reward_key TEXT NOT NULL,title TEXT NOT NULL,points INTEGER NOT NULL DEFAULT 0,earned_at TEXT NOT NULL,UNIQUE(user_id,reward_key))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS weekly_attempts(user_id BIGINT NOT NULL,week_key TEXT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,duration_ms INTEGER NOT NULL,completed_at TEXT NOT NULL,ranked INTEGER NOT NULL DEFAULT 1)"))
+def account_migrate():
+ with engine.begin() as c:
+  for stmt in ["ALTER TABLE users ADD COLUMN display_name TEXT","ALTER TABLE users ADD COLUMN email TEXT"]:
+   try:c.execute(text(stmt))
+   except Exception:pass
+  c.execute(text("UPDATE users SET display_name=username WHERE display_name IS NULL OR display_name=''"))
+
+def update_account(uid,display_name,language):
+ display_name=display_name.strip()
+ if len(display_name)<2:raise ValueError("DISPLAY_NAME_TOO_SHORT")
+ if language not in ("de","fr"):raise ValueError("INVALID_LANGUAGE")
+ with engine.begin() as c:c.execute(text("UPDATE users SET display_name=:n,language=:l WHERE id=:u"),{"n":display_name,"l":language,"u":uid})
+
+def change_password(uid,current_password,new_password):
+ if len(new_password)<8:raise ValueError("PASSWORD_TOO_SHORT")
+ with engine.connect() as c:r=c.execute(text("SELECT password_hash,password_salt FROM users WHERE id=:u"),{"u":uid}).first()
+ h,_=hp(current_password,r[1])
+ if not secrets.compare_digest(h,r[0]):raise ValueError("CURRENT_PASSWORD_WRONG")
+ nh,ns=hp(new_password)
+ with engine.begin() as c:c.execute(text("UPDATE users SET password_hash=:h,password_salt=:s WHERE id=:u"),{"h":nh,"s":ns,"u":uid})
+
+def accounts_by_email(email):
+ with engine.connect() as c:
+  rows=c.execute(text("SELECT username,COALESCE(NULLIF(display_name,''),username) display_name FROM users WHERE lower(email)=lower(:e) ORDER BY username"),{"e":email.strip()}).mappings().all()
+ return [dict(r) for r in rows]
+
 def multiplayer_init():
  with engine.begin() as c:
   c.execute(text("CREATE TABLE IF NOT EXISTS game_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',created_at TEXT NOT NULL,started_at TEXT,finished_at TEXT)"))
@@ -29,7 +55,7 @@ def multiplayer_init():
 def create_room(uid,code):
  now=datetime.now(timezone.utc).isoformat()
  with engine.begin() as c:
-  name=c.execute(text("SELECT username FROM users WHERE id=:u"),{"u":uid}).scalar_one()
+  name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
   c.execute(text("INSERT INTO game_rooms(code,host_user_id,status,created_at) VALUES(:c,:u,'lobby',:d)"),{"c":code,"u":uid,"d":now})
   c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,1,:d)"),{"c":code,"u":uid,"n":name,"d":now})
 
@@ -48,7 +74,7 @@ def join_room(uid,code):
   if r[0]!="lobby":raise ValueError("ROOM_ALREADY_STARTED")
   if c.execute(text("SELECT COUNT(*) FROM game_players WHERE room_code=:c"),{"c":code}).scalar_one()>=5:raise ValueError("ROOM_FULL")
   if c.execute(text("SELECT 1 FROM game_players WHERE room_code=:c AND user_id=:u"),{"c":code,"u":uid}).first():return
-  name=c.execute(text("SELECT username FROM users WHERE id=:u"),{"u":uid}).scalar_one()
+  name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
   c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,0,:d)"),{"c":code,"u":uid,"n":name,"d":now})
 
 def set_ready(uid,code,ready):
@@ -149,14 +175,16 @@ def multiplayer_history(uid,limit=10):
 
 def hp(p,s=None):
  s=s or secrets.token_hex(32);return hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),250000).hex(),s
-def register(u,p,l):
+def register(u,p,l,display_name=None,email=None):
  u=u.strip()
  if len(u)<3:raise ValueError("USERNAME_TOO_SHORT")
- if len(p)<6:raise ValueError("PASSWORD_TOO_SHORT")
+ if len(p)<8:raise ValueError("PASSWORD_TOO_SHORT")
+ display_name=(display_name or u).strip();email=(email or "").strip().lower()
+ if len(display_name)<2:raise ValueError("DISPLAY_NAME_TOO_SHORT")
  h,s=hp(p)
  try:
   with engine.begin() as c:
-   uid=c.execute(text("INSERT INTO users(username,password_hash,password_salt,language,created_at) VALUES(:u,:h,:s,:l,:d) RETURNING id"),{"u":u,"h":h,"s":s,"l":l,"d":datetime.now(timezone.utc).isoformat()}).scalar_one()
+   uid=c.execute(text("INSERT INTO users(username,password_hash,password_salt,language,display_name,email,created_at) VALUES(:u,:h,:s,:l,:n,:e,:d) RETURNING id"),{"u":u,"h":h,"s":s,"l":l,"n":display_name,"e":email,"d":datetime.now(timezone.utc).isoformat()}).scalar_one()
    for lv in LEVELS:c.execute(text("INSERT INTO level_progress(user_id,level,unlocked) VALUES(:u,:l,:o)"),{"u":uid,"l":lv,"o":1 if lv=="enfant" else 0})
    return uid
  except Exception as e:
@@ -175,7 +203,7 @@ def session_user(raw):
  with engine.connect() as c:r=c.execute(text("SELECT user_id FROM sessions WHERE token_hash=:t AND expires_at>:n"),{"t":hh,"n":datetime.now(timezone.utc).isoformat()}).first()
  return r[0] if r else None
 def user(uid):
- with engine.connect() as c:r=c.execute(text("SELECT id,username,language,points FROM users WHERE id=:u"),{"u":uid}).mappings().first()
+ with engine.connect() as c:r=c.execute(text("SELECT id,username,display_name,email,language,points FROM users WHERE id=:u"),{"u":uid}).mappings().first()
  return dict(r) if r else None
 def mastered(uid):
  with engine.connect() as c:rs=c.execute(text("SELECT question_id FROM question_progress WHERE user_id=:u AND mastered=1"),{"u":uid}).all()

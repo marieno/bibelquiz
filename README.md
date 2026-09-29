@@ -116,3 +116,14 @@ This prevents `profile` from being interpreted as a room code.
 - Dashboard identity strip.
 - Crown artwork on multiplayer/result celebrations.
 - Identity assets cached by the PWA service worker.
+
+
+## V5.2 – Account & Authentication
+- Existing accounts migrate safely: `display_name` defaults to current username.
+- Username stays unique/private and is used for login.
+- Display/player name is public in the game and can be changed.
+- Email is private and deliberately NOT unique, allowing family/child accounts to share one address.
+- New registration is a dedicated screen; opening it no longer submits empty credentials.
+- Registration validates player name, username, email, 8-character password and confirmation.
+- Account screen supports player-name/language update and password change.
+- Recovery UI is present but intentionally disabled until verified SMTP/email delivery is configured.

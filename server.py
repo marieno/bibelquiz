@@ -13,12 +13,15 @@ LEVELS=["enfant","facile","moyen","difficile"]
 
 app=FastAPI(title="BibelQuiz")
 database.init()
+database.account_migrate()
 database.multiplayer_init()
 
 class Auth(BaseModel):
     username:str
     password:str
     language:str="de"
+    display_name:str|None=None
+    email:str|None=None
 class RoomReady(BaseModel):
     ready:bool=True
 class RoomJoin(BaseModel):
@@ -26,6 +29,15 @@ class RoomJoin(BaseModel):
 class GroupAnswer(BaseModel):
     choice:str
     question_index:int
+
+class AccountUpdate(BaseModel):
+    display_name:str
+    language:str
+class PasswordChange(BaseModel):
+    current_password:str
+    new_password:str
+class RecoveryLookup(BaseModel):
+    email:str
 
 class Answer(BaseModel):
     question_id:int
@@ -103,7 +115,7 @@ def evaluate_rewards(user_id,p):
 
 @app.post("/api/register")
 def register(a:Auth):
-    try:u=database.register(a.username,a.password,a.language)
+    try:u=database.register(a.username,a.password,a.language,a.display_name,a.email)
     except ValueError as e:raise HTTPException(400,str(e))
     token=database.create_session(u)
     return {"token":token,"user":database.user(u)}
@@ -205,6 +217,26 @@ def weekly_archive(authorization:str|None=Header(None)):
   out.append({"week":w["week"],"title":w["title"],"active":bool(w.get("active"))})
  return out
 
+
+
+@app.put("/api/account")
+def account_update(a:AccountUpdate,authorization:str|None=Header(None)):
+ u=uid(authorization)
+ try:database.update_account(u,a.display_name,a.language)
+ except ValueError as e:raise HTTPException(400,str(e))
+ return {"user":database.user(u)}
+
+@app.post("/api/account/change-password")
+def account_password(a:PasswordChange,authorization:str|None=Header(None)):
+ u=uid(authorization)
+ try:database.change_password(u,a.current_password,a.new_password)
+ except ValueError as e:raise HTTPException(400,str(e))
+ return {"ok":True}
+
+@app.post("/api/recovery/accounts")
+def recovery_accounts(a:RecoveryLookup):
+ # Temporary preparation endpoint. Do not expose account list publicly until SMTP verification exists.
+ raise HTTPException(501,"EMAIL_RECOVERY_NOT_CONFIGURED")
 
 @app.post("/api/group/create")
 def group_create(authorization:str|None=Header(None)):
