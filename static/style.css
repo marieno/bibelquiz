@@ -26,3 +26,13 @@ body{overflow-x:hidden}
 .milestone-track{display:flex;justify-content:space-between;gap:6px;margin-top:14px}.milestone{flex:1;text-align:center;padding:8px 4px;border-radius:13px;background:#edf6fb;color:#6b8295;font-size:12px}.milestone.done{background:#fff0ae;color:#7d5a00;font-weight:800}
 .bounce{animation:bounce .55s ease}@keyframes bounce{50%{transform:scale(1.08)}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+
+/* Multiplayer host controls */
+.host-dock{position:sticky;bottom:10px;z-index:800;margin:18px auto 8px;max-width:760px;background:#fff8cf;border:2px solid #f1c94f;border-radius:20px;padding:12px;box-shadow:0 10px 32px #234f6a35;text-align:center}
+.host-dock .host-title{font-weight:900;color:#7a5b00;margin-bottom:8px}
+.host-next{width:100%;min-height:62px;font-size:18px!important;background:#42bd57!important;animation:hostPulse 1.6s ease-in-out infinite}
+@keyframes hostPulse{50%{transform:scale(1.018);box-shadow:0 0 0 7px #54cc6530}}
+.wait-host{text-align:center;background:#e8f3ff;border:1px solid #b9dced;border-radius:18px;padding:18px;margin-top:16px;font-weight:800}
+.wait-dots{display:inline-block;letter-spacing:5px;animation:dots 1.2s infinite}
+@keyframes dots{50%{opacity:.3}}
+@media(max-width:600px){.host-dock{position:fixed;left:10px;right:10px;bottom:10px;margin:0}.group-game-wrap{padding-bottom:120px}}

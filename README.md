@@ -71,3 +71,12 @@ Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.
   - 10 wins +250
   - 5 podiums +100
   - Correct answer within 3 seconds +75
+
+
+## V4.2-E – Host UX
+- Reveal happens automatically when all players answer or the 15-second timer expires.
+- Host receives a large sticky/fixed bottom action panel after reveal.
+- Questions 1–9: `NÄCHSTE FRAGE / QUESTION SUIVANTE`.
+- Question 10: `ENDERGEBNIS ANZEIGEN / AFFICHER LE RÉSULTAT`.
+- Non-host players see an explicit waiting-for-host panel.
+- Faster polling makes reveal transitions clearer on phones.

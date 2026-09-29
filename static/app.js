@@ -61,13 +61,13 @@ async function groupGame(){
  if(x.phase==="finished"){groupPodium(x);return}
  let q=x.question,r=q.reponses[lang],host=x.room.host_user_id===x.room.me;
  let answers=x.answers||[];
- A.innerHTML=`<div class=wrap><div class=top><span class=pill>👥 ${groupCode}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
+ A.innerHTML=`<div class="wrap group-game-wrap"><div class=top><span class=pill>👥 ${groupCode}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
  <div class=progress><i style="width:${100*(x.index+1)/10}%"></i></div><div class=top><p>${lang==="de"?"Frage":"Question"} ${x.index+1}/10</p><h2>⏱ ${Math.ceil(x.remaining)}s</h2></div>
  <div class="card question">${esc(q.question[lang])}</div>
  <div class=answers>${["A","B","C","D"].map(a=>`<button id=g${a} class="btn answer ${x.phase==="reveal"&&a===x.correct_choice?"good":""}" ${x.phase==="reveal"||x.my_answered?"disabled":""} onclick="groupAnswer('${a}')"><b>${a}</b>&nbsp;&nbsp; ${esc(r[a])}</button>`).join("")}</div>
  <div class=card style="margin-top:14px"><b>${x.answered_count}/${x.player_count} ${lang==="de"?"haben geantwortet":"ont répondu"}</b>${x.my_answered&&x.phase==="question"?`<p>✅ ${lang==="de"?"Antwort gespeichert. Warte auf die anderen…":"Réponse enregistrée. Attends les autres…"}</p>`:""}</div>
- ${x.phase==="reveal"?`<div class=card style="margin-top:14px"><h2>💡 ${lang==="de"?"Auflösung":"Réponse"}</h2>${answers.map(a=>`<p>${a.correct?"✅":"❌"} <b>${esc(a.username)}</b> — ${a.points>0?"+"+a.points+" ⭐":"0"}</p>`).join("")}<h3>🏆 ${lang==="de"?"Zwischenstand":"Classement"}</h3>${x.scores.map((s,i)=>`<p>${i+1}. <b>${esc(s.username)}</b> — ${s.score} ⭐</p>`).join("")}${host?`<button class="btn green full" onclick="groupNext()">▶ ${x.index===9?(lang==="de"?"ERGEBNIS":"RÉSULTATS"):(lang==="de"?"NÄCHSTE FRAGE":"QUESTION SUIVANTE")}</button>`:`<p>${lang==="de"?"Der Host startet die nächste Frage.":"L’hôte lance la question suivante."}</p>`}</div>`:""}</div>`
- groupPoll=setTimeout(groupGame,x.phase==="question"?700:1500)
+ ${x.phase==="reveal"?`<div class=card style="margin-top:14px"><h2>💡 ${lang==="de"?"Auflösung":"Réponse"}</h2><p style="font-size:18px">✅ <b>${esc(r[x.correct_choice])}</b></p>${answers.map(a=>`<p>${a.correct?"✅":"❌"} <b>${esc(a.username)}</b> — ${a.points>0?"+"+a.points+" ⭐":"0"}</p>`).join("")}<h3>🏆 ${lang==="de"?"Zwischenstand":"Classement"}</h3>${x.scores.map((s,i)=>`<p>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(s.username)}</b> — ${s.score} ⭐</p>`).join("")}</div>${host?`<div class=host-dock><div class=host-title>👑 ${lang==="de"?"DU BIST DER HOST":"TU ES L’HÔTE"}</div><button class="btn host-next" onclick="groupNext()">${x.index===9?"🏆 "+(lang==="de"?"ENDERGEBNIS ANZEIGEN":"AFFICHER LE RÉSULTAT"):"▶ "+(lang==="de"?"NÄCHSTE FRAGE":"QUESTION SUIVANTE")+" →"}</button></div>`:`<div class=wait-host>👑 ${lang==="de"?"Der Host startet die nächste Frage":"L’hôte lance la question suivante"} <span class=wait-dots>● ● ●</span></div>`}`:""}</div>`
+ groupPoll=setTimeout(groupGame,x.phase==="question"?500:900)
 }
 async function groupAnswer(choice){try{await api(`/api/group/${groupCode}/answer`,{method:"POST",body:JSON.stringify({choice,question_index:window.groupQuestionIndex})})}catch(e){
  // index is recovered from server on retry; use explicit current state below
