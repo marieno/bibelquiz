@@ -46,3 +46,15 @@ Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.
 - Ready/not-ready state.
 - Lobby refreshes automatically.
 - Start button is intentionally disabled until V4.2-B game synchronization is added.
+
+
+## V4.2-B/C – Multiplayer Game
+- Host starts when 2–5 players are ready.
+- Same 10 random questions for everyone, drawn from the full question bank.
+- Server-authoritative 15-second timer.
+- One answer per player per question.
+- Correct answer: 100 base points + speed bonus 0–50.
+- Answers are hidden until everyone answers or time expires.
+- Intermediate leaderboard after each reveal.
+- Host advances the room.
+- Final podium after question 10.

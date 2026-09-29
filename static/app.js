@@ -48,10 +48,37 @@ async function groupLobby(){
  A.innerHTML=`<div class=wrap>${back("groupLeave()")}<div class="card hero"><h1>🎮 ${lang==="de"?"Lobby":"Salon"}</h1><p>${lang==="de"?"Raumcode":"Code"}:</p><div style="font-size:48px;font-weight:900;letter-spacing:8px">${r.code}</div><p>${r.players.length}/5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
  <div class=card><h2>👥 ${lang==="de"?"Spieler":"Joueurs"}</h2>${r.players.map(p=>`<p style="font-size:18px">${p.user_id===r.host_user_id?"👑":"👤"} <b>${esc(p.display_name)}</b> <span style="float:right">${p.ready?"🟢 "+(lang==="de"?"Bereit":"Prêt"):"⚪ "+(lang==="de"?"Nicht bereit":"Pas prêt")}</span></p>`).join("")}
  ${!host?`<button class="btn ${mine&&mine.ready?"ghost":"green"} full" onclick="groupReady(${!(mine&&mine.ready)})">${mine&&mine.ready?(lang==="de"?"NICHT BEREIT":"PAS PRÊT"):(lang==="de"?"ICH BIN BEREIT":"JE SUIS PRÊT")}</button>`:""}
- ${host?`<button class="btn green full" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""}>▶ ${lang==="de"?"SPIEL STARTEN (kommt in V4.2-B)":"DÉMARRER (V4.2-B)"}</button>`:""}</div>
+ ${host?`<button class="btn green full" onclick="groupStart()" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""}>▶ ${lang==="de"?"SPIEL STARTEN":"DÉMARRER"}</button>`:""}</div>
  <p><button class="btn ghost" onclick="groupLeave()">🚪 ${lang==="de"?"Gruppe verlassen":"Quitter le groupe"}</button></p></div>`
- groupPoll=setInterval(async()=>{try{let n=await api("/api/group/"+groupCode);let snapshot=JSON.stringify(n.players)+n.host_user_id;if(window._gs!==snapshot){window._gs=snapshot;groupLobby()}}catch(e){stopGroupPoll()}},1800)
+ groupPoll=setInterval(async()=>{try{let n=await api("/api/group/"+groupCode);if(n.status==="playing"){stopGroupPoll();groupGame();return}let snapshot=JSON.stringify(n.players)+n.host_user_id;if(window._gs!==snapshot){window._gs=snapshot;groupLobby()}}catch(e){stopGroupPoll()}},1800)
 }
+
+async function groupStart(){stopGroupPoll();await api(`/api/group/${groupCode}/start`,{method:"POST",body:"{}"});groupGame()}
+async function groupGame(){
+ stopGroupPoll();let x;
+ try{x=await api(`/api/group/${groupCode}/game`)}catch(e){groupHome();return}
+ if(x.phase==="lobby"){groupLobby();return}window.groupQuestionIndex=x.index
+ if(x.phase==="finished"){groupPodium(x);return}
+ let q=x.question,r=q.reponses[lang],host=x.room.host_user_id===x.room.me;
+ let answers=x.answers||[];
+ A.innerHTML=`<div class=wrap><div class=top><span class=pill>👥 ${groupCode}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
+ <div class=progress><i style="width:${100*(x.index+1)/10}%"></i></div><div class=top><p>${lang==="de"?"Frage":"Question"} ${x.index+1}/10</p><h2>⏱ ${Math.ceil(x.remaining)}s</h2></div>
+ <div class="card question">${esc(q.question[lang])}</div>
+ <div class=answers>${["A","B","C","D"].map(a=>`<button id=g${a} class="btn answer ${x.phase==="reveal"&&a===x.correct_choice?"good":""}" ${x.phase==="reveal"||x.my_answered?"disabled":""} onclick="groupAnswer('${a}')"><b>${a}</b>&nbsp;&nbsp; ${esc(r[a])}</button>`).join("")}</div>
+ <div class=card style="margin-top:14px"><b>${x.answered_count}/${x.player_count} ${lang==="de"?"haben geantwortet":"ont répondu"}</b>${x.my_answered&&x.phase==="question"?`<p>✅ ${lang==="de"?"Antwort gespeichert. Warte auf die anderen…":"Réponse enregistrée. Attends les autres…"}</p>`:""}</div>
+ ${x.phase==="reveal"?`<div class=card style="margin-top:14px"><h2>💡 ${lang==="de"?"Auflösung":"Réponse"}</h2>${answers.map(a=>`<p>${a.correct?"✅":"❌"} <b>${esc(a.username)}</b> — ${a.points>0?"+"+a.points+" ⭐":"0"}</p>`).join("")}<h3>🏆 ${lang==="de"?"Zwischenstand":"Classement"}</h3>${x.scores.map((s,i)=>`<p>${i+1}. <b>${esc(s.username)}</b> — ${s.score} ⭐</p>`).join("")}${host?`<button class="btn green full" onclick="groupNext()">▶ ${x.index===9?(lang==="de"?"ERGEBNIS":"RÉSULTATS"):(lang==="de"?"NÄCHSTE FRAGE":"QUESTION SUIVANTE")}</button>`:`<p>${lang==="de"?"Der Host startet die nächste Frage.":"L’hôte lance la question suivante."}</p>`}</div>`:""}</div>`
+ groupPoll=setTimeout(groupGame,x.phase==="question"?700:1500)
+}
+async function groupAnswer(choice){try{await api(`/api/group/${groupCode}/answer`,{method:"POST",body:JSON.stringify({choice,question_index:window.groupQuestionIndex})})}catch(e){
+ // index is recovered from server on retry; use explicit current state below
+ let st=await api(`/api/group/${groupCode}/game`);if(!st.my_answered)await api(`/api/group/${groupCode}/answer`,{method:"POST",body:JSON.stringify({choice,question_index:st.index})})
+ }groupGame()}
+async function groupNext(){await api(`/api/group/${groupCode}/next`,{method:"POST",body:"{}"});groupGame()}
+function groupPodium(x){
+ stopGroupPoll();confetti();fly("🏆");let s=x.scores;
+ A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars>🏆<br>⭐⭐⭐</div><h1 style="text-align:center">${lang==="de"?"Endergebnis":"Résultat final"}</h1>${s.map((p,i)=>`<p style="font-size:${i===0?24:18}px;text-align:center">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(p.username)}</b> — ${p.score} ⭐ <small>(${p.correct_count}/10)</small></p>`).join("")}<button class="btn green full" onclick="groupHome()">👥 ${lang==="de"?"NEUE GRUPPE":"NOUVEAU GROUPE"}</button><button class="btn ghost full" onclick="dashboard()">🏠 Dashboard</button></div></div>`
+}
+
 async function groupReady(v){await api(`/api/group/${groupCode}/ready`,{method:"POST",body:JSON.stringify({ready:v})});groupLobby()}
 async function groupLeave(){stopGroupPoll();if(groupCode){try{await api(`/api/group/${groupCode}/leave`,{method:"POST",body:"{}"})}catch(e){}}groupCode="";groupHome()}
 

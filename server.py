@@ -1,4 +1,5 @@
 import json, random, secrets, time
+from datetime import datetime, timezone
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.staticfiles import StaticFiles
@@ -22,6 +23,9 @@ class RoomReady(BaseModel):
     ready:bool=True
 class RoomJoin(BaseModel):
     code:str
+class GroupAnswer(BaseModel):
+    choice:str
+    question_index:int
 
 class Answer(BaseModel):
     question_id:int
@@ -234,6 +238,77 @@ def group_ready(code:str,a:RoomReady,authorization:str|None=Header(None)):
 @app.post("/api/group/{code}/leave")
 def group_leave(code:str,authorization:str|None=Header(None)):
  u=uid(authorization);database.leave_room(u,code);return {"ok":True}
+
+
+def group_question_pool():
+ # Group mode is deliberately independent from solo unlocks.
+ return QUESTIONS
+
+def group_public_state(uid_,code):
+ r=database.room(code)
+ if not r or not any(p["user_id"]==uid_ for p in r["players"]):raise HTTPException(403)
+ st=database.game_state(code)
+ if not st:return {"room":r,"phase":"lobby"}
+ if st["status"]=="finished" or st["current_index"]>=len(st["question_ids"]):
+  return {"room":r,"phase":"finished","scores":st["scores"]}
+ i=st["current_index"];qid=st["question_ids"][i];q=next(x for x in QUESTIONS if x["id"]==qid)
+ started=datetime.fromisoformat(st["question_started_at"])
+ elapsed=max(0,(datetime.now(timezone.utc)-started).total_seconds())
+ remaining=max(0,15-elapsed)
+ all_answered=len(st["answered_ids"])>=len(r["players"])
+ reveal=remaining<=0 or all_answered
+ out={"room":r,"phase":"reveal" if reveal else "question","index":i,"total":10,
+      "remaining":round(remaining,1),"scores":st["scores"],"answered_count":len(st["answered_ids"]),
+      "player_count":len(r["players"]),"my_answered":uid_ in st["answered_ids"],
+      "question":{"id":q["id"],"question":q["question"],"reponses":q["reponses"]}}
+ if reveal:
+  out["correct_choice"]=q["correcte"];out["reference"]=q["reference"]
+  out["answers"]=database.game_answer_details(code,i)
+ return out
+
+@app.post("/api/group/{code}/start")
+def group_start(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization)
+ pool=group_question_pool()
+ # Diverse random sample across whole bank.
+ chosen=random.sample(pool,min(10,len(pool)))
+ try:database.start_game(u,code,[q["id"] for q in chosen])
+ except ValueError as e:raise HTTPException(400,str(e))
+ return group_public_state(u,code)
+
+@app.get("/api/group/{code}/game")
+def group_game(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);return group_public_state(u,code)
+
+@app.post("/api/group/{code}/answer")
+def group_answer(code:str,a:GroupAnswer,authorization:str|None=Header(None)):
+ u=uid(authorization);st=database.game_state(code)
+ if not st or st["status"]!="playing":raise HTTPException(409,"GAME_NOT_PLAYING")
+ if a.question_index!=st["current_index"]:raise HTTPException(409,"QUESTION_CHANGED")
+ started=datetime.fromisoformat(st["question_started_at"])
+ elapsed_ms=max(0,int((datetime.now(timezone.utc)-started).total_seconds()*1000))
+ if elapsed_ms>15000:raise HTTPException(409,"TIME_UP")
+ qid=st["question_ids"][st["current_index"]];q=next(x for x in QUESTIONS if x["id"]==qid)
+ ok=a.choice.upper()==q["correcte"]
+ # 100 base + 0..50 speed bonus. Full bonus at immediate response, zero at 15s.
+ bonus=max(0,50-int(elapsed_ms/300))
+ pts=(100+bonus) if ok else 0
+ if not database.save_game_answer(u,code,st["current_index"],a.choice.upper(),ok,elapsed_ms,pts):
+  raise HTTPException(409,"ALREADY_ANSWERED")
+ return {"accepted":True}
+
+@app.post("/api/group/{code}/next")
+def group_next(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);r=database.room(code)
+ if not r or r["host_user_id"]!=u:raise HTTPException(403,"HOST_ONLY")
+ st=database.game_state(code)
+ if not st:raise HTTPException(404)
+ # Host can advance only after all answered or timer elapsed.
+ started=datetime.fromisoformat(st["question_started_at"])
+ elapsed=(datetime.now(timezone.utc)-started).total_seconds()
+ if len(st["answered_ids"])<len(r["players"]) and elapsed<15:raise HTTPException(409,"QUESTION_STILL_ACTIVE")
+ database.advance_game(code)
+ return group_public_state(u,code)
 
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")

@@ -21,6 +21,9 @@ def multiplayer_init():
  with engine.begin() as c:
   c.execute(text("CREATE TABLE IF NOT EXISTS game_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',created_at TEXT NOT NULL,started_at TEXT,finished_at TEXT)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS game_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,joined_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS game_state(room_code TEXT PRIMARY KEY,question_ids TEXT NOT NULL,current_index INTEGER NOT NULL DEFAULT 0,question_started_at TEXT,status TEXT NOT NULL DEFAULT 'playing')"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS game_answers(room_code TEXT NOT NULL,question_index INTEGER NOT NULL,user_id BIGINT NOT NULL,choice TEXT NOT NULL,correct INTEGER NOT NULL,elapsed_ms INTEGER NOT NULL,points INTEGER NOT NULL,UNIQUE(room_code,question_index,user_id))"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS game_scores(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL DEFAULT 0,correct_count INTEGER NOT NULL DEFAULT 0,UNIQUE(room_code,user_id))"))
 
 def create_room(uid,code):
  now=datetime.now(timezone.utc).isoformat()
@@ -58,6 +61,61 @@ def leave_room(uid,code):
   left=c.execute(text("SELECT user_id FROM game_players WHERE room_code=:c ORDER BY joined_at"),{"c":code}).all()
   if not left:c.execute(text("DELETE FROM game_rooms WHERE code=:c"),{"c":code})
   elif rr[0]==uid:c.execute(text("UPDATE game_rooms SET host_user_id=:u WHERE code=:c"),{"u":left[0][0],"c":code})
+
+
+def start_game(uid,code,question_ids):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  r=c.execute(text("SELECT host_user_id,status FROM game_rooms WHERE code=:c"),{"c":code}).first()
+  if not r:raise ValueError("ROOM_NOT_FOUND")
+  if r[0]!=uid:raise ValueError("HOST_ONLY")
+  if r[1]!="lobby":raise ValueError("ALREADY_STARTED")
+  ps=c.execute(text("SELECT user_id,ready FROM game_players WHERE room_code=:c"),{"c":code}).all()
+  if len(ps)<2:raise ValueError("NOT_ENOUGH_PLAYERS")
+  if any(not x[1] for x in ps):raise ValueError("PLAYERS_NOT_READY")
+  c.execute(text("UPDATE game_rooms SET status='playing',started_at=:d WHERE code=:c"),{"d":now,"c":code})
+  c.execute(text("INSERT INTO game_state(room_code,question_ids,current_index,question_started_at,status) VALUES(:c,:q,0,:d,'playing')"),
+            {"c":code,"q":",".join(map(str,question_ids)),"d":now})
+  for x in ps:c.execute(text("INSERT INTO game_scores(room_code,user_id,score,correct_count) VALUES(:c,:u,0,0)"),{"c":code,"u":x[0]})
+
+def game_state(code):
+ with engine.connect() as c:
+  st=c.execute(text("SELECT * FROM game_state WHERE room_code=:c"),{"c":code}).mappings().first()
+  if not st:return None
+  scores=c.execute(text("""SELECT s.user_id,u.username,s.score,s.correct_count FROM game_scores s
+    JOIN users u ON u.id=s.user_id WHERE s.room_code=:c ORDER BY s.score DESC,s.correct_count DESC,u.username"""),{"c":code}).mappings().all()
+  answers=c.execute(text("SELECT user_id FROM game_answers WHERE room_code=:c AND question_index=:i"),{"c":code,"i":st["current_index"]}).all()
+ out=dict(st);out["question_ids"]=[int(x) for x in out["question_ids"].split(",") if x];out["scores"]=[dict(x) for x in scores];out["answered_ids"]=[x[0] for x in answers];return out
+
+def save_game_answer(uid,code,index,choice,correct,elapsed_ms,points):
+ try:
+  with engine.begin() as c:
+   c.execute(text("INSERT INTO game_answers(room_code,question_index,user_id,choice,correct,elapsed_ms,points) VALUES(:c,:i,:u,:ch,:ok,:e,:p)"),
+             {"c":code,"i":index,"u":uid,"ch":choice,"ok":1 if correct else 0,"e":elapsed_ms,"p":points})
+   c.execute(text("UPDATE game_scores SET score=score+:p,correct_count=correct_count+:v WHERE room_code=:c AND user_id=:u"),
+             {"p":points,"v":1 if correct else 0,"c":code,"u":uid})
+  return True
+ except Exception as e:
+  if "unique" in str(e).lower():return False
+  raise
+
+def advance_game(code):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  st=c.execute(text("SELECT current_index,question_ids FROM game_state WHERE room_code=:c"),{"c":code}).first()
+  if not st:return
+  total=len([x for x in st[1].split(",") if x]);n=st[0]+1
+  if n>=total:
+   c.execute(text("UPDATE game_state SET status='finished',current_index=:i WHERE room_code=:c"),{"i":n,"c":code})
+   c.execute(text("UPDATE game_rooms SET status='finished',finished_at=:d WHERE code=:c"),{"d":now,"c":code})
+  else:c.execute(text("UPDATE game_state SET current_index=:i,question_started_at=:d WHERE room_code=:c"),{"i":n,"d":now,"c":code})
+
+def game_answer_details(code,index):
+ with engine.connect() as c:
+  rows=c.execute(text("""SELECT a.user_id,u.username,a.choice,a.correct,a.elapsed_ms,a.points
+    FROM game_answers a JOIN users u ON u.id=a.user_id
+    WHERE a.room_code=:c AND a.question_index=:i ORDER BY a.points DESC"""),{"c":code,"i":index}).mappings().all()
+ return [dict(x) for x in rows]
 
 def hp(p,s=None):
  s=s or secrets.token_hex(32);return hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),250000).hex(),s
