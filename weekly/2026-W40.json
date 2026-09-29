@@ -1,0 +1,270 @@
+{
+  "week": "2026-W40",
+  "title": {
+    "de": "Quiz der Woche",
+    "fr": "Quiz de la semaine"
+  },
+  "active": true,
+  "questions": [
+    {
+      "id": "W40-01",
+      "question": {
+        "de": "Wer baute die Arche?",
+        "fr": "Qui construisit l'arche ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "David",
+          "B": "Mose",
+          "C": "Noah",
+          "D": "Jona"
+        },
+        "fr": {
+          "A": "David",
+          "B": "Moïse",
+          "C": "Noé",
+          "D": "Jonas"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "1. Mose 6,14",
+        "fr": "Genèse 6:14"
+      }
+    },
+    {
+      "id": "W40-02",
+      "question": {
+        "de": "Wer besiegte Goliath?",
+        "fr": "Qui vainquit Goliath ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Josef",
+          "B": "Sara",
+          "C": "Isaak",
+          "D": "David"
+        },
+        "fr": {
+          "A": "Joseph",
+          "B": "Sara",
+          "C": "Isaac",
+          "D": "David"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "1. Samuel 17,50",
+        "fr": "1 Samuel 17:50"
+      }
+    },
+    {
+      "id": "W40-03",
+      "question": {
+        "de": "Wer wurde in die Löwengrube geworfen?",
+        "fr": "Qui fut jeté dans la fosse aux lions ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jona",
+          "B": "Simson",
+          "C": "David",
+          "D": "Daniel"
+        },
+        "fr": {
+          "A": "Jonas",
+          "B": "Samson",
+          "C": "David",
+          "D": "Daniel"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Daniel 6,17",
+        "fr": "Daniel 6:17"
+      }
+    },
+    {
+      "id": "W40-04",
+      "question": {
+        "de": "Wer wurde von einem großen Fisch verschlungen?",
+        "fr": "Qui fut englouti par un grand poisson ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Jona",
+          "B": "Isaak",
+          "C": "Rut",
+          "D": "Josef"
+        },
+        "fr": {
+          "A": "Jonas",
+          "B": "Isaac",
+          "C": "Ruth",
+          "D": "Joseph"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Jona 2,1",
+        "fr": "Jonas 2:1"
+      }
+    },
+    {
+      "id": "W40-05",
+      "question": {
+        "de": "Wer war für seine außergewöhnliche Kraft bekannt?",
+        "fr": "Qui était connu pour sa force extraordinaire ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Rut",
+          "B": "David",
+          "C": "Simson",
+          "D": "Sara"
+        },
+        "fr": {
+          "A": "Ruth",
+          "B": "David",
+          "C": "Samson",
+          "D": "Sara"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Richter 14,6",
+        "fr": "Juges 14:6"
+      }
+    },
+    {
+      "id": "W40-06",
+      "question": {
+        "de": "In welcher Stadt wurde Jesus geboren?",
+        "fr": "Dans quelle ville Jésus est-il né ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Bethlehem",
+          "B": "Maria",
+          "C": "Nazareth",
+          "D": "Zwölf Apostel"
+        },
+        "fr": {
+          "A": "Bethléem",
+          "B": "Marie",
+          "C": "Nazareth",
+          "D": "Douze apôtres"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 2,1",
+        "fr": "Matthieu 2:1"
+      }
+    },
+    {
+      "id": "W40-07",
+      "question": {
+        "de": "Wer taufte Jesus?",
+        "fr": "Qui baptisa Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Johannes der Täufer",
+          "B": "Jordan",
+          "C": "Petrus",
+          "D": "Bethlehem"
+        },
+        "fr": {
+          "A": "Jean-Baptiste",
+          "B": "Jourdain",
+          "C": "Pierre",
+          "D": "Bethléem"
+        }
+      },
+      "correcte": "A",
+      "reference": {
+        "de": "Matthäus 3,13",
+        "fr": "Matthieu 3:13"
+      }
+    },
+    {
+      "id": "W40-08",
+      "question": {
+        "de": "Wer baute den ersten Tempel in Jerusalem?",
+        "fr": "Qui construisit le premier temple à Jérusalem ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Petrus",
+          "B": "Salomo",
+          "C": "Matthäus",
+          "D": "Offenbarung"
+        },
+        "fr": {
+          "A": "Pierre",
+          "B": "Salomon",
+          "C": "Matthieu",
+          "D": "Apocalypse"
+        }
+      },
+      "correcte": "B",
+      "reference": {
+        "de": "1. Könige 6,1",
+        "fr": "1 Rois 6:1"
+      }
+    },
+    {
+      "id": "W40-09",
+      "question": {
+        "de": "Welcher Jünger verleugnete Jesus dreimal?",
+        "fr": "Quel disciple renia Jésus trois fois ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Judas Iskariot",
+          "B": "Vaterunser",
+          "C": "Petrus",
+          "D": "Mose"
+        },
+        "fr": {
+          "A": "Judas Iscariot",
+          "B": "Notre Père",
+          "C": "Pierre",
+          "D": "Moïse"
+        }
+      },
+      "correcte": "C",
+      "reference": {
+        "de": "Matthäus 26,75",
+        "fr": "Matthieu 26:75"
+      }
+    },
+    {
+      "id": "W40-10",
+      "question": {
+        "de": "Wer verriet Jesus?",
+        "fr": "Qui trahit Jésus ?"
+      },
+      "reponses": {
+        "de": {
+          "A": "Matthäus",
+          "B": "Genesis / 1. Mose",
+          "C": "Psalmen",
+          "D": "Judas Iskariot"
+        },
+        "fr": {
+          "A": "Matthieu",
+          "B": "Genèse",
+          "C": "Psaumes",
+          "D": "Judas Iscariot"
+        }
+      },
+      "correcte": "D",
+      "reference": {
+        "de": "Matthäus 26,14-16",
+        "fr": "Matthieu 26:14-16"
+      }
+    }
+  ]
+}

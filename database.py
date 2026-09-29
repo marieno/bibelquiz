@@ -16,6 +16,7 @@ def init():
   c.execute(text("CREATE TABLE IF NOT EXISTS question_progress(user_id BIGINT NOT NULL,question_id INTEGER NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,correct_answers INTEGER NOT NULL DEFAULT 0,mastered INTEGER NOT NULL DEFAULT 0,last_played_at TEXT,UNIQUE(user_id,question_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id BIGINT NOT NULL,expires_at TEXT NOT NULL,created_at TEXT NOT NULL)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS rewards(user_id BIGINT NOT NULL,reward_key TEXT NOT NULL,title TEXT NOT NULL,points INTEGER NOT NULL DEFAULT 0,earned_at TEXT NOT NULL,UNIQUE(user_id,reward_key))"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS weekly_attempts(user_id BIGINT NOT NULL,week_key TEXT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,duration_ms INTEGER NOT NULL,completed_at TEXT NOT NULL,ranked INTEGER NOT NULL DEFAULT 1)"))
 def hp(p,s=None):
  s=s or secrets.token_hex(32);return hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),250000).hex(),s
 def register(u,p,l):
@@ -78,4 +79,25 @@ def claim_reward(uid,key,title,points):
 def rewards(uid):
  with engine.connect() as c:
   rows=c.execute(text("SELECT reward_key,title,points,earned_at FROM rewards WHERE user_id=:u ORDER BY earned_at DESC"),{"u":uid}).mappings().all()
+ return [dict(r) for r in rows]
+
+def weekly_first_result(uid,week):
+ with engine.connect() as c:
+  r=c.execute(text("SELECT score,correct_count,duration_ms,completed_at FROM weekly_attempts WHERE user_id=:u AND week_key=:w AND ranked=1 ORDER BY completed_at ASC LIMIT 1"),{"u":uid,"w":week}).mappings().first()
+ return dict(r) if r else None
+
+def save_weekly_result(uid,week,score,correct_count,duration_ms):
+ first=weekly_first_result(uid,week)
+ ranked=0 if first else 1
+ with engine.begin() as c:
+  c.execute(text("INSERT INTO weekly_attempts(user_id,week_key,score,correct_count,duration_ms,completed_at,ranked) VALUES(:u,:w,:s,:c,:d,:t,:r)"),
+   {"u":uid,"w":week,"s":score,"c":correct_count,"d":duration_ms,"t":datetime.now(timezone.utc).isoformat(),"r":ranked})
+ return ranked==1
+
+def weekly_leaderboard(week,limit=50):
+ with engine.connect() as c:
+  rows=c.execute(text("""SELECT u.username,a.score,a.correct_count,a.duration_ms
+    FROM weekly_attempts a JOIN users u ON u.id=a.user_id
+    WHERE a.week_key=:w AND a.ranked=1
+    ORDER BY a.score DESC,a.correct_count DESC,a.duration_ms ASC LIMIT :n"""),{"w":week,"n":limit}).mappings().all()
  return [dict(r) for r in rows]

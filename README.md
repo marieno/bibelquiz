@@ -30,3 +30,9 @@ Hinweis: Für echte Nutzung übers Internet später HTTPS + PostgreSQL + persist
 - Level completion bonus: +150 points.
 - Rewards are unique and cannot be claimed twice.
 - Absolute SQLite path for PythonAnywhere.
+
+
+## V4.1 – Quiz der Woche
+Place one weekly JSON in `weekly/`. Exactly one should have `"active": true`.
+The first completed attempt is ranked; later attempts are practice.
+Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.

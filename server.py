@@ -1,4 +1,4 @@
-import json, random, secrets
+import json, random, secrets, time
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Header
 from fastapi.staticfiles import StaticFiles
@@ -44,6 +44,25 @@ def progress(user_id):
                 database.unlock(user_id,nxt); result[nxt]["unlocked"]=True
     return result
 
+
+
+WEEKLY_DIR=ROOT/"weekly"
+WEEKLY_RUNS={}
+
+def active_weekly():
+ files=sorted(WEEKLY_DIR.glob("*.json"),reverse=True)
+ for f in files:
+  d=json.loads(f.read_text(encoding="utf-8"))
+  if d.get("active"): return d
+ return None
+
+class WeeklyAnswer(BaseModel):
+    week:str
+    question_id:str
+    choice:str
+
+def public_weekly_question(q):
+ return {"id":q["id"],"question":q["question"],"reponses":q["reponses"]}
 
 def evaluate_rewards(user_id,p):
     won=[]
@@ -116,6 +135,65 @@ def answer(a:Answer,authorization:str|None=Header(None)):
 
 @app.get("/health")
 def health(): return {"status":"ok"}
+
+
+@app.get("/api/weekly")
+def weekly_info(authorization:str|None=Header(None)):
+ u=uid(authorization); w=active_weekly()
+ if not w:return {"active":False}
+ first=database.weekly_first_result(u,w["week"])
+ return {"active":True,"week":w["week"],"title":w["title"],"question_count":len(w["questions"]),
+         "first_result":first,"leaderboard":database.weekly_leaderboard(w["week"],10)}
+
+@app.post("/api/weekly/start")
+def weekly_start(authorization:str|None=Header(None)):
+ u=uid(authorization); w=active_weekly()
+ if not w:raise HTTPException(404,"NO_WEEKLY_QUIZ")
+ run=secrets.token_urlsafe(18)
+ WEEKLY_RUNS[run]={"uid":u,"week":w["week"],"start":time.time(),"answers":{}}
+ return {"run":run,"week":w["week"],"title":w["title"],"questions":[public_weekly_question(q) for q in w["questions"]]}
+
+@app.post("/api/weekly/answer/{run}")
+def weekly_answer(run:str,a:WeeklyAnswer,authorization:str|None=Header(None)):
+ u=uid(authorization); state=WEEKLY_RUNS.get(run)
+ if not state or state["uid"]!=u:raise HTTPException(404,"RUN_NOT_FOUND")
+ w=active_weekly()
+ if not w or w["week"]!=state["week"]:raise HTTPException(409,"QUIZ_CHANGED")
+ q=next((x for x in w["questions"] if x["id"]==a.question_id),None)
+ if not q:raise HTTPException(404,"QUESTION_NOT_FOUND")
+ if q["id"] in state["answers"]:raise HTTPException(409,"ALREADY_ANSWERED")
+ ok=a.choice.upper()==q["correcte"]; state["answers"][q["id"]]=ok
+ return {"correct":ok,"correct_choice":q["correcte"],"reference":q["reference"]}
+
+@app.post("/api/weekly/finish/{run}")
+def weekly_finish(run:str,authorization:str|None=Header(None)):
+ u=uid(authorization); state=WEEKLY_RUNS.pop(run,None)
+ if not state or state["uid"]!=u:raise HTTPException(404,"RUN_NOT_FOUND")
+ w=active_weekly()
+ if not w or w["week"]!=state["week"]:raise HTTPException(409,"QUIZ_CHANGED")
+ correct=sum(1 for v in state["answers"].values() if v)
+ duration=max(1,int((time.time()-state["start"])*1000))
+ # Accuracy dominates; time only adds a modest tiebreak-style bonus.
+ score=correct*100+max(0,200-min(200,duration//1000))
+ ranked=database.save_weekly_result(u,w["week"],score,correct,duration)
+ rewards=[]
+ if ranked:
+  if database.claim_reward(u,f"weekly:{w['week']}:participation","⭐ Quiz der Woche / Quiz de la semaine",20):
+   rewards.append({"emoji":"⭐","title":"Quiz der Woche / Quiz de la semaine","points":20})
+  for need,bonus,emoji in [(7,30,"🥉"),(9,50,"🥈"),(10,100,"🥇")]:
+   if correct>=need and database.claim_reward(u,f"weekly:{w['week']}:{need}",f"{emoji} {correct}/10",bonus):
+    rewards.append({"emoji":emoji,"title":f"{correct}/10","points":bonus})
+ return {"ranked":ranked,"score":score,"correct_count":correct,"duration_ms":duration,
+         "first_result":database.weekly_first_result(u,w["week"]),"leaderboard":database.weekly_leaderboard(w["week"],10),
+         "rewards":rewards,"user":database.user(u)}
+
+@app.get("/api/weekly/archive")
+def weekly_archive(authorization:str|None=Header(None)):
+ uid(authorization); out=[]
+ for f in sorted(WEEKLY_DIR.glob("*.json"),reverse=True):
+  w=json.loads(f.read_text(encoding="utf-8"))
+  out.append({"week":w["week"],"title":w["title"],"active":bool(w.get("active"))})
+ return out
 
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")
