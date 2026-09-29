@@ -90,3 +90,10 @@ Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.
 - Other players see the host's actual name while waiting.
 - Player answer state is private: only "your answer is saved" is shown before reveal.
 - Multiplayer profile now shows an explicit error screen if its API cannot load.
+
+
+## V4.2-G – Multiplayer profile route fix
+The personal multiplayer profile endpoints no longer live below the dynamic room-code route.
+- `GET /api/multiplayer/profile`
+- `POST /api/multiplayer/claim-badges`
+This prevents `profile` from being interpreted as a room code.

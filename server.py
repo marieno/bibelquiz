@@ -329,13 +329,13 @@ def evaluate_multiplayer_badges(u):
   if ok and database.claim_reward(u,key,title,pts):won.append({"key":key,"title":title,"points":pts,"emoji":emoji})
  return won
 
-@app.get("/api/group/profile")
+@app.get("/api/multiplayer/profile")
 def group_profile(authorization:str|None=Header(None)):
  u=uid(authorization)
  return {"stats":database.multiplayer_stats(u),"history":database.multiplayer_history(u,10),
          "rewards":[r for r in database.rewards(u) if str(r["reward_key"]).startswith("multi:")]}
 
-@app.post("/api/group/claim-badges")
+@app.post("/api/multiplayer/claim-badges")
 def group_claim_badges(authorization:str|None=Header(None)):
  u=uid(authorization);won=evaluate_multiplayer_badges(u)
  return {"rewards":won,"stats":database.multiplayer_stats(u),"user":database.user(u)}

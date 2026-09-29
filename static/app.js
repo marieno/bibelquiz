@@ -76,14 +76,14 @@ async function groupAnswer(choice){try{await api(`/api/group/${groupCode}/answer
 async function groupNext(){await api(`/api/group/${groupCode}/next`,{method:"POST",body:"{}"});groupGame()}
 async function groupPodium(x){
  stopGroupPoll();confetti();fly("🏆");
- let badge=await api("/api/group/claim-badges",{method:"POST",body:"{}"});me=badge.user||me;
+ let badge=await api("/api/multiplayer/claim-badges",{method:"POST",body:"{}"});me=badge.user||me;
  let s=x.scores,st=badge.stats;
  A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars>🏆<br>⭐⭐⭐</div><h1 style="text-align:center">${lang==="de"?"Endergebnis":"Résultat final"}</h1>${s.map((p,i)=>`<p style="font-size:${i===0?24:18}px;text-align:center">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(p.username)}</b> — ${p.score} ⭐ <small>(${p.correct_count}/10)</small></p>`).join("")}<hr><p style="text-align:center">🎮 ${st.games} &nbsp; 🥇 ${st.wins} &nbsp; 🎖️ ${st.podiums}</p><button class="btn full" onclick="groupProfile()">🏆 ${lang==="de"?"MEIN MULTIPLAYER-PROFIL":"MON PROFIL MULTIJOUEUR"}</button><button class="btn green full" onclick="groupHome()">👥 ${lang==="de"?"NEUE GRUPPE":"NOUVEAU GROUPE"}</button><button class="btn ghost full" onclick="dashboard()">🏠 Dashboard</button></div></div>`;
  if(badge.rewards&&badge.rewards.length)setTimeout(()=>showRewards(badge.rewards),450)
 }
 async function groupProfile(){
  try{
- stopGroupPoll();let x=await api("/api/group/profile"),st=x.stats;
+ stopGroupPoll();let x=await api("/api/multiplayer/profile"),st=x.stats;
  let best=st.best_answer_ms==null?"—":(st.best_answer_ms/1000).toFixed(2)+" s";
  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>🏆 ${lang==="de"?"Multiplayer-Profil":"Profil multijoueur"}</h1></div>
  <div class=stats><div class=card><h2>🎮 ${st.games}</h2><p>${lang==="de"?"Spiele":"Parties"}</p></div><div class=card><h2>🥇 ${st.wins}</h2><p>${lang==="de"?"Siege":"Victoires"}</p></div><div class=card><h2>🎖️ ${st.podiums}</h2><p>Podiums</p></div><div class=card><h2>⚡ ${best}</h2><p>${lang==="de"?"Beste Antwort":"Meilleure réponse"}</p></div></div>
