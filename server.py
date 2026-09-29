@@ -247,8 +247,11 @@ def group_question_pool():
 def group_public_state(uid_,code):
  r=database.room(code)
  if not r or not any(p["user_id"]==uid_ for p in r["players"]):raise HTTPException(403)
+ host_player=next((p for p in r["players"] if p["user_id"]==r["host_user_id"]),None)
+ is_host=(uid_==r["host_user_id"])
+ host_name=host_player["display_name"] if host_player else "Host"
  st=database.game_state(code)
- if not st:return {"room":r,"phase":"lobby"}
+ if not st:return {"room":r,"phase":"lobby","is_host":is_host,"host_name":host_name}
  if st["status"]=="finished" or st["current_index"]>=len(st["question_ids"]):
   database.finalize_multiplayer_results(code)
   return {"room":r,"phase":"finished","scores":st["scores"],"stats":database.multiplayer_stats(uid_)}
@@ -258,7 +261,7 @@ def group_public_state(uid_,code):
  remaining=max(0,15-elapsed)
  all_answered=len(st["answered_ids"])>=len(r["players"])
  reveal=remaining<=0 or all_answered
- out={"room":r,"phase":"reveal" if reveal else "question","index":i,"total":10,
+ out={"room":r,"phase":"reveal" if reveal else "question","is_host":is_host,"host_name":host_name,"index":i,"total":10,
       "remaining":round(remaining,1),"scores":st["scores"],"answered_count":len(st["answered_ids"]),
       "player_count":len(r["players"]),"my_answered":uid_ in st["answered_ids"],
       "question":{"id":q["id"],"question":q["question"],"reponses":q["reponses"]}}

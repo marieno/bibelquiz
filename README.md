@@ -80,3 +80,13 @@ Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.
 - Question 10: `ENDERGEBNIS ANZEIGEN / AFFICHER LE RÉSULTAT`.
 - Non-host players see an explicit waiting-for-host panel.
 - Faster polling makes reveal transitions clearer on phones.
+
+
+## V4.2-F – Multiplayer corrective release
+- Server explicitly returns `is_host` and `host_name`.
+- Client no longer infers host role from JavaScript ID comparisons.
+- Host name is visible during the game.
+- Only the host receives the next-question/final-result control.
+- Other players see the host's actual name while waiting.
+- Player answer state is private: only "your answer is saved" is shown before reveal.
+- Multiplayer profile now shows an explicit error screen if its API cannot load.

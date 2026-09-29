@@ -59,14 +59,14 @@ async function groupGame(){
  try{x=await api(`/api/group/${groupCode}/game`)}catch(e){groupHome();return}
  if(x.phase==="lobby"){groupLobby();return}window.groupQuestionIndex=x.index
  if(x.phase==="finished"){groupPodium(x);return}
- let q=x.question,r=q.reponses[lang],host=x.room.host_user_id===x.room.me;
+ let q=x.question,r=q.reponses[lang],host=Boolean(x.is_host);
  let answers=x.answers||[];
- A.innerHTML=`<div class="wrap group-game-wrap"><div class=top><span class=pill>👥 ${groupCode}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
+ A.innerHTML=`<div class="wrap group-game-wrap"><div class=top><span class=pill>👥 ${groupCode} &nbsp; 👑 ${esc(x.host_name||"Host")}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
  <div class=progress><i style="width:${100*(x.index+1)/10}%"></i></div><div class=top><p>${lang==="de"?"Frage":"Question"} ${x.index+1}/10</p><h2>⏱ ${Math.ceil(x.remaining)}s</h2></div>
  <div class="card question">${esc(q.question[lang])}</div>
  <div class=answers>${["A","B","C","D"].map(a=>`<button id=g${a} class="btn answer ${x.phase==="reveal"&&a===x.correct_choice?"good":""}" ${x.phase==="reveal"||x.my_answered?"disabled":""} onclick="groupAnswer('${a}')"><b>${a}</b>&nbsp;&nbsp; ${esc(r[a])}</button>`).join("")}</div>
- <div class=card style="margin-top:14px"><b>${x.answered_count}/${x.player_count} ${lang==="de"?"haben geantwortet":"ont répondu"}</b>${x.my_answered&&x.phase==="question"?`<p>✅ ${lang==="de"?"Antwort gespeichert. Warte auf die anderen…":"Réponse enregistrée. Attends les autres…"}</p>`:""}</div>
- ${x.phase==="reveal"?`<div class=card style="margin-top:14px"><h2>💡 ${lang==="de"?"Auflösung":"Réponse"}</h2><p style="font-size:18px">✅ <b>${esc(r[x.correct_choice])}</b></p>${answers.map(a=>`<p>${a.correct?"✅":"❌"} <b>${esc(a.username)}</b> — ${a.points>0?"+"+a.points+" ⭐":"0"}</p>`).join("")}<h3>🏆 ${lang==="de"?"Zwischenstand":"Classement"}</h3>${x.scores.map((s,i)=>`<p>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(s.username)}</b> — ${s.score} ⭐</p>`).join("")}</div>${host?`<div class=host-dock><div class=host-title>👑 ${lang==="de"?"DU BIST DER HOST":"TU ES L’HÔTE"}</div><button class="btn host-next" onclick="groupNext()">${x.index===9?"🏆 "+(lang==="de"?"ENDERGEBNIS ANZEIGEN":"AFFICHER LE RÉSULTAT"):"▶ "+(lang==="de"?"NÄCHSTE FRAGE":"QUESTION SUIVANTE")+" →"}</button></div>`:`<div class=wait-host>👑 ${lang==="de"?"Der Host startet die nächste Frage":"L’hôte lance la question suivante"} <span class=wait-dots>● ● ●</span></div>`}`:""}</div>`
+ <div class=card style="margin-top:14px"><b>${x.answered_count}/${x.player_count} ${lang==="de"?"haben geantwortet":"ont répondu"}</b><p>${x.my_answered?"✅ "+(lang==="de"?"Deine Antwort ist gespeichert":"Ta réponse est enregistrée"):"⏳ "+(lang==="de"?"Du hast noch nicht geantwortet":"Tu n’as pas encore répondu")}</p>${x.phase==="question"&&x.remaining<=1?`<p>⏱ ${lang==="de"?"Zeit fast abgelaufen!":"Temps presque écoulé !"}</p>`:""}</div>
+ ${x.phase==="reveal"?`<div class=card style="margin-top:14px"><h2>💡 ${lang==="de"?"Auflösung":"Réponse"}</h2><p style="font-size:18px">✅ <b>${esc(r[x.correct_choice])}</b></p>${answers.map(a=>`<p>${a.correct?"✅":"❌"} <b>${esc(a.username)}</b> — ${a.points>0?"+"+a.points+" ⭐":"0"}</p>`).join("")}<h3>🏆 ${lang==="de"?"Zwischenstand":"Classement"}</h3>${x.scores.map((s,i)=>`<p>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(s.username)}</b> — ${s.score} ⭐</p>`).join("")}</div>${host?`<div class=host-dock><div class=host-title>👑 ${lang==="de"?"DU BIST DER HOST":"TU ES L’HÔTE"}</div><button class="btn host-next" onclick="groupNext()">${x.index===9?"🏆 "+(lang==="de"?"ENDERGEBNIS ANZEIGEN":"AFFICHER LE RÉSULTAT"):"▶ "+(lang==="de"?"NÄCHSTE FRAGE":"QUESTION SUIVANTE")+" →"}</button></div>`:`<div class=wait-host>👑 ${lang==="de"?(esc(x.host_name)+" startet die nächste Frage"):(esc(x.host_name)+" lance la question suivante")} <span class=wait-dots>● ● ●</span></div>`}`:""}</div>`
  groupPoll=setTimeout(groupGame,x.phase==="question"?500:900)
 }
 async function groupAnswer(choice){try{await api(`/api/group/${groupCode}/answer`,{method:"POST",body:JSON.stringify({choice,question_index:window.groupQuestionIndex})})}catch(e){
@@ -82,12 +82,18 @@ async function groupPodium(x){
  if(badge.rewards&&badge.rewards.length)setTimeout(()=>showRewards(badge.rewards),450)
 }
 async function groupProfile(){
+ try{
  stopGroupPoll();let x=await api("/api/group/profile"),st=x.stats;
  let best=st.best_answer_ms==null?"—":(st.best_answer_ms/1000).toFixed(2)+" s";
  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>🏆 ${lang==="de"?"Multiplayer-Profil":"Profil multijoueur"}</h1></div>
  <div class=stats><div class=card><h2>🎮 ${st.games}</h2><p>${lang==="de"?"Spiele":"Parties"}</p></div><div class=card><h2>🥇 ${st.wins}</h2><p>${lang==="de"?"Siege":"Victoires"}</p></div><div class=card><h2>🎖️ ${st.podiums}</h2><p>Podiums</p></div><div class=card><h2>⚡ ${best}</h2><p>${lang==="de"?"Beste Antwort":"Meilleure réponse"}</p></div></div>
  <div class=card style="margin-top:14px"><h2>🎖️ Badges</h2><div class=badges>${x.rewards.length?x.rewards.map(r=>`<span class=badge>${esc(r.title)}</span>`).join(""):`<span>${lang==="de"?"Noch kein Multiplayer-Badge.":"Pas encore de badge multijoueur."}</span>`}</div></div>
  <div class=card style="margin-top:14px"><h2>📜 ${lang==="de"?"Letzte Spiele":"Dernières parties"}</h2>${x.history.length?x.history.map(h=>`<p>${h.position==1?"🥇":h.position==2?"🥈":h.position==3?"🥉":"#"+h.position} <b>${h.score} ⭐</b> — ${h.correct_count}/10 <small>(${h.room_code})</small></p>`).join(""):`<p>—</p>`}</div></div>`
+ }
+ catch(e){
+  stopGroupPoll();
+  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class=card><h2>⚠️ ${lang==="de"?"Profil konnte nicht geladen werden":"Impossible de charger le profil"}</h2><p>${esc(e.message||String(e))}</p><button class="btn" onclick="groupProfile()">${lang==="de"?"ERNEUT VERSUCHEN":"RÉESSAYER"}</button></div></div>`
+ }
 }
 
 async function groupReady(v){await api(`/api/group/${groupCode}/ready`,{method:"POST",body:JSON.stringify({ready:v})});groupLobby()}
