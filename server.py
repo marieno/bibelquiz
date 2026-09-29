@@ -12,11 +12,17 @@ LEVELS=["enfant","facile","moyen","difficile"]
 
 app=FastAPI(title="BibelQuiz")
 database.init()
+database.multiplayer_init()
 
 class Auth(BaseModel):
     username:str
     password:str
     language:str="de"
+class RoomReady(BaseModel):
+    ready:bool=True
+class RoomJoin(BaseModel):
+    code:str
+
 class Answer(BaseModel):
     question_id:int
     choice:str
@@ -194,6 +200,40 @@ def weekly_archive(authorization:str|None=Header(None)):
   w=json.loads(f.read_text(encoding="utf-8"))
   out.append({"week":w["week"],"title":w["title"],"active":bool(w.get("active"))})
  return out
+
+
+@app.post("/api/group/create")
+def group_create(authorization:str|None=Header(None)):
+ u=uid(authorization)
+ for _ in range(30):
+  code=str(random.randint(100000,999999))
+  if not database.room(code):
+   database.create_room(u,code)
+   return database.room(code)
+ raise HTTPException(503,"ROOM_CODE_UNAVAILABLE")
+
+@app.post("/api/group/join")
+def group_join(a:RoomJoin,authorization:str|None=Header(None)):
+ u=uid(authorization);code=a.code.strip()
+ try:database.join_room(u,code)
+ except ValueError as e:raise HTTPException(400,str(e))
+ return database.room(code)
+
+@app.get("/api/group/{code}")
+def group_room(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);r=database.room(code)
+ if not r:raise HTTPException(404,"ROOM_NOT_FOUND")
+ if not any(p["user_id"]==u for p in r["players"]):raise HTTPException(403)
+ r["me"]=u
+ return r
+
+@app.post("/api/group/{code}/ready")
+def group_ready(code:str,a:RoomReady,authorization:str|None=Header(None)):
+ u=uid(authorization);database.set_ready(u,code,a.ready);return database.room(code)
+
+@app.post("/api/group/{code}/leave")
+def group_leave(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);database.leave_room(u,code);return {"ok":True}
 
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")

@@ -17,6 +17,48 @@ def init():
   c.execute(text("CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id BIGINT NOT NULL,expires_at TEXT NOT NULL,created_at TEXT NOT NULL)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS rewards(user_id BIGINT NOT NULL,reward_key TEXT NOT NULL,title TEXT NOT NULL,points INTEGER NOT NULL DEFAULT 0,earned_at TEXT NOT NULL,UNIQUE(user_id,reward_key))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS weekly_attempts(user_id BIGINT NOT NULL,week_key TEXT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,duration_ms INTEGER NOT NULL,completed_at TEXT NOT NULL,ranked INTEGER NOT NULL DEFAULT 1)"))
+def multiplayer_init():
+ with engine.begin() as c:
+  c.execute(text("CREATE TABLE IF NOT EXISTS game_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',created_at TEXT NOT NULL,started_at TEXT,finished_at TEXT)"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS game_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,joined_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
+
+def create_room(uid,code):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  name=c.execute(text("SELECT username FROM users WHERE id=:u"),{"u":uid}).scalar_one()
+  c.execute(text("INSERT INTO game_rooms(code,host_user_id,status,created_at) VALUES(:c,:u,'lobby',:d)"),{"c":code,"u":uid,"d":now})
+  c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,1,:d)"),{"c":code,"u":uid,"n":name,"d":now})
+
+def room(code):
+ with engine.connect() as c:
+  r=c.execute(text("SELECT * FROM game_rooms WHERE code=:c"),{"c":code}).mappings().first()
+  if not r:return None
+  ps=c.execute(text("SELECT user_id,display_name,ready,joined_at FROM game_players WHERE room_code=:c ORDER BY joined_at"),{"c":code}).mappings().all()
+ out=dict(r);out["players"]=[dict(x) for x in ps];return out
+
+def join_room(uid,code):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  r=c.execute(text("SELECT status FROM game_rooms WHERE code=:c"),{"c":code}).first()
+  if not r:raise ValueError("ROOM_NOT_FOUND")
+  if r[0]!="lobby":raise ValueError("ROOM_ALREADY_STARTED")
+  if c.execute(text("SELECT COUNT(*) FROM game_players WHERE room_code=:c"),{"c":code}).scalar_one()>=5:raise ValueError("ROOM_FULL")
+  if c.execute(text("SELECT 1 FROM game_players WHERE room_code=:c AND user_id=:u"),{"c":code,"u":uid}).first():return
+  name=c.execute(text("SELECT username FROM users WHERE id=:u"),{"u":uid}).scalar_one()
+  c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,0,:d)"),{"c":code,"u":uid,"n":name,"d":now})
+
+def set_ready(uid,code,ready):
+ with engine.begin() as c:c.execute(text("UPDATE game_players SET ready=:r WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"c":code,"u":uid})
+
+def leave_room(uid,code):
+ with engine.begin() as c:
+  rr=c.execute(text("SELECT host_user_id,status FROM game_rooms WHERE code=:c"),{"c":code}).first()
+  if not rr or rr[1]!="lobby":return
+  c.execute(text("DELETE FROM game_players WHERE room_code=:c AND user_id=:u"),{"c":code,"u":uid})
+  left=c.execute(text("SELECT user_id FROM game_players WHERE room_code=:c ORDER BY joined_at"),{"c":code}).all()
+  if not left:c.execute(text("DELETE FROM game_rooms WHERE code=:c"),{"c":code})
+  elif rr[0]==uid:c.execute(text("UPDATE game_rooms SET host_user_id=:u WHERE code=:c"),{"u":left[0][0],"c":code})
+
 def hp(p,s=None):
  s=s or secrets.token_hex(32);return hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),250000).hex(),s
 def register(u,p,l):

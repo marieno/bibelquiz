@@ -36,3 +36,13 @@ Hinweis: Für echte Nutzung übers Internet später HTTPS + PostgreSQL + persist
 Place one weekly JSON in `weekly/`. Exactly one should have `"active": true`.
 The first completed attempt is ranked; later attempts are practice.
 Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.
+
+
+## V4.2-A – Group Lobby
+- Create a six-digit room.
+- Join by code.
+- 2–5 authenticated players.
+- Host crown and host migration if host leaves.
+- Ready/not-ready state.
+- Lobby refreshes automatically.
+- Start button is intentionally disabled until V4.2-B game synchronization is added.
