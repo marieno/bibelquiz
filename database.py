@@ -24,6 +24,7 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS game_state(room_code TEXT PRIMARY KEY,question_ids TEXT NOT NULL,current_index INTEGER NOT NULL DEFAULT 0,question_started_at TEXT,status TEXT NOT NULL DEFAULT 'playing')"))
   c.execute(text("CREATE TABLE IF NOT EXISTS game_answers(room_code TEXT NOT NULL,question_index INTEGER NOT NULL,user_id BIGINT NOT NULL,choice TEXT NOT NULL,correct INTEGER NOT NULL,elapsed_ms INTEGER NOT NULL,points INTEGER NOT NULL,UNIQUE(room_code,question_index,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS game_scores(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL DEFAULT 0,correct_count INTEGER NOT NULL DEFAULT 0,UNIQUE(room_code,user_id))"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS multiplayer_results(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,position INTEGER NOT NULL,best_answer_ms INTEGER,finished_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
 
 def create_room(uid,code):
  now=datetime.now(timezone.utc).isoformat()
@@ -116,6 +117,35 @@ def game_answer_details(code,index):
     FROM game_answers a JOIN users u ON u.id=a.user_id
     WHERE a.room_code=:c AND a.question_index=:i ORDER BY a.points DESC"""),{"c":code,"i":index}).mappings().all()
  return [dict(x) for x in rows]
+
+
+def finalize_multiplayer_results(code):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  existing=c.execute(text("SELECT COUNT(*) FROM multiplayer_results WHERE room_code=:c"),{"c":code}).scalar_one()
+  if existing:return False
+  scores=c.execute(text("""SELECT s.user_id,s.score,s.correct_count,
+    MIN(CASE WHEN a.correct=1 THEN a.elapsed_ms ELSE NULL END) best_ms
+    FROM game_scores s LEFT JOIN game_answers a ON a.room_code=s.room_code AND a.user_id=s.user_id
+    WHERE s.room_code=:c GROUP BY s.user_id,s.score,s.correct_count
+    ORDER BY s.score DESC,s.correct_count DESC,best_ms ASC"""),{"c":code}).all()
+  for pos,row in enumerate(scores,1):
+   c.execute(text("""INSERT INTO multiplayer_results(room_code,user_id,score,correct_count,position,best_answer_ms,finished_at)
+     VALUES(:c,:u,:s,:n,:p,:b,:d)"""),{"c":code,"u":row[0],"s":row[1],"n":row[2],"p":pos,"b":row[3],"d":now})
+ return True
+
+def multiplayer_stats(uid):
+ with engine.connect() as c:
+  rows=c.execute(text("SELECT position,best_answer_ms FROM multiplayer_results WHERE user_id=:u"),{"u":uid}).all()
+  best=c.execute(text("SELECT MIN(best_answer_ms) FROM multiplayer_results WHERE user_id=:u AND best_answer_ms IS NOT NULL"),{"u":uid}).scalar()
+ games=len(rows);wins=sum(1 for r in rows if r[0]==1);podiums=sum(1 for r in rows if r[0]<=3)
+ return {"games":games,"wins":wins,"podiums":podiums,"best_answer_ms":best}
+
+def multiplayer_history(uid,limit=10):
+ with engine.connect() as c:
+  rows=c.execute(text("""SELECT room_code,score,correct_count,position,best_answer_ms,finished_at
+   FROM multiplayer_results WHERE user_id=:u ORDER BY finished_at DESC LIMIT :n"""),{"u":uid,"n":limit}).mappings().all()
+ return [dict(r) for r in rows]
 
 def hp(p,s=None):
  s=s or secrets.token_hex(32);return hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),250000).hex(),s

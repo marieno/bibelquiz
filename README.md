@@ -58,3 +58,16 @@ Weekly rewards: participation +20, 7/10 +30, 9/10 +50, 10/10 +100.
 - Intermediate leaderboard after each reveal.
 - Host advances the room.
 - Final podium after question 10.
+
+
+## V4.2-D – Persistent multiplayer profile
+- Finished games are persisted once.
+- Stats: games, wins, podiums, fastest correct answer.
+- Last 10 multiplayer results.
+- Unique multiplayer badges and point rewards:
+  - First group game +25
+  - First win +50
+  - 3 wins +100
+  - 10 wins +250
+  - 5 podiums +100
+  - Correct answer within 3 seconds +75

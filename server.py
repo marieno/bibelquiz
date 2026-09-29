@@ -250,7 +250,8 @@ def group_public_state(uid_,code):
  st=database.game_state(code)
  if not st:return {"room":r,"phase":"lobby"}
  if st["status"]=="finished" or st["current_index"]>=len(st["question_ids"]):
-  return {"room":r,"phase":"finished","scores":st["scores"]}
+  database.finalize_multiplayer_results(code)
+  return {"room":r,"phase":"finished","scores":st["scores"],"stats":database.multiplayer_stats(uid_)}
  i=st["current_index"];qid=st["question_ids"][i];q=next(x for x in QUESTIONS if x["id"]==qid)
  started=datetime.fromisoformat(st["question_started_at"])
  elapsed=max(0,(datetime.now(timezone.utc)-started).total_seconds())
@@ -309,6 +310,32 @@ def group_next(code:str,authorization:str|None=Header(None)):
  if len(st["answered_ids"])<len(r["players"]) and elapsed<15:raise HTTPException(409,"QUESTION_STILL_ACTIVE")
  database.advance_game(code)
  return group_public_state(u,code)
+
+
+def evaluate_multiplayer_badges(u):
+ st=database.multiplayer_stats(u);won=[]
+ checks=[
+  ("multi:first_game",st["games"]>=1,"🎮 Erste Gruppenpartie / Première partie",25,"🎮"),
+  ("multi:first_win",st["wins"]>=1,"🥇 Erster Sieg / Première victoire",50,"🥇"),
+  ("multi:3wins",st["wins"]>=3,"🔥 3 Siege / 3 victoires",100,"🔥"),
+  ("multi:10wins",st["wins"]>=10,"🏆 10 Siege / 10 victoires",250,"🏆"),
+  ("multi:5podiums",st["podiums"]>=5,"🎖️ 5 Podien / 5 podiums",100,"🎖️"),
+  ("multi:blitz",st["best_answer_ms"] is not None and st["best_answer_ms"]<=3000,"⚡ Blitzantwort / Réponse éclair",75,"⚡")
+ ]
+ for key,ok,title,pts,emoji in checks:
+  if ok and database.claim_reward(u,key,title,pts):won.append({"key":key,"title":title,"points":pts,"emoji":emoji})
+ return won
+
+@app.get("/api/group/profile")
+def group_profile(authorization:str|None=Header(None)):
+ u=uid(authorization)
+ return {"stats":database.multiplayer_stats(u),"history":database.multiplayer_history(u,10),
+         "rewards":[r for r in database.rewards(u) if str(r["reward_key"]).startswith("multi:")]}
+
+@app.post("/api/group/claim-badges")
+def group_claim_badges(authorization:str|None=Header(None)):
+ u=uid(authorization);won=evaluate_multiplayer_badges(u)
+ return {"rewards":won,"stats":database.multiplayer_stats(u),"user":database.user(u)}
 
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")
