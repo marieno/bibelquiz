@@ -8,3 +8,21 @@ input{width:100%;padding:15px;border:1px solid var(--line);border-radius:14px;ma
 .pill{display:inline-block;background:#e9f5ff;border-radius:20px;padding:6px 12px}.question{font-size:clamp(22px,5vw,32px);text-align:center;font-weight:800;margin:25px 0}.feedback{text-align:center;font-weight:700;padding:14px;border-radius:15px;margin-top:15px}.stars{font-size:42px;text-align:center}
 @media(min-width:850px){.levels{grid-template-columns:repeat(4,1fr)}.cats{grid-template-columns:repeat(3,1fr)}.answers{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.wrap{padding:12px}.card{padding:17px}.levels,.cats,.answers,.stats{grid-template-columns:1fr}.top h2{font-size:18px}.answer{min-height:62px}.auth{margin:3vh auto}}
+
+
+/* ---------- LIFE & MOTION ---------- */
+body{overflow-x:hidden}
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9999}
+.float-object{position:absolute;font-size:clamp(24px,5vw,48px);filter:drop-shadow(0 5px 8px #295b7b25);animation:flyAcross 1.05s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes flyAcross{0%{transform:translate(-90px,30px) rotate(-18deg) scale(.6);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translate(calc(100vw + 100px),-45px) rotate(18deg) scale(1.08);opacity:0}}
+.page-enter{animation:pageIn .36s ease both}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+.confetti{position:absolute;top:-40px;font-size:25px;animation:confettiFall 1.7s ease-in forwards}
+@keyframes confettiFall{to{transform:translateY(105vh) rotate(520deg);opacity:.15}}
+.reward-pop{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10000;width:min(90vw,460px);background:#fffdf5;border:3px solid #ffd45c;border-radius:28px;padding:25px;text-align:center;box-shadow:0 22px 80px #1a537060;animation:rewardPop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes rewardPop{from{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(-3deg)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.reward-pop .big{font-size:64px}.reward-pop h2{margin:5px 0;color:var(--ink)}.reward-pop .bonus{font-size:26px;color:#df8c00;font-weight:900}
+.badges{display:flex;flex-wrap:wrap;gap:8px}.badge{background:#fff4c9;border:1px solid #ffd974;padding:8px 12px;border-radius:999px;font-weight:750}
+.milestone-track{display:flex;justify-content:space-between;gap:6px;margin-top:14px}.milestone{flex:1;text-align:center;padding:8px 4px;border-radius:13px;background:#edf6fb;color:#6b8295;font-size:12px}.milestone.done{background:#fff0ae;color:#7d5a00;font-weight:800}
+.bounce{animation:bounce .55s ease}@keyframes bounce{50%{transform:scale(1.08)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}

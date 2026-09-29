@@ -44,6 +44,34 @@ def progress(user_id):
                 database.unlock(user_id,nxt); result[nxt]["unlocked"]=True
     return result
 
+
+def evaluate_rewards(user_id,p):
+    won=[]
+    total_mastered=sum(p[l]["done"] for l in LEVELS)
+
+    for target,bonus,emoji in [(5,20,"🌟"),(10,30,"🏅"),(25,50,"🔥"),(50,100,"🏆"),(100,200,"👑")]:
+        if total_mastered>=target:
+            key=f"mastered:{target}"
+            title=f"{emoji} {target} Fragen / questions"
+            if database.claim_reward(user_id,key,title,bonus):
+                won.append({"key":key,"title":title,"points":bonus,"emoji":emoji})
+
+    for level in LEVELS:
+        for category,cp in p[level]["categories"].items():
+            if cp["total"] and cp["done"]==cp["total"]:
+                key=f"category:{level}:{category}"
+                title=f"🎁 Kategorie geschafft / catégorie terminée"
+                if database.claim_reward(user_id,key,title,50):
+                    won.append({"key":key,"title":title,"points":50,"emoji":"🎁"})
+
+        lp=p[level]
+        if lp["total"] and lp["done"]==lp["total"]:
+            key=f"level:{level}"
+            title=f"🏆 Level geschafft / niveau terminé"
+            if database.claim_reward(user_id,key,title,150):
+                won.append({"key":key,"title":title,"points":150,"emoji":"🏆"})
+    return won
+
 @app.post("/api/register")
 def register(a:Auth):
     try:u=database.register(a.username,a.password,a.language)
@@ -60,7 +88,7 @@ def login(a:Auth):
 
 @app.get("/api/me")
 def me(authorization:str|None=Header(None)):
-    u=uid(authorization); return {"user":database.user(u),"progress":progress(u)}
+    u=uid(authorization); return {"user":database.user(u),"progress":progress(u),"rewards":database.rewards(u)}
 
 @app.get("/api/round/{level}/{category}")
 def round_(level:str,category:str,authorization:str|None=Header(None)):
@@ -82,8 +110,9 @@ def answer(a:Answer,authorization:str|None=Header(None)):
     correct=a.choice.upper()==q["correcte"]
     newly=database.answer(u,q["id"],correct,int(q.get("points",0)))
     p=progress(u)
+    rewards=evaluate_rewards(u,p)
     return {"correct":correct,"correct_choice":q["correcte"],"reference":q["reference"],
-            "newly_mastered":newly,"user":database.user(u),"progress":p}
+            "newly_mastered":newly,"user":database.user(u),"progress":p,"rewards":rewards}
 
 @app.get("/health")
 def health(): return {"status":"ok"}

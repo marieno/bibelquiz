@@ -2,12 +2,9 @@ import os,hashlib,secrets
 from datetime import datetime,timedelta,timezone
 from sqlalchemy import create_engine,text
 LEVELS=["enfant","facile","moyen","difficile"]
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-URL = os.getenv(
-    "DATABASE_URL",
-    f"sqlite:///{os.path.join(BASE_DIR, 'data', 'bible_quiz.db')}"
-)
+BASE_DIR=os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(BASE_DIR,"data"),exist_ok=True)
+URL=os.getenv("DATABASE_URL",f"sqlite:///{os.path.join(BASE_DIR,'data','bible_quiz.db')}")
 if URL.startswith("postgres://"): URL="postgresql+psycopg://"+URL[11:]
 elif URL.startswith("postgresql://"): URL="postgresql+psycopg://"+URL[13:]
 engine=create_engine(URL,pool_pre_ping=True,connect_args={"check_same_thread":False} if URL.startswith("sqlite") else {})
@@ -18,6 +15,7 @@ def init():
   c.execute(text("CREATE TABLE IF NOT EXISTS level_progress(user_id BIGINT NOT NULL,level TEXT NOT NULL,unlocked INTEGER NOT NULL DEFAULT 0,UNIQUE(user_id,level))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS question_progress(user_id BIGINT NOT NULL,question_id INTEGER NOT NULL,attempts INTEGER NOT NULL DEFAULT 0,correct_answers INTEGER NOT NULL DEFAULT 0,mastered INTEGER NOT NULL DEFAULT 0,last_played_at TEXT,UNIQUE(user_id,question_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id BIGINT NOT NULL,expires_at TEXT NOT NULL,created_at TEXT NOT NULL)"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS rewards(user_id BIGINT NOT NULL,reward_key TEXT NOT NULL,title TEXT NOT NULL,points INTEGER NOT NULL DEFAULT 0,earned_at TEXT NOT NULL,UNIQUE(user_id,reward_key))"))
 def hp(p,s=None):
  s=s or secrets.token_hex(32);return hashlib.pbkdf2_hmac("sha256",p.encode(),s.encode(),250000).hex(),s
 def register(u,p,l):
@@ -64,3 +62,20 @@ def answer(uid,qid,ok,pts):
   else:c.execute(text("INSERT INTO question_progress(user_id,question_id,attempts,correct_answers,mastered,last_played_at) VALUES(:u,:q,1,:v,:m,:d)"),{"u":uid,"q":qid,"v":1 if ok else 0,"m":1 if ok else 0,"d":now})
   if ok:c.execute(text("UPDATE users SET points=points+:p WHERE id=:u"),{"p":pts,"u":uid})
  return new
+
+def claim_reward(uid,key,title,points):
+ now=datetime.now(timezone.utc).isoformat()
+ try:
+  with engine.begin() as c:
+   c.execute(text("INSERT INTO rewards(user_id,reward_key,title,points,earned_at) VALUES(:u,:k,:t,:p,:d)"),
+             {"u":uid,"k":key,"t":title,"p":points,"d":now})
+   if points:c.execute(text("UPDATE users SET points=points+:p WHERE id=:u"),{"p":points,"u":uid})
+  return True
+ except Exception as e:
+  if "unique" in str(e).lower() or "duplicate" in str(e).lower():return False
+  raise
+
+def rewards(uid):
+ with engine.connect() as c:
+  rows=c.execute(text("SELECT reward_key,title,points,earned_at FROM rewards WHERE user_id=:u ORDER BY earned_at DESC"),{"u":uid}).mappings().all()
+ return [dict(r) for r in rows]

@@ -19,3 +19,14 @@ PC: http://127.0.0.1:8000
 4. Falls Windows Firewall fragt: Zugriff für privates Netzwerk erlauben.
 
 Hinweis: Für echte Nutzung übers Internet später HTTPS + PostgreSQL + persistente Sessions einsetzen.
+
+
+## V3 – animations & gamification
+- Animated page transitions and flying Bible-themed emoji objects.
+- Confetti on correct answers and victories.
+- Persistent milestone rewards stored in the database.
+- Milestones: 5, 10, 25, 50, 100 mastered questions.
+- Category completion bonus: +50 points.
+- Level completion bonus: +150 points.
+- Rewards are unique and cannot be claimed twice.
+- Absolute SQLite path for PythonAnywhere.
