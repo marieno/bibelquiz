@@ -107,3 +107,12 @@ This prevents `profile` from being interpreted as a room code.
 - Android/Chromium native install prompt when available.
 - iPhone/iPad Safari add-to-home-screen guidance.
 - Offline fallback to cached application shell; live game/API features still require internet.
+
+
+## V5.1 – BibelQuiz visual identity
+- Branded startup splash screen.
+- Original lightweight SVG identity set: Bible/cross logo, dove, ark, crown, fish, scroll.
+- Branded animated page journeys replace several generic emoji transitions.
+- Dashboard identity strip.
+- Crown artwork on multiplayer/result celebrations.
+- Identity assets cached by the PWA service worker.
