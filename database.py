@@ -2,7 +2,12 @@ import os,hashlib,secrets
 from datetime import datetime,timedelta,timezone
 from sqlalchemy import create_engine,text
 LEVELS=["enfant","facile","moyen","difficile"]
-URL=os.getenv("DATABASE_URL","sqlite:///./data/bible_quiz.db")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+URL = os.getenv(
+    "DATABASE_URL",
+    f"sqlite:///{os.path.join(BASE_DIR, 'data', 'bible_quiz.db')}"
+)
 if URL.startswith("postgres://"): URL="postgresql+psycopg://"+URL[11:]
 elif URL.startswith("postgresql://"): URL="postgresql+psycopg://"+URL[13:]
 engine=create_engine(URL,pool_pre_ping=True,connect_args={"check_same_thread":False} if URL.startswith("sqlite") else {})
