@@ -340,6 +340,11 @@ def group_claim_badges(authorization:str|None=Header(None)):
  u=uid(authorization);won=evaluate_multiplayer_badges(u)
  return {"rewards":won,"stats":database.multiplayer_stats(u),"user":database.user(u)}
 
+
+@app.get("/service-worker.js")
+def service_worker():
+    return FileResponse(ROOT/"static"/"service-worker.js", media_type="application/javascript", headers={"Service-Worker-Allowed":"/","Cache-Control":"no-cache"})
+
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")
 def home():return FileResponse(ROOT/"static"/"index.html")

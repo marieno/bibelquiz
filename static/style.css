@@ -36,3 +36,8 @@ body{overflow-x:hidden}
 .wait-dots{display:inline-block;letter-spacing:5px;animation:dots 1.2s infinite}
 @keyframes dots{50%{opacity:.3}}
 @media(max-width:600px){.host-dock{position:fixed;left:10px;right:10px;bottom:10px;margin:0}.group-game-wrap{padding-bottom:120px}}
+
+.install-banner{position:fixed;right:14px;bottom:14px;z-index:9500;max-width:360px;background:#fffdf5;border:2px solid #f0c653;border-radius:20px;padding:14px;box-shadow:0 14px 42px #16466a45}
+.install-banner h3{margin:0 0 5px}.install-actions{display:flex;gap:8px;margin-top:10px}.install-actions button{flex:1}
+.standalone-only{display:none}@media(display-mode:standalone){.browser-only{display:none!important}.standalone-only{display:block}}
+@media(max-width:600px){.install-banner{left:10px;right:10px;bottom:10px;max-width:none}}

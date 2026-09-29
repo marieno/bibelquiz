@@ -1,1 +1,26 @@
-{"name":"BibelQuiz","short_name":"BibelQuiz","start_url":"/","display":"standalone","background_color":"#d9f2ff","theme_color":"#74c8f4"}
+{
+  "name": "BibelQuiz – Wissen. Spielen. Wachsen.",
+  "short_name": "BibelQuiz",
+  "description": "Bilinguales Bibelquiz mit Solo, Quiz der Woche und Gruppenspiel.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#d9f2ff",
+  "theme_color": "#1d5b96",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

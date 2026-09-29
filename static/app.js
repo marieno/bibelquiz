@@ -135,3 +135,24 @@ async function weeklyArchive(){
 
 function logout(){localStorage.removeItem("token");token="";auth()}
 token?load():auth();
+
+
+// ---------- PWA installation ----------
+let deferredInstallPrompt=null;
+function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true}
+function dismissInstall(){document.querySelector("#installBanner")?.remove();localStorage.installDismissed=Date.now()}
+function showInstallBanner(){
+ if(isStandalone()||document.querySelector("#installBanner"))return;
+ let old=Number(localStorage.installDismissed||0);
+ if(Date.now()-old<3*24*60*60*1000)return;
+ let d=document.createElement("div");d.id="installBanner";d.className="install-banner browser-only";
+ let ios=isIOS();
+ d.innerHTML=`<h3>📲 ${lang==="fr"?"Installer BibelQuiz":"BibelQuiz installieren"}</h3><p>${ios?(lang==="fr"?"Dans Safari : Partager → Sur l’écran d’accueil.":"In Safari: Teilen → Zum Home-Bildschirm."):(lang==="fr"?"Ajoute BibelQuiz à ton écran d’accueil.":"BibelQuiz wie eine App auf dem Startbildschirm nutzen.")}</p><div class=install-actions>${deferredInstallPrompt?`<button class="btn green" id=installNow>${lang==="fr"?"INSTALLER":"INSTALLIEREN"}</button>`:""}<button class="btn ghost" onclick="dismissInstall()">${lang==="fr"?"Plus tard":"Später"}</button></div>`;
+ document.body.appendChild(d);
+ if(deferredInstallPrompt)document.querySelector("#installNow").onclick=async()=>{deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;d.remove()}
+}
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;setTimeout(showInstallBanner,700)});
+window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;document.querySelector("#installBanner")?.remove();localStorage.removeItem("installDismissed")});
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/static/service-worker.js").catch(console.error));
+setTimeout(()=>{if(isIOS())showInstallBanner()},1600);

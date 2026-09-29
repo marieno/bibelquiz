@@ -97,3 +97,13 @@ The personal multiplayer profile endpoints no longer live below the dynamic room
 - `GET /api/multiplayer/profile`
 - `POST /api/multiplayer/claim-badges`
 This prevents `profile` from being interpreted as a room code.
+
+
+## V5.0 – Installable PWA
+- Standalone display mode for tablet/phone.
+- 192px and 512px BibelQuiz icons.
+- Root-scoped service worker with versioned app-shell cache.
+- API calls remain network-only so multiplayer/leaderboards stay current.
+- Android/Chromium native install prompt when available.
+- iPhone/iPad Safari add-to-home-screen guidance.
+- Offline fallback to cached application shell; live game/API features still require internet.
