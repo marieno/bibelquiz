@@ -19,7 +19,7 @@ def init():
   c.execute(text("CREATE TABLE IF NOT EXISTS weekly_attempts(user_id BIGINT NOT NULL,week_key TEXT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,duration_ms INTEGER NOT NULL,completed_at TEXT NOT NULL,ranked INTEGER NOT NULL DEFAULT 1)"))
 def account_migrate():
  with engine.begin() as c:
-  for stmt in ["ALTER TABLE users ADD COLUMN display_name TEXT","ALTER TABLE users ADD COLUMN email TEXT"]:
+  for stmt in ["ALTER TABLE users ADD COLUMN display_name TEXT","ALTER TABLE users ADD COLUMN email TEXT","ALTER TABLE users ADD COLUMN audio_enabled INTEGER DEFAULT 0","ALTER TABLE users ADD COLUMN audio_slow INTEGER DEFAULT 0"]:
    try:c.execute(text(stmt))
    except Exception:pass
   c.execute(text("UPDATE users SET display_name=username WHERE display_name IS NULL OR display_name=''"))
@@ -42,6 +42,11 @@ def accounts_by_email(email):
  with engine.connect() as c:
   rows=c.execute(text("SELECT username,COALESCE(NULLIF(display_name,''),username) display_name FROM users WHERE lower(email)=lower(:e) ORDER BY username"),{"e":email.strip()}).mappings().all()
  return [dict(r) for r in rows]
+
+def update_audio_preferences(uid,enabled,slow):
+ with engine.begin() as c:
+  c.execute(text("UPDATE users SET audio_enabled=:e,audio_slow=:s WHERE id=:u"),
+            {"e":1 if enabled else 0,"s":1 if slow else 0,"u":uid})
 
 def multiplayer_init():
  with engine.begin() as c:
@@ -203,7 +208,7 @@ def session_user(raw):
  with engine.connect() as c:r=c.execute(text("SELECT user_id FROM sessions WHERE token_hash=:t AND expires_at>:n"),{"t":hh,"n":datetime.now(timezone.utc).isoformat()}).first()
  return r[0] if r else None
 def user(uid):
- with engine.connect() as c:r=c.execute(text("SELECT id,username,display_name,email,language,points FROM users WHERE id=:u"),{"u":uid}).mappings().first()
+ with engine.connect() as c:r=c.execute(text("SELECT id,username,display_name,email,language,points,COALESCE(audio_enabled,0) audio_enabled,COALESCE(audio_slow,0) audio_slow FROM users WHERE id=:u"),{"u":uid}).mappings().first()
  return dict(r) if r else None
 def mastered(uid):
  with engine.connect() as c:rs=c.execute(text("SELECT question_id FROM question_progress WHERE user_id=:u AND mastered=1"),{"u":uid}).all()

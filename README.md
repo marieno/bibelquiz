@@ -127,3 +127,15 @@ This prevents `profile` from being interpreted as a room code.
 - Registration validates player name, username, email, 8-character password and confirmation.
 - Account screen supports player-name/language update and password change.
 - Recovery UI is present but intentionally disabled until verified SMTP/email delivery is configured.
+
+
+## V5.3 – Accessibility & Audio
+- Browser/device text-to-speech via Web Speech API; no MP3 library required.
+- German `de-DE` and French `fr-FR` based on account language.
+- Read question + all four answers.
+- Individual answer speaker controls.
+- Optional automatic reading stored per user.
+- Optional slow speech mode stored per user.
+- Solo, Weekly Quiz and Multiplayer support.
+- Multiplayer speech is local to each device and never changes timer or score.
+- Speech stops when moving to another solo/weekly question.

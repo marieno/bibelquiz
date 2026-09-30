@@ -55,3 +55,13 @@ body{overflow-x:hidden}
 @keyframes journey{to{left:calc(100vw + 20px);transform:translateY(-45px) rotate(6deg)}}@keyframes sceneFade{0%{opacity:0}20%{opacity:1}80%{opacity:1}100%{opacity:0}}
 .result-crown{width:130px;height:90px;object-fit:contain;animation:crownDrop .6s cubic-bezier(.2,1.4,.4,1)}@keyframes crownDrop{from{transform:translateY(-35px) scale(.7);opacity:0}}
 @media(max-width:650px){.identity-strip{grid-template-columns:repeat(2,1fr)}.brand-splash p{letter-spacing:.16em}}
+
+/* V5.3 audio accessibility */
+.audio-toolbar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.audio-btn{border:1px solid var(--line);background:#eef8ff;color:var(--ink);border-radius:999px;padding:9px 13px;font-weight:800;cursor:pointer}
+.audio-btn.speaking{background:#fff0ae;animation:audioPulse .8s ease-in-out infinite}
+@keyframes audioPulse{50%{transform:scale(1.05)}}
+.answer-row{position:relative}.answer-audio{position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:3;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:19px;cursor:pointer}
+.answer.has-audio{padding-right:58px!important}
+.audio-settings{background:#eaf7ff;border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:14px}
+.switchline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}

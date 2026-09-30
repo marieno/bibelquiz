@@ -30,6 +30,10 @@ class GroupAnswer(BaseModel):
     choice:str
     question_index:int
 
+class AudioPreferences(BaseModel):
+    enabled:bool=False
+    slow:bool=False
+
 class AccountUpdate(BaseModel):
     display_name:str
     language:str
@@ -218,6 +222,11 @@ def weekly_archive(authorization:str|None=Header(None)):
  return out
 
 
+
+@app.put("/api/account/audio")
+def account_audio(a:AudioPreferences,authorization:str|None=Header(None)):
+ u=uid(authorization);database.update_audio_preferences(u,a.enabled,a.slow)
+ return {"user":database.user(u)}
 
 @app.put("/api/account")
 def account_update(a:AccountUpdate,authorization:str|None=Header(None)):

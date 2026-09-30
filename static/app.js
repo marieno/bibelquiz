@@ -67,7 +67,7 @@ A.innerHTML=`<div class=wrap><div class=top><div class=brand-mark><img src="/sta
 function levels(){brandJourney("levels");A.innerHTML=`<div class=wrap>${back("dashboard()")}<h1>${lang==="de"?"Wähle dein Level":"Choisis ton niveau"}</h1><div class=levels>${Object.keys(prog).map(l=>`<div class="card level ${prog[l].unlocked?"":"locked"}"><h2>${prog[l].unlocked?"🔓":"🔒"} ${L(names[l])}</h2><p>${prog[l].done}/${prog[l].total}</p>${prog[l].unlocked?`<button class=btn onclick="categories('${l}')">▶</button>`:""}</div>`).join("")}</div></div>`}
 function categories(l){brandJourney("categories");level=l;let cs=prog[l].categories;A.innerHTML=`<div class=wrap>${back("levels()")}<h1>${L(names[l])}</h1><div class=cats>${Object.keys(cs).map(c=>{let x=cs[c],pc=Math.round(100*x.done/x.total);return `<div class="card cat"><h3>${L(cats[c]||[c,c])}</h3><div class=progress><i style="width:${pc}%"></i></div><p>${x.done}/${x.total}</p><button class=btn onclick="start('${c}')">▶ ${lang==="de"?"Spielen":"Jouer"}</button></div>`}).join("")}</div></div>`}
 async function start(c){fly("⭐");cat=c;round=await api(`/api/round/${level}/${c}`);idx=0;good=0;question()}
-function question(){if(idx>=round.length)return result();let q=round[idx],r=q.reponses[lang];A.innerHTML=`<div class=wrap><div class=top>${back(`categories('${level}')`)}<b>⭐ ${me.points}</b></div><p class=pill>${L(names[level])} • ${L(cats[cat]||[cat,cat])}</p><div class=progress><i style="width:${100*(idx+1)/round.length}%"></i></div><p>${lang==="de"?"Frage":"Question"} ${idx+1}/${round.length}</p><div class="card question">${esc(q.question[lang])}</div><div class=answers>${["A","B","C","D"].map(x=>`<button id=a${x} class="btn answer" onclick="answer('${x}')"><b>${x}</b>&nbsp;&nbsp; ${esc(r[x])}</button>`).join("")}</div><div id=fb></div><div id=nxt></div></div>`}
+function question(){if(idx>=round.length)return result();stopSpeech();let q=round[idx],r=q.reponses[lang];A.innerHTML=`<div class=wrap><div class=top>${back(`categories('${level}')`)}<b>⭐ ${me.points}</b></div><p class=pill>${L(names[level])} • ${L(cats[cat]||[cat,cat])}</p><div class=progress><i style="width:${100*(idx+1)/round.length}%"></i></div><p>${lang==="de"?"Frage":"Question"} ${idx+1}/${round.length}</p><div class="card question">${esc(q.question[lang])}</div>${audioQuestionTools(q)}<div class=answers>${["A","B","C","D"].map(x=>`<div class=answer-row><button id=a${x} class="btn answer has-audio" onclick="answer('${x}')"><b>${x}</b>&nbsp;&nbsp; ${esc(r[x])}</button>${audioAnswerButton(x,r[x])}</div>`).join("")}</div><div id=fb></div><div id=nxt></div></div>`;maybeAutoSpeak(q)}
 async function answer(choice){document.querySelectorAll(".answer").forEach(b=>b.disabled=true);let q=round[idx],x=await api("/api/answer",{method:"POST",body:JSON.stringify({question_id:q.id,choice})});me=x.user;prog=x.progress;if(x.rewards&&x.rewards.length){rewardHistory=[...x.rewards,...rewardHistory]}if(x.correct){good++;confetti();document.querySelector("#a"+choice).classList.add("good");fb.innerHTML=`<div class="feedback" style="background:#dff6df">🎉 ${lang==="de"?"Richtig!":"Bonne réponse !"} +${q.points}</div>`}else{document.querySelector("#a"+choice).classList.add("bad");document.querySelector("#a"+x.correct_choice).classList.add("good");fb.innerHTML=`<div class="feedback" style="background:#ffe0e0">💡 ${lang==="de"?"Leider falsch.":"Mauvaise réponse."}</div>`}if(x.rewards&&x.rewards.length)setTimeout(()=>showRewards(x.rewards),500);nxt.innerHTML=`<button class="btn green full" onclick="idx++;question()">${lang==="de"?"WEITER":"SUIVANT"} →</button>`}
 function result(){confetti();brandJourney("victory");let stars=good==round.length?"⭐⭐⭐":good>=3?"⭐⭐":"⭐";A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars>🏆<br>${stars}</div><h1 style="text-align:center">${lang==="de"?"Runde beendet!":"Partie terminée !"}</h1><h1 style="text-align:center">${good}/${round.length}</h1><p style="text-align:center">⭐ ${me.points} ${lang==="de"?"Punkte":"Points"}</p><button class="btn full" onclick="start('${cat}')">🔄 ${lang==="de"?"Nochmal":"Rejouer"}</button><button class="btn green full" onclick="dashboard()">🏠 Dashboard</button></div></div>`}
 function progressView(){fly("🏅");A.innerHTML=`<div class=wrap>${back("dashboard()")}<h1>📊 ${lang==="de"?"Fortschritt":"Progression"}</h1>${Object.keys(prog).map(l=>`<div class=card style="margin:12px 0"><h2>${prog[l].unlocked?"🔓":"🔒"} ${L(names[l])} ${prog[l].done}/${prog[l].total}</h2>${prog[l].unlocked?Object.keys(prog[l].categories).map(c=>`<p>${L(cats[c]||[c,c])}: ${prog[l].categories[c].done}/${prog[l].categories[c].total}</p>`).join(""):""}</div>`).join("")}</div>`}
@@ -100,10 +100,11 @@ async function groupGame(){
  if(x.phase==="lobby"){groupLobby();return}window.groupQuestionIndex=x.index
  if(x.phase==="finished"){groupPodium(x);return}
  let q=x.question,r=q.reponses[lang],host=Boolean(x.is_host);
+ let audioKey=groupCode+":"+x.index;if(window._lastGroupAudio!==audioKey){window._lastGroupAudio=audioKey;maybeAutoSpeak(q)}
  let answers=x.answers||[];
  A.innerHTML=`<div class="wrap group-game-wrap"><div class=top><span class=pill>👥 ${groupCode} &nbsp; 👑 ${esc(x.host_name||"Host")}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
  <div class=progress><i style="width:${100*(x.index+1)/10}%"></i></div><div class=top><p>${lang==="de"?"Frage":"Question"} ${x.index+1}/10</p><h2>⏱ ${Math.ceil(x.remaining)}s</h2></div>
- <div class="card question">${esc(q.question[lang])}</div>
+ <div class="card question">${esc(q.question[lang])}</div>${audioQuestionTools(q)}
  <div class=answers>${["A","B","C","D"].map(a=>`<button id=g${a} class="btn answer ${x.phase==="reveal"&&a===x.correct_choice?"good":""}" ${x.phase==="reveal"||x.my_answered?"disabled":""} onclick="groupAnswer('${a}')"><b>${a}</b>&nbsp;&nbsp; ${esc(r[a])}</button>`).join("")}</div>
  <div class=card style="margin-top:14px"><b>${x.answered_count}/${x.player_count} ${lang==="de"?"haben geantwortet":"ont répondu"}</b><p>${x.my_answered?"✅ "+(lang==="de"?"Deine Antwort ist gespeichert":"Ta réponse est enregistrée"):"⏳ "+(lang==="de"?"Du hast noch nicht geantwortet":"Tu n’as pas encore répondu")}</p>${x.phase==="question"&&x.remaining<=1?`<p>⏱ ${lang==="de"?"Zeit fast abgelaufen!":"Temps presque écoulé !"}</p>`:""}</div>
  ${x.phase==="reveal"?`<div class=card style="margin-top:14px"><h2>💡 ${lang==="de"?"Auflösung":"Réponse"}</h2><p style="font-size:18px">✅ <b>${esc(r[x.correct_choice])}</b></p>${answers.map(a=>`<p>${a.correct?"✅":"❌"} <b>${esc(a.username)}</b> — ${a.points>0?"+"+a.points+" ⭐":"0"}</p>`).join("")}<h3>🏆 ${lang==="de"?"Zwischenstand":"Classement"}</h3>${x.scores.map((s,i)=>`<p>${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(s.username)}</b> — ${s.score} ⭐</p>`).join("")}</div>${host?`<div class=host-dock><div class=host-title>👑 ${lang==="de"?"DU BIST DER HOST":"TU ES L’HÔTE"}</div><button class="btn host-next" onclick="groupNext()">${x.index===9?"🏆 "+(lang==="de"?"ENDERGEBNIS ANZEIGEN":"AFFICHER LE RÉSULTAT"):"▶ "+(lang==="de"?"NÄCHSTE FRAGE":"QUESTION SUIVANTE")+" →"}</button></div>`:`<div class=wait-host>👑 ${lang==="de"?(esc(x.host_name)+" startet die nächste Frage"):(esc(x.host_name)+" lance la question suivante")} <span class=wait-dots>● ● ●</span></div>`}`:""}</div>`
@@ -154,9 +155,9 @@ async function weeklyStart(){
  let x=await api("/api/weekly/start",{method:"POST",body:"{}"});weeklyRun=x.run;weeklyQuestions=x.questions;weeklyIdx=0;weeklyGood=0;weeklyQuestion()
 }
 function weeklyQuestion(){
- if(weeklyIdx>=weeklyQuestions.length)return weeklyFinish();
+ stopSpeech();if(weeklyIdx>=weeklyQuestions.length)return weeklyFinish();
  let q=weeklyQuestions[weeklyIdx],r=q.reponses[lang];
- A.innerHTML=`<div class=wrap><div class=top>${back("weeklyHome()")}<b>⭐ Quiz der Woche</b></div><div class=progress><i style="width:${100*(weeklyIdx+1)/weeklyQuestions.length}%"></i></div><p>${lang==="de"?"Frage":"Question"} ${weeklyIdx+1}/10</p><div class="card question">${esc(q.question[lang])}</div><div class=answers>${["A","B","C","D"].map(x=>`<button id=w${x} class="btn answer" onclick="weeklyAnswer('${x}')"><b>${x}</b>&nbsp;&nbsp; ${esc(r[x])}</button>`).join("")}</div><div id=fb></div><div id=nxt></div></div>`
+ A.innerHTML=`<div class=wrap><div class=top>${back("weeklyHome()")}<b>⭐ Quiz der Woche</b></div><div class=progress><i style="width:${100*(weeklyIdx+1)/weeklyQuestions.length}%"></i></div><p>${lang==="de"?"Frage":"Question"} ${weeklyIdx+1}/10</p><div class="card question">${esc(q.question[lang])}</div>${audioQuestionTools(q)}<div class=answers>${["A","B","C","D"].map(x=>`<button id=w${x} class="btn answer" onclick="weeklyAnswer('${x}')"><b>${x}</b>&nbsp;&nbsp; ${esc(r[x])}</button>`).join("")}</div><div id=fb></div><div id=nxt></div></div>`
 }
 async function weeklyAnswer(choice){
  document.querySelectorAll(".answer").forEach(b=>b.disabled=true);let q=weeklyQuestions[weeklyIdx];
@@ -170,13 +171,13 @@ async function weeklyFinish(){
  A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars>🏆<br>${x.correct_count==10?"⭐⭐⭐":x.correct_count>=7?"⭐⭐":"⭐"}</div><h1 style="text-align:center">${lang==="de"?"Wochenquiz beendet!":"Quiz de la semaine terminé !"}</h1><h1 style="text-align:center">${x.correct_count}/10</h1><p style="text-align:center">🏆 ${x.score}</p><p style="text-align:center">${x.ranked?(lang==="de"?"Dieser Versuch zählt für die Rangliste.":"Cette tentative compte au classement."):(lang==="de"?"Übungsrunde – dein erster Versuch bleibt gewertet.":"Entraînement – ta première tentative reste classée.")}</p><button class="btn green full" onclick="weeklyHome()">⭐ ${lang==="de"?"RANGLISTE":"CLASSEMENT"}</button><button class="btn ghost full" onclick="dashboard()">🏠 Dashboard</button></div></div>`
 }
 async function weeklyArchive(){
- let a=await api("/api/weekly/archive");A.innerHTML=`<div class=wrap>${back("weeklyHome()")}<h1>📚 Archiv / Archives</h1>${a.map(w=>`<div class=card style="margin:10px 0"><b>${w.week}</b> — ${esc(w.title[lang])} ${w.active?"⭐":""}</div>`).join("")}</div>`
+ let a=await api("/api/weekly/archive");A.innerHTML=`<div class=wrap>${back("weeklyHome()")}<h1>📚 Archiv / Archives</h1>${a.map(w=>`<div class=card style="margin:10px 0"><b>${w.week}</b> — ${esc(w.title[lang])} ${w.active?"⭐":""}</div>`).join("")}</div>`;maybeAutoSpeak(q)
 }
 
 function accountView(){
  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👤 ${lang==="de"?"Mein Konto":"Mon compte"}</h1><p>${esc(me.display_name||me.username)}</p></div>
  <div class=card><label>${lang==="de"?"Spielername":"Nom de joueur"}</label><input id=ad value="${esc(me.display_name||me.username)}"><label>${lang==="de"?"Benutzername (privat)":"Identifiant (privé)"}</label><input value="${esc(me.username)}" disabled><label>E-Mail</label><input value="${esc(me.email||"")}" disabled><label>Sprache / Langue</label><select id=al style="width:100%;padding:14px;border-radius:14px"><option value=de ${me.language==="de"?"selected":""}>Deutsch</option><option value=fr ${me.language==="fr"?"selected":""}>Français</option></select><button class="btn green full" onclick="saveAccount()">💾 ${lang==="de"?"SPEICHERN":"ENREGISTRER"}</button><p id=amsg></p></div>
- <div class=card style="margin-top:14px"><h2>🔑 ${lang==="de"?"Passwort ändern":"Changer le mot de passe"}</h2><input id=oldp type=password placeholder="${lang==="de"?"Aktuelles Passwort":"Mot de passe actuel"}"><input id=newp type=password placeholder="${lang==="de"?"Neues Passwort – mindestens 8 Zeichen":"Nouveau mot de passe – 8 caractères minimum"}"><button class="btn full" onclick="changePassword()">🔑 ${lang==="de"?"PASSWORT ÄNDERN":"CHANGER"}</button><p id=pmsg></p></div></div>`
+ <div class=audio-settings><h2>🔊 ${lang==="de"?"Vorlesemodus":"Mode lecture"}</h2><div class=switchline><span>${lang==="de"?"Frage + Antworten automatisch vorlesen":"Lire automatiquement question + réponses"}</span><input id=audioEnabled type=checkbox ${me.audio_enabled?"checked":""}></div><div class=switchline><span>🐢 ${lang==="de"?"Langsam sprechen":"Parler lentement"}</span><input id=audioSlow type=checkbox ${me.audio_slow?"checked":""}></div><button class="btn" onclick="saveAudioPrefs()">💾 ${lang==="de"?"AUDIO SPEICHERN":"ENREGISTRER AUDIO"}</button><span id=audioMsg></span></div><div class=card style="margin-top:14px"><h2>🔑 ${lang==="de"?"Passwort ändern":"Changer le mot de passe"}</h2><input id=oldp type=password placeholder="${lang==="de"?"Aktuelles Passwort":"Mot de passe actuel"}"><input id=newp type=password placeholder="${lang==="de"?"Neues Passwort – mindestens 8 Zeichen":"Nouveau mot de passe – 8 caractères minimum"}"><button class="btn full" onclick="changePassword()">🔑 ${lang==="de"?"PASSWORT ÄNDERN":"CHANGER"}</button><p id=pmsg></p></div></div>`
 }
 async function saveAccount(){try{let x=await api("/api/account",{method:"PUT",body:JSON.stringify({display_name:ad.value.trim(),language:al.value})});me=x.user;lang=me.language;amsg.textContent="✓ "+(lang==="de"?"Gespeichert":"Enregistré")}catch(e){amsg.textContent=e.message}}
 async function changePassword(){if(newp.value.length<8){pmsg.textContent=lang==="de"?"Mindestens 8 Zeichen.":"8 caractères minimum.";return}try{await api("/api/account/change-password",{method:"POST",body:JSON.stringify({current_password:oldp.value,new_password:newp.value})});pmsg.textContent="✓ "+(lang==="de"?"Passwort geändert.":"Mot de passe modifié.");oldp.value="";newp.value=""}catch(e){pmsg.textContent=e.message==="CURRENT_PASSWORD_WRONG"?(lang==="de"?"Aktuelles Passwort ist falsch.":"Mot de passe actuel incorrect."):e.message}}
@@ -184,6 +185,33 @@ async function changePassword(){if(newp.value.length<8){pmsg.textContent=lang===
 function logout(){localStorage.removeItem("token");token="";auth()}
 token?load():auth();
 
+
+
+// ---------- V5.3 Audio accessibility ----------
+let currentUtterance=null;
+function stopSpeech(){if("speechSynthesis" in window){speechSynthesis.cancel();currentUtterance=null}document.querySelectorAll(".audio-btn").forEach(b=>b.classList.remove("speaking"))}
+function speakText(text,button=null){
+ if(!("speechSynthesis" in window)||!text)return;
+ stopSpeech();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=(me&&me.audio_slow)?0.72:0.95;u.pitch=1;
+ let voices=speechSynthesis.getVoices(),v=voices.find(x=>x.lang.toLowerCase().startsWith(lang==="fr"?"fr":"de"));if(v)u.voice=v;
+ if(button)button.classList.add("speaking");u.onend=u.onerror=()=>{button?.classList.remove("speaking");currentUtterance=null};currentUtterance=u;speechSynthesis.speak(u)
+}
+function speakQuestion(q){
+ let r=q.reponses[lang],prefix=lang==="fr"?"Réponse":"Antwort";
+ speakText(`${q.question[lang]}. ${prefix} A: ${r.A}. ${prefix} B: ${r.B}. ${prefix} C: ${r.C}. ${prefix} D: ${r.D}.`)
+}
+function audioQuestionTools(q){
+ window._audioQ=q;
+ return `<div class=audio-toolbar><button class=audio-btn onclick="speakQuestion(window._audioQ)">🔊 ${lang==="de"?"Frage + Antworten vorlesen":"Lire question + réponses"}</button><button class=audio-btn onclick="stopSpeech()">⏹</button></div>`
+}
+function audioAnswerButton(letter,text){
+ return `<button class=answer-audio aria-label="Audio ${letter}" onclick="event.stopPropagation();speakText(${JSON.stringify(text)},this)">🔊</button>`
+}
+async function saveAudioPrefs(){
+ let enabled=document.querySelector("#audioEnabled")?.checked||false,slow=document.querySelector("#audioSlow")?.checked||false;
+ try{let x=await api("/api/account/audio",{method:"PUT",body:JSON.stringify({enabled,slow})});me=x.user;document.querySelector("#audioMsg").textContent="✓ "+(lang==="de"?"Gespeichert":"Enregistré")}catch(e){document.querySelector("#audioMsg").textContent=e.message}
+}
+function maybeAutoSpeak(q){if(me&&me.audio_enabled)setTimeout(()=>speakQuestion(q),350)}
 
 // ---------- PWA installation ----------
 let deferredInstallPrompt=null;
