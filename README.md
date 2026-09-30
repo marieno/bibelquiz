@@ -174,3 +174,12 @@ This prevents `profile` from being interpreted as a room code.
 - `JETZT AKTUALISIEREN / ACTUALISER MAINTENANT` activates the new worker and reloads once.
 - Worker checks for updates every 15 minutes while the app is open.
 - Recovery screens now explicitly mention delivery delay and spam folder.
+
+
+## V5.4.3 – Recovery diagnostics
+- Public recovery responses remain neutral (`{"ok": true}`).
+- Server logs now record recovery request state and Brevo outcome.
+- Email addresses are represented only by a short SHA-256 marker.
+- Tokens and API keys are never logged.
+- Brevo message ID presence is logged, not the ID itself.
+- Mail helper now returns Brevo's message ID to the server for diagnostic confirmation.

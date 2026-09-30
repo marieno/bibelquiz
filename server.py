@@ -1,4 +1,4 @@
-import json, random, secrets, time
+import json, random, secrets, time, logging, hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Header
@@ -255,12 +255,21 @@ def account_password(a:PasswordChange,authorization:str|None=Header(None)):
 
 @app.post("/api/recovery/usernames/request")
 def recovery_usernames_request(a:RecoveryLookup):
- # Always return the same response to avoid email/account enumeration.
- accounts=database.accounts_by_email(a.email)
- if accounts and mailer.configured():
-  token=database.create_recovery_token(a.email,"usernames")
-  try:mailer.send_username_recovery(a.email,token)
-  except Exception:pass
+ # Always return the same public response to avoid account/email enumeration.
+ email=a.email.strip().lower()
+ marker=hashlib.sha256(email.encode()).hexdigest()[:10]
+ accounts=database.accounts_by_email(email)
+ configured=mailer.configured()
+ log.warning("RECOVERY_USERNAME_REQUEST email_hash=%s accounts=%s brevo_configured=%s",marker,len(accounts),configured)
+ if accounts and configured:
+  token=database.create_recovery_token(email,"usernames")
+  try:
+   message_id=mailer.send_username_recovery(email,token)
+   log.warning("RECOVERY_MAIL_SENT purpose=usernames email_hash=%s message_id_present=%s",marker,bool(message_id))
+  except Exception as e:
+   log.exception("RECOVERY_MAIL_ERROR purpose=usernames email_hash=%s error_type=%s",marker,type(e).__name__)
+ elif accounts and not configured:
+  log.error("RECOVERY_MAIL_SKIPPED purpose=usernames email_hash=%s reason=BREVO_NOT_CONFIGURED",marker)
  return {"ok":True}
 
 @app.post("/api/recovery/usernames/verify")
@@ -273,16 +282,22 @@ def recovery_usernames_verify(a:TokenLookup):
 
 @app.post("/api/recovery/password/request")
 def recovery_password_request(a:PasswordRecoveryRequest):
- accounts=database.accounts_by_email(a.email)
- match=next((x for x in accounts if x["username"].lower()==a.username.strip().lower()),None)
- if match and mailer.configured():
+ email=a.email.strip().lower();username=a.username.strip()
+ marker=hashlib.sha256(email.encode()).hexdigest()[:10]
+ accounts=database.accounts_by_email(email)
+ match=next((x for x in accounts if x["username"].lower()==username.lower()),None)
+ configured=mailer.configured()
+ log.warning("RECOVERY_PASSWORD_REQUEST email_hash=%s accounts=%s username_match=%s brevo_configured=%s",marker,len(accounts),bool(match),configured)
+ if match and configured:
   with database.engine.connect() as c:
-   row=c.execute(database.text("SELECT id FROM users WHERE lower(username)=lower(:u) AND lower(email)=lower(:e)"),
-                 {"u":a.username.strip(),"e":a.email.strip()}).first()
+   row=c.execute(database.text("SELECT id FROM users WHERE lower(username)=lower(:u) AND lower(email)=lower(:e)"),{"u":username,"e":email}).first()
   if row:
-   token=database.create_recovery_token(a.email,"password",row[0])
-   try:mailer.send_password_recovery(a.email,match["display_name"],token)
-   except Exception:pass
+   token=database.create_recovery_token(email,"password",row[0])
+   try:
+    message_id=mailer.send_password_recovery(email,match["display_name"],token)
+    log.warning("RECOVERY_MAIL_SENT purpose=password email_hash=%s message_id_present=%s",marker,bool(message_id))
+   except Exception as e:
+    log.exception("RECOVERY_MAIL_ERROR purpose=password email_hash=%s error_type=%s",marker,type(e).__name__)
  return {"ok":True}
 
 @app.post("/api/recovery/password/reset")

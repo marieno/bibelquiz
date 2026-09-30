@@ -41,7 +41,7 @@ def send(to,subject,text):
 
 def send_username_recovery(email,token):
     link=f"{APP_URL}/?recovery=usernames&token={token}"
-    send(email,"BibelQuiz – Benutzerkonten / Comptes",
+    return send(email,"BibelQuiz – Benutzerkonten / Comptes",
          f"""BibelQuiz
 
 Öffne diesen sicheren Link, um die mit dieser E-Mail verbundenen Konten anzuzeigen:
@@ -54,7 +54,7 @@ Le lien est valable 30 minutes et utilisable une seule fois.""")
 
 def send_password_recovery(email,display_name,token):
     link=f"{APP_URL}/?recovery=password&token={token}"
-    send(email,"BibelQuiz – Passwort zurücksetzen / Réinitialiser le mot de passe",
+    return send(email,"BibelQuiz – Passwort zurücksetzen / Réinitialiser le mot de passe",
          f"""BibelQuiz
 
 Konto / Compte: {display_name}
