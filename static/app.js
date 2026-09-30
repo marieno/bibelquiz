@@ -65,8 +65,8 @@ function recoveryInfo(kind){
   A.innerHTML=`<div class=wrap><div class="card auth">${back("auth()")}<h1>🔑 Passwort vergessen?</h1><p>E-Mail + Benutzername des Kontos. / E-mail + identifiant du compte.</p><input id=recEmail type=email placeholder="familie@example.com"><input id=recUser placeholder="Benutzername / Identifiant"><button class="btn green full" onclick="requestPassword()">✉️ RESET-LINK SENDEN</button><p id=recMsg></p></div></div>`
  }
 }
-async function requestUsernames(){await api("/api/recovery/usernames/request",{method:"POST",body:JSON.stringify({email:recEmail.value.trim()})});recMsg.textContent="Wenn die E-Mail bekannt ist, wurde ein Link gesendet. / Si l’adresse est connue, un lien a été envoyé."}
-async function requestPassword(){await api("/api/recovery/password/request",{method:"POST",body:JSON.stringify({email:recEmail.value.trim(),username:recUser.value.trim()})});recMsg.textContent="Wenn die Angaben stimmen, wurde ein Reset-Link gesendet. / Si les informations correspondent, un lien a été envoyé."}
+async function requestUsernames(){await api("/api/recovery/usernames/request",{method:"POST",body:JSON.stringify({email:recEmail.value.trim()})});recMsg.innerHTML="✉️ <b>E-Mail angefordert / E-mail demandée</b><br>Wenn die Adresse registriert ist, erhältst du in wenigen Sekunden eine E-Mail. Bitte auch Spam prüfen.<br>Si l’adresse est enregistrée, tu recevras un e-mail dans quelques secondes. Vérifie aussi les spams."}
+async function requestPassword(){await api("/api/recovery/password/request",{method:"POST",body:JSON.stringify({email:recEmail.value.trim(),username:recUser.value.trim()})});recMsg.innerHTML="✉️ <b>Reset-Link angefordert / Lien demandé</b><br>Wenn die Angaben stimmen, erhältst du in wenigen Sekunden eine E-Mail. Bitte auch Spam prüfen.<br>Si les informations correspondent, tu recevras un e-mail dans quelques secondes. Vérifie aussi les spams."}
 async function handleRecoveryLink(){
  let q=new URLSearchParams(location.search),type=q.get("recovery"),tok=q.get("token");if(!type||!tok)return false;
  if(type==="usernames"){
@@ -246,5 +246,20 @@ function showInstallBanner(){
 }
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;setTimeout(showInstallBanner,700)});
 window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;document.querySelector("#installBanner")?.remove();localStorage.removeItem("installDismissed")});
-if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/static/service-worker.js").catch(console.error));
+function showUpdateBanner(reg){
+ if(document.querySelector("#updateBanner"))return;
+ let d=document.createElement("div");d.id="updateBanner";d.className="update-banner";
+ d.innerHTML=`<b>🔄 ${lang==="fr"?"Nouvelle version disponible":"Neue Version verfügbar"}</b><br><span>${lang==="fr"?"BibelQuiz a été mis à jour.":"BibelQuiz wurde aktualisiert."}</span><br><button class="btn green">${lang==="fr"?"ACTUALISER MAINTENANT":"JETZT AKTUALISIEREN"}</button>`;
+ d.querySelector("button").onclick=()=>{if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"})};document.body.appendChild(d)
+}
+if("serviceWorker" in navigator)window.addEventListener("load",async()=>{
+ try{
+  let refreshing=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(refreshing)return;refreshing=true;location.reload()});
+  let reg=await navigator.serviceWorker.register("/service-worker.js",{updateViaCache:"none"});
+  if(reg.waiting&&navigator.serviceWorker.controller)showUpdateBanner(reg);
+  reg.addEventListener("updatefound",()=>{let nw=reg.installing;if(!nw)return;nw.addEventListener("statechange",()=>{if(nw.state==="installed"&&navigator.serviceWorker.controller)showUpdateBanner(reg)})});
+  setInterval(()=>reg.update().catch(()=>{}),15*60*1000);
+ }catch(e){console.error("Service worker:",e)}
+});
 setTimeout(()=>{if(isIOS())showInstallBanner()},1600);

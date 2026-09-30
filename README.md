@@ -165,3 +165,12 @@ This prevents `profile` from being interpreted as a room code.
 - Existing real process environment variables take precedence.
 - No dependency such as python-dotenv is required.
 - Authenticated `/api/system/mail-status` exposes only booleans, never the API key.
+
+
+## V5.4.2 – PWA update reliability
+- Service worker registered from `/service-worker.js` with root scope.
+- HTML, JS and CSS are network-first/no-store; cache is only the offline fallback.
+- New worker waits and displays an explicit update banner.
+- `JETZT AKTUALISIEREN / ACTUALISER MAINTENANT` activates the new worker and reloads once.
+- Worker checks for updates every 15 minutes while the app is open.
+- Recovery screens now explicitly mention delivery delay and spam folder.
