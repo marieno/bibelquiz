@@ -6,6 +6,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import database
+from env_loader import load_private_env
+load_private_env()
 import mailer
 
 ROOT=Path(__file__).parent
@@ -427,6 +429,11 @@ def group_claim_badges(authorization:str|None=Header(None)):
 @app.get("/service-worker.js")
 def service_worker():
     return FileResponse(ROOT/"static"/"service-worker.js", media_type="application/javascript", headers={"Service-Worker-Allowed":"/","Cache-Control":"no-cache"})
+
+@app.get("/api/system/mail-status")
+def mail_status(authorization:str|None=Header(None)):
+ u=uid(authorization)
+ return {"provider":"brevo","configured":mailer.configured(),"sender_configured":bool(mailer.BREVO_FROM_EMAIL)}
 
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")

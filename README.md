@@ -158,3 +158,10 @@ This prevents `profile` from being interpreted as a room code.
 - Required environment variables: `BREVO_API_KEY`, `BREVO_FROM_EMAIL`, `BREVO_FROM_NAME`, `APP_URL`.
 - No third-party Python package is required; the integration uses Python's standard HTTPS client.
 - Never commit a real API key. `.env` remains ignored.
+
+
+## V5.4.1 – Private Brevo environment
+- Loads `/home/MarieNo/.bibelquiz.env` before importing the Brevo mailer.
+- Existing real process environment variables take precedence.
+- No dependency such as python-dotenv is required.
+- Authenticated `/api/system/mail-status` exposes only booleans, never the API key.
