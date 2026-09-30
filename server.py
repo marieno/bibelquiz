@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import database
+import mailer
 
 ROOT=Path(__file__).parent
 QUESTIONS=json.loads((ROOT/"questions"/"questions.json").read_text(encoding="utf-8"))["questions"]
@@ -42,6 +43,14 @@ class PasswordChange(BaseModel):
     new_password:str
 class RecoveryLookup(BaseModel):
     email:str
+class PasswordRecoveryRequest(BaseModel):
+    email:str
+    username:str
+class TokenLookup(BaseModel):
+    token:str
+class PasswordReset(BaseModel):
+    token:str
+    new_password:str
 
 class Answer(BaseModel):
     question_id:int
@@ -242,10 +251,43 @@ def account_password(a:PasswordChange,authorization:str|None=Header(None)):
  except ValueError as e:raise HTTPException(400,str(e))
  return {"ok":True}
 
-@app.post("/api/recovery/accounts")
-def recovery_accounts(a:RecoveryLookup):
- # Temporary preparation endpoint. Do not expose account list publicly until SMTP verification exists.
- raise HTTPException(501,"EMAIL_RECOVERY_NOT_CONFIGURED")
+@app.post("/api/recovery/usernames/request")
+def recovery_usernames_request(a:RecoveryLookup):
+ # Always return the same response to avoid email/account enumeration.
+ accounts=database.accounts_by_email(a.email)
+ if accounts and mailer.configured():
+  token=database.create_recovery_token(a.email,"usernames")
+  try:mailer.send_username_recovery(a.email,token)
+  except Exception:pass
+ return {"ok":True}
+
+@app.post("/api/recovery/usernames/verify")
+def recovery_usernames_verify(a:TokenLookup):
+ tok=database.recovery_token(a.token,"usernames")
+ if not tok:raise HTTPException(400,"TOKEN_INVALID")
+ accounts=database.accounts_by_email(tok["email"])
+ database.consume_recovery_token(a.token)
+ return {"accounts":accounts}
+
+@app.post("/api/recovery/password/request")
+def recovery_password_request(a:PasswordRecoveryRequest):
+ accounts=database.accounts_by_email(a.email)
+ match=next((x for x in accounts if x["username"].lower()==a.username.strip().lower()),None)
+ if match and mailer.configured():
+  with database.engine.connect() as c:
+   row=c.execute(database.text("SELECT id FROM users WHERE lower(username)=lower(:u) AND lower(email)=lower(:e)"),
+                 {"u":a.username.strip(),"e":a.email.strip()}).first()
+  if row:
+   token=database.create_recovery_token(a.email,"password",row[0])
+   try:mailer.send_password_recovery(a.email,match["display_name"],token)
+   except Exception:pass
+ return {"ok":True}
+
+@app.post("/api/recovery/password/reset")
+def recovery_password_reset(a:PasswordReset):
+ try:database.reset_password_by_token(a.token,a.new_password)
+ except ValueError as e:raise HTTPException(400,str(e))
+ return {"ok":True}
 
 @app.post("/api/group/create")
 def group_create(authorization:str|None=Header(None)):

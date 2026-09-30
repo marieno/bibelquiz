@@ -23,6 +23,7 @@ def account_migrate():
    try:c.execute(text(stmt))
    except Exception:pass
   c.execute(text("UPDATE users SET display_name=username WHERE display_name IS NULL OR display_name=''"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS recovery_tokens(token_hash TEXT PRIMARY KEY,email TEXT NOT NULL,purpose TEXT NOT NULL,user_id BIGINT,expires_at TEXT NOT NULL,used INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL)"))
 
 def update_account(uid,display_name,language):
  display_name=display_name.strip()
@@ -47,6 +48,34 @@ def update_audio_preferences(uid,enabled,slow):
  with engine.begin() as c:
   c.execute(text("UPDATE users SET audio_enabled=:e,audio_slow=:s WHERE id=:u"),
             {"e":1 if enabled else 0,"s":1 if slow else 0,"u":uid})
+
+
+def create_recovery_token(email,purpose,user_id=None,minutes=30):
+ raw=secrets.token_urlsafe(40);hh=hashlib.sha256(raw.encode()).hexdigest()
+ now=datetime.now(timezone.utc);exp=now+timedelta(minutes=minutes)
+ with engine.begin() as c:
+  c.execute(text("INSERT INTO recovery_tokens(token_hash,email,purpose,user_id,expires_at,used,created_at) VALUES(:t,:e,:p,:u,:x,0,:c)"),
+            {"t":hh,"e":email.strip().lower(),"p":purpose,"u":user_id,"x":exp.isoformat(),"c":now.isoformat()})
+ return raw
+
+def recovery_token(raw,purpose):
+ hh=hashlib.sha256(raw.encode()).hexdigest();now=datetime.now(timezone.utc).isoformat()
+ with engine.connect() as c:r=c.execute(text("SELECT * FROM recovery_tokens WHERE token_hash=:t AND purpose=:p AND used=0 AND expires_at>:n"),
+                                      {"t":hh,"p":purpose,"n":now}).mappings().first()
+ return dict(r) if r else None
+
+def consume_recovery_token(raw):
+ hh=hashlib.sha256(raw.encode()).hexdigest()
+ with engine.begin() as c:c.execute(text("UPDATE recovery_tokens SET used=1 WHERE token_hash=:t"),{"t":hh})
+
+def reset_password_by_token(raw,new_password):
+ if len(new_password)<8:raise ValueError("PASSWORD_TOO_SHORT")
+ tok=recovery_token(raw,"password")
+ if not tok or not tok["user_id"]:raise ValueError("TOKEN_INVALID")
+ nh,ns=hp(new_password)
+ with engine.begin() as c:
+  c.execute(text("UPDATE users SET password_hash=:h,password_salt=:s WHERE id=:u"),{"h":nh,"s":ns,"u":tok["user_id"]})
+ consume_recovery_token(raw)
 
 def multiplayer_init():
  with engine.begin() as c:

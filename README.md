@@ -139,3 +139,13 @@ This prevents `profile` from being interpreted as a room code.
 - Solo, Weekly Quiz and Multiplayer support.
 - Multiplayer speech is local to each device and never changes timer or score.
 - Speech stops when moving to another solo/weekly question.
+
+
+## V5.4 – Secure family account recovery
+- Shared family email addresses remain supported.
+- Username recovery sends a 30-minute, one-time secure link; account names are revealed only after possession of the email is verified through that link.
+- Password recovery requires both email and private username, then sends a 30-minute, one-time reset link.
+- Public request endpoints always return the same response to reduce account/email enumeration.
+- Recovery tokens are stored only as SHA-256 hashes.
+- SMTP credentials come only from environment variables; `.env` stays ignored by Git.
+- `.env.example` documents required variables without secrets.

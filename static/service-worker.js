@@ -1,4 +1,4 @@
-const CACHE="bibelquiz-v5-audio-1";
+const CACHE="bibelquiz-v5-recovery-1";
 const SHELL=["/","/static/style.css","/static/app.js","/static/manifest.json","/static/icons/icon-192.png","/static/icons/icon-512.png","/static/identity/logo.svg","/static/identity/dove.svg","/static/identity/ark.svg","/static/identity/crown.svg","/static/identity/fish.svg","/static/identity/scroll.svg"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)));self.skipWaiting()});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
