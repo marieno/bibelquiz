@@ -149,3 +149,12 @@ This prevents `profile` from being interpreted as a room code.
 - Recovery tokens are stored only as SHA-256 hashes.
 - SMTP credentials come only from environment variables; `.env` stays ignored by Git.
 - `.env.example` documents required variables without secrets.
+
+
+## V5.4-Brevo – HTTPS transactional mail
+- SMTP dependency removed.
+- Recovery mail uses Brevo `POST https://api.brevo.com/v3/smtp/email`.
+- API key is sent only in the `api-key` HTTP header.
+- Required environment variables: `BREVO_API_KEY`, `BREVO_FROM_EMAIL`, `BREVO_FROM_NAME`, `APP_URL`.
+- No third-party Python package is required; the integration uses Python's standard HTTPS client.
+- Never commit a real API key. `.env` remains ignored.
