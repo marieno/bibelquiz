@@ -191,3 +191,13 @@ This prevents `profile` from being interpreted as a room code.
 - Recovery token is invalidated if all delivery attempts fail.
 - Recovery logs remain privacy-preserving and no longer dump full tracebacks for expected delivery failures.
 - Includes the missing production recovery logger definition.
+
+
+## V5.4.5 – Email Queue + Worker
+- ASGI requests no longer contact Brevo.
+- Recovery creates its secure token and queues the complete email in SQLite, then returns immediately.
+- `email_worker.py` sends pending messages outside Uvicorn.
+- Worker uses the existing reliable Brevo mailer.
+- Queue records status, attempts, sent timestamp and last error.
+- Failed messages retry up to five worker runs.
+- Run manually with `.venv/bin/python email_worker.py`; schedule it separately once validated.

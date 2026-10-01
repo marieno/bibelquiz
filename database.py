@@ -24,6 +24,7 @@ def account_migrate():
    except Exception:pass
   c.execute(text("UPDATE users SET display_name=username WHERE display_name IS NULL OR display_name=''"))
   c.execute(text("CREATE TABLE IF NOT EXISTS recovery_tokens(token_hash TEXT PRIMARY KEY,email TEXT NOT NULL,purpose TEXT NOT NULL,user_id BIGINT,expires_at TEXT NOT NULL,used INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL)"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS email_queue(id INTEGER PRIMARY KEY AUTOINCREMENT,recipient TEXT NOT NULL,subject TEXT NOT NULL,body TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',attempts INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL,sent_at TEXT,last_error TEXT)"))
 
 def update_account(uid,display_name,language):
  display_name=display_name.strip()
@@ -80,6 +81,28 @@ def reset_password_by_token(raw,new_password):
  with engine.begin() as c:
   c.execute(text("UPDATE users SET password_hash=:h,password_salt=:s WHERE id=:u"),{"h":nh,"s":ns,"u":tok["user_id"]})
  consume_recovery_token(raw)
+
+
+def queue_email(recipient,subject,body):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  c.execute(text("INSERT INTO email_queue(recipient,subject,body,status,attempts,created_at) VALUES(:r,:s,:b,'pending',0,:d)"),
+            {"r":recipient.strip().lower(),"s":subject,"b":body,"d":now})
+
+def pending_emails(limit=20):
+ with engine.connect() as c:
+  rows=c.execute(text("SELECT id,recipient,subject,body,attempts FROM email_queue WHERE status='pending' AND attempts<5 ORDER BY id LIMIT :n"),{"n":limit}).mappings().all()
+ return [dict(r) for r in rows]
+
+def mark_email_sent(mail_id):
+ with engine.begin() as c:c.execute(text("UPDATE email_queue SET status='sent',attempts=attempts+1,sent_at=:d,last_error=NULL WHERE id=:i"),{"d":datetime.now(timezone.utc).isoformat(),"i":mail_id})
+
+def mark_email_failed(mail_id,error):
+ # Keep pending for retries until the fifth worker attempt.
+ with engine.begin() as c:
+  c.execute(text("""UPDATE email_queue SET attempts=attempts+1,
+    status=CASE WHEN attempts+1>=5 THEN 'failed' ELSE 'pending' END,
+    last_error=:e WHERE id=:i"""),{"e":str(error)[:500],"i":mail_id})
 
 def multiplayer_init():
  with engine.begin() as c:

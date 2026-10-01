@@ -263,16 +263,21 @@ def recovery_usernames_request(a:RecoveryLookup):
  accounts=database.accounts_by_email(email)
  configured=mailer.configured()
  log.warning("RECOVERY_USERNAME_REQUEST email_hash=%s accounts=%s brevo_configured=%s",marker,len(accounts),configured)
- if accounts and configured:
+ if accounts:
   token=database.create_recovery_token(email,"usernames")
-  try:
-   message_id=mailer.send_username_recovery(email,token)
-   log.warning("RECOVERY_MAIL_SENT purpose=usernames email_hash=%s message_id_present=%s",marker,bool(message_id))
-  except Exception as e:
-   database.invalidate_recovery_token(token)
-   log.error("RECOVERY_MAIL_ERROR purpose=usernames email_hash=%s error_type=%s",marker,type(e).__name__)
- elif accounts and not configured:
-  log.error("RECOVERY_MAIL_SKIPPED purpose=usernames email_hash=%s reason=BREVO_NOT_CONFIGURED",marker)
+  link=f"{mailer.APP_URL}/?recovery=usernames&token={token}"
+  subject="BibelQuiz – Benutzerkonten / Comptes"
+  body=f"""BibelQuiz
+
+Öffne diesen sicheren Link, um die mit dieser E-Mail verbundenen Konten anzuzeigen:
+{link}
+
+Der Link ist 30 Minuten gültig und nur einmal verwendbar.
+
+Ouvre ce lien sécurisé pour afficher les comptes associés à cette adresse.
+Le lien est valable 30 minutes et utilisable une seule fois."""
+  database.queue_email(email,subject,body)
+  log.warning("RECOVERY_MAIL_QUEUED purpose=usernames email_hash=%s",marker)
  return {"ok":True}
 
 @app.post("/api/recovery/usernames/verify")
@@ -291,17 +296,24 @@ def recovery_password_request(a:PasswordRecoveryRequest):
  match=next((x for x in accounts if x["username"].lower()==username.lower()),None)
  configured=mailer.configured()
  log.warning("RECOVERY_PASSWORD_REQUEST email_hash=%s accounts=%s username_match=%s brevo_configured=%s",marker,len(accounts),bool(match),configured)
- if match and configured:
+ if match:
   with database.engine.connect() as c:
    row=c.execute(database.text("SELECT id FROM users WHERE lower(username)=lower(:u) AND lower(email)=lower(:e)"),{"u":username,"e":email}).first()
   if row:
    token=database.create_recovery_token(email,"password",row[0])
-   try:
-    message_id=mailer.send_password_recovery(email,match["display_name"],token)
-    log.warning("RECOVERY_MAIL_SENT purpose=password email_hash=%s message_id_present=%s",marker,bool(message_id))
-   except Exception as e:
-    database.invalidate_recovery_token(token)
-    log.error("RECOVERY_MAIL_ERROR purpose=password email_hash=%s error_type=%s",marker,type(e).__name__)
+   link=f"{mailer.APP_URL}/?recovery=password&token={token}"
+   subject="BibelQuiz – Passwort zurücksetzen / Réinitialiser le mot de passe"
+   body=f"""BibelQuiz
+
+Konto / Compte: {match["display_name"]}
+
+Passwort zurücksetzen / Réinitialiser le mot de passe:
+{link}
+
+Der Link ist 30 Minuten gültig und nur einmal verwendbar.
+Le lien est valable 30 minutes et utilisable une seule fois."""
+   database.queue_email(email,subject,body)
+   log.warning("RECOVERY_MAIL_QUEUED purpose=password email_hash=%s",marker)
  return {"ok":True}
 
 @app.post("/api/recovery/password/reset")
