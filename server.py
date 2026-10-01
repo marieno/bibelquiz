@@ -10,6 +10,8 @@ from env_loader import load_private_env
 load_private_env()
 import mailer
 
+log = logging.getLogger("bibelquiz.recovery")
+
 ROOT=Path(__file__).parent
 QUESTIONS=json.loads((ROOT/"questions"/"questions.json").read_text(encoding="utf-8"))["questions"]
 LEVELS=["enfant","facile","moyen","difficile"]
@@ -267,7 +269,8 @@ def recovery_usernames_request(a:RecoveryLookup):
    message_id=mailer.send_username_recovery(email,token)
    log.warning("RECOVERY_MAIL_SENT purpose=usernames email_hash=%s message_id_present=%s",marker,bool(message_id))
   except Exception as e:
-   log.exception("RECOVERY_MAIL_ERROR purpose=usernames email_hash=%s error_type=%s",marker,type(e).__name__)
+   database.invalidate_recovery_token(token)
+   log.error("RECOVERY_MAIL_ERROR purpose=usernames email_hash=%s error_type=%s",marker,type(e).__name__)
  elif accounts and not configured:
   log.error("RECOVERY_MAIL_SKIPPED purpose=usernames email_hash=%s reason=BREVO_NOT_CONFIGURED",marker)
  return {"ok":True}
@@ -297,7 +300,8 @@ def recovery_password_request(a:PasswordRecoveryRequest):
     message_id=mailer.send_password_recovery(email,match["display_name"],token)
     log.warning("RECOVERY_MAIL_SENT purpose=password email_hash=%s message_id_present=%s",marker,bool(message_id))
    except Exception as e:
-    log.exception("RECOVERY_MAIL_ERROR purpose=password email_hash=%s error_type=%s",marker,type(e).__name__)
+    database.invalidate_recovery_token(token)
+    log.error("RECOVERY_MAIL_ERROR purpose=password email_hash=%s error_type=%s",marker,type(e).__name__)
  return {"ok":True}
 
 @app.post("/api/recovery/password/reset")

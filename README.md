@@ -183,3 +183,11 @@ This prevents `profile` from being interpreted as a room code.
 - Tokens and API keys are never logged.
 - Brevo message ID presence is logged, not the ID itself.
 - Mail helper now returns Brevo's message ID to the server for diagnostic confirmation.
+
+
+## V5.4.4 – Reliable Recovery
+- Brevo delivery retries transient connection/server errors up to three times (0s, 0.6s, 1.5s backoff).
+- Permanent 4xx errors (except 429) fail immediately.
+- Recovery token is invalidated if all delivery attempts fail.
+- Recovery logs remain privacy-preserving and no longer dump full tracebacks for expected delivery failures.
+- Includes the missing production recovery logger definition.

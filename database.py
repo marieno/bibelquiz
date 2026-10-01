@@ -68,6 +68,10 @@ def consume_recovery_token(raw):
  hh=hashlib.sha256(raw.encode()).hexdigest()
  with engine.begin() as c:c.execute(text("UPDATE recovery_tokens SET used=1 WHERE token_hash=:t"),{"t":hh})
 
+def invalidate_recovery_token(raw):
+ hh=hashlib.sha256(raw.encode()).hexdigest()
+ with engine.begin() as c:c.execute(text("UPDATE recovery_tokens SET used=1 WHERE token_hash=:t"),{"t":hh})
+
 def reset_password_by_token(raw,new_password):
  if len(new_password)<8:raise ValueError("PASSWORD_TOO_SHORT")
  tok=recovery_token(raw,"password")

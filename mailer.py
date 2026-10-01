@@ -1,4 +1,4 @@
-import os, json, urllib.request, urllib.error
+import os, json, urllib.request, urllib.error, time
 
 BREVO_API_KEY=os.getenv("BREVO_API_KEY","")
 BREVO_FROM_EMAIL=os.getenv("BREVO_FROM_EMAIL","")
@@ -10,34 +10,22 @@ def configured():
     return bool(BREVO_API_KEY and BREVO_FROM_EMAIL)
 
 def send(to,subject,text):
-    if not configured():
-        raise RuntimeError("BREVO_NOT_CONFIGURED")
-    payload={
-        "sender":{"name":BREVO_FROM_NAME,"email":BREVO_FROM_EMAIL},
-        "to":[{"email":to}],
-        "subject":subject,
-        "textContent":text,
-        "tags":["bibelquiz-recovery"]
-    }
-    req=urllib.request.Request(
-        BREVO_URL,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={
-            "accept":"application/json",
-            "api-key":BREVO_API_KEY,
-            "content-type":"application/json"
-        },
-        method="POST"
-    )
-    try:
-        with urllib.request.urlopen(req,timeout=20) as resp:
-            body=json.loads(resp.read().decode("utf-8") or "{}")
-            return body.get("messageId")
-    except urllib.error.HTTPError as e:
-        detail=e.read().decode("utf-8",errors="replace")
-        raise RuntimeError(f"BREVO_HTTP_{e.code}: {detail}") from e
-    except urllib.error.URLError as e:
-        raise RuntimeError(f"BREVO_CONNECTION_ERROR: {e.reason}") from e
+    if not configured(): raise RuntimeError("BREVO_NOT_CONFIGURED")
+    payload={"sender":{"name":BREVO_FROM_NAME,"email":BREVO_FROM_EMAIL},"to":[{"email":to}],"subject":subject,"textContent":text,"tags":["bibelquiz-recovery"]}
+    body=json.dumps(payload).encode("utf-8");last_error=None
+    for delay in (0,0.6,1.5):
+        if delay: time.sleep(delay)
+        req=urllib.request.Request(BREVO_URL,data=body,headers={"accept":"application/json","api-key":BREVO_API_KEY,"content-type":"application/json"},method="POST")
+        try:
+            with urllib.request.urlopen(req,timeout=20) as resp:
+                result=json.loads(resp.read().decode("utf-8") or "{}");return result.get("messageId")
+        except urllib.error.HTTPError as e:
+            detail=e.read().decode("utf-8",errors="replace")
+            if 400<=e.code<500 and e.code!=429: raise RuntimeError(f"BREVO_HTTP_{e.code}: {detail}") from e
+            last_error=RuntimeError(f"BREVO_HTTP_{e.code}: {detail}")
+        except (urllib.error.URLError,OSError) as e:
+            reason=getattr(e,"reason",e);last_error=RuntimeError(f"BREVO_CONNECTION_ERROR: {reason}")
+    raise last_error or RuntimeError("BREVO_SEND_FAILED")
 
 def send_username_recovery(email,token):
     link=f"{APP_URL}/?recovery=usernames&token={token}"
