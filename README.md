@@ -201,3 +201,13 @@ This prevents `profile` from being interpreted as a room code.
 - Queue records status, attempts, sent timestamp and last error.
 - Failed messages retry up to five worker runs.
 - Run manually with `.venv/bin/python email_worker.py`; schedule it separately once validated.
+
+
+## V5.4.6 – Automatic Recovery Worker
+- Recovery queues the email and immediately spawns `email_worker.py` as a detached process.
+- The HTTP request does not wait for Brevo.
+- Worker uses the proven console/subprocess network path.
+- A short-lived lock file prevents request bursts from spawning multiple workers.
+- Worker removes the lock when it exits.
+- Queue remains the source of truth: transient failures stay pending for later retry.
+- The temporary `/api/system/subprocess-test` diagnostic endpoint is not included in this release.

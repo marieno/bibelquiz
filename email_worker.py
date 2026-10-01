@@ -1,4 +1,5 @@
 import time
+from pathlib import Path
 from env_loader import load_private_env
 load_private_env()
 
@@ -25,4 +26,10 @@ def run_once():
     return sent,failed
 
 if __name__=="__main__":
-    run_once()
+    try:
+        run_once()
+    finally:
+        try:
+            Path(__file__).resolve().parent.joinpath("data","email_worker.lock").unlink(missing_ok=True)
+        except Exception:
+            pass

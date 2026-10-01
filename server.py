@@ -1,4 +1,4 @@
-import json, random, secrets, time, logging, hashlib
+import json, random, secrets, time, logging, hashlib, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 from fastapi import FastAPI, HTTPException, Header
@@ -255,6 +255,29 @@ def account_password(a:PasswordChange,authorization:str|None=Header(None)):
  except ValueError as e:raise HTTPException(400,str(e))
  return {"ok":True}
 
+def trigger_email_worker():
+ # Fire-and-forget: the HTTP request never waits for Brevo.
+ # A small lock file prevents a burst of requests from spawning many workers.
+ lock=ROOT/"data"/"email_worker.lock"
+ try:
+  if lock.exists() and time.time()-lock.stat().st_mtime < 60:
+   return False
+  lock.parent.mkdir(parents=True,exist_ok=True)
+  lock.write_text(str(time.time()),encoding="utf-8")
+  subprocess.Popen(
+   [sys.executable,str(ROOT/"email_worker.py")],
+   cwd=str(ROOT),
+   stdout=subprocess.DEVNULL,
+   stderr=subprocess.DEVNULL,
+   start_new_session=True
+  )
+  return True
+ except Exception as e:
+  log.error("EMAIL_WORKER_START_ERROR error_type=%s",type(e).__name__)
+  try:lock.unlink(missing_ok=True)
+  except Exception:pass
+  return False
+
 @app.post("/api/recovery/usernames/request")
 def recovery_usernames_request(a:RecoveryLookup):
  # Always return the same public response to avoid account/email enumeration.
@@ -277,6 +300,7 @@ Der Link ist 30 Minuten gültig und nur einmal verwendbar.
 Ouvre ce lien sécurisé pour afficher les comptes associés à cette adresse.
 Le lien est valable 30 minutes et utilisable une seule fois."""
   database.queue_email(email,subject,body)
+  trigger_email_worker()
   log.warning("RECOVERY_MAIL_QUEUED purpose=usernames email_hash=%s",marker)
  return {"ok":True}
 
@@ -313,6 +337,7 @@ Passwort zurücksetzen / Réinitialiser le mot de passe:
 Der Link ist 30 Minuten gültig und nur einmal verwendbar.
 Le lien est valable 30 minutes et utilisable une seule fois."""
    database.queue_email(email,subject,body)
+   trigger_email_worker()
    log.warning("RECOVERY_MAIL_QUEUED purpose=password email_hash=%s",marker)
  return {"ok":True}
 
