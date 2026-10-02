@@ -10,7 +10,7 @@ function renderRace(){root.innerHTML=`<div class=race id=road>${Array.from({leng
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span>🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div></div>
 <div class=distance-sign id=distanceSign>500 m → ZIEL</div><div class=finish-gate id=finishGate>🏁 ZIEL 🏁</div>
 <div class=car id=car></div>
-<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn onpointerdown="setBrake(true)" onpointerup="setBrake(false)" onpointercancel="setBrake(false)">▼</button><button class="drive gas" id=gasBtn onpointerdown="setGas(true)" onpointerup="setGas(false)" onpointercancel="setGas(false)">▲</button></div></div></div>`;placeCar()}
+<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein" onpointerdown="setBrake(true)" onpointerup="setBrake(false)" onpointercancel="setBrake(false)">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer" onpointerdown="setGas(true)" onpointerup="setGas(false)" onpointercancel="setGas(false)">▲</button></div></div></div>`;placeCar()}
 function setGas(v){gas=v;document.querySelector("#gasBtn")?.classList.toggle("active",v)}
 function setBrake(v){braking=v;document.querySelector("#brakeBtn")?.classList.toggle("active",v)}
 function move(d){if(!running)return;lane=Math.max(0,Math.min(2,lane+d));placeCar()}

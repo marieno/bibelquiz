@@ -18,3 +18,44 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .drive.gas{background:#bdf0c5}.drive.brake{background:#ffd0c9}.drive.active{transform:scale(.92);box-shadow:inset 0 0 0 4px #244}
 .controls{align-items:flex-end}.pedals{display:flex;gap:10px}.steer{display:flex;gap:10px}
 @media(max-width:520px){.race-map{top:60px}.drive{width:66px;height:66px}.finish-gate{font-size:22px}}
+
+/* V6.1.1: phone-safe driving controls */
+.race{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+.controls{
+ position:fixed;
+ z-index:80;
+ left:10px;
+ right:10px;
+ bottom:calc(10px + env(safe-area-inset-bottom,0px));
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ pointer-events:none;
+}
+.controls .steer,.controls .pedals{display:flex;gap:10px;pointer-events:auto}
+.drive{
+ width:68px;height:68px;min-width:68px;min-height:68px;
+ display:grid;place-items:center;
+ border:2px solid #ffffff;
+ box-shadow:0 5px 16px #0005;
+ font-size:25px;
+}
+.drive.gas,.drive.brake{width:82px;border-radius:20px;font-size:0}
+.drive.gas:after{content:"▲ GAS";font-size:17px;font-weight:1000}
+.drive.brake:after{content:"▼ FREIN";font-size:15px;font-weight:1000}
+@media(max-width:520px){
+ .race{padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+ .controls{left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom,0px));gap:8px}
+ .controls .steer,.controls .pedals{gap:6px}
+ .drive{width:58px;height:58px;min-width:58px;min-height:58px}
+ .drive.gas,.drive.brake{width:74px}
+ .drive.gas:after{font-size:15px}
+ .drive.brake:after{font-size:13px}
+ .car{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-height:700px){
+ .drive{width:54px;height:54px;min-width:54px;min-height:54px}
+ .drive.gas,.drive.brake{width:68px}
+ .car{bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+}

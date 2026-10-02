@@ -271,3 +271,11 @@ This prototype intentionally has no multiplayer persistence yet. Its purpose is 
 - From halfway onward a distance-to-finish sign appears.
 - From ~82% onward the finish gate becomes visible and approaches on the road.
 - Question pickup reduces momentum, so the player must accelerate again after answering.
+
+
+## V6.1.1 – Mobile-safe race controls
+- Driving controls are fixed above the phone safe-area/navigation bar.
+- All four controls remain visible: left, right, brake and accelerator.
+- Accelerator is explicitly labelled `▲ GAS`; brake `▼ FREIN`.
+- Car position is raised on short/mobile displays so controls never cover it.
+- Added extra bottom track space for phone aspect ratios.
