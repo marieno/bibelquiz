@@ -9,3 +9,12 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .question-overlay{position:absolute;inset:0;z-index:50;background:#082b48d9;display:grid;place-items:center;padding:14px}.question{width:min(94vw,650px);background:#fffdf5;border-radius:26px;padding:20px;text-align:center}.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.answer{min-height:72px;border:0;border-radius:17px;padding:12px;font-size:16px;font-weight:800;background:#e9f5ff}.answer.good{background:#bff0c6}.answer.bad{background:#ffc5c1}.speaker{border:0;border-radius:999px;padding:9px 14px;background:#fff0a8;font-weight:900}
 .finish{position:absolute;inset:0;z-index:60;background:#0a3153e8;display:grid;place-items:center;padding:16px;color:#15324b}.finish .panel{animation:pop .5s ease}.big{font-size:58px}@keyframes road{from{top:-15%}to{top:110%}}@keyframes pop{from{transform:scale(.7);opacity:0}}
 @media(max-width:520px){.answers{grid-template-columns:1fr}.answer{min-height:58px}.levels{grid-template-columns:1fr 1fr}}
+
+/* V6.1 real driving */
+.race-map{position:absolute;z-index:25;top:64px;left:12px;right:12px;background:#ffffffdd;border-radius:16px;padding:8px 12px;font-weight:900}
+.map-track{height:10px;background:#cbd8df;border-radius:999px;position:relative;margin:8px 42px 2px}.map-fill{position:absolute;left:0;top:0;bottom:0;background:#58b96a;border-radius:999px;width:0}.map-car{position:absolute;top:50%;transform:translate(-50%,-50%);font-size:22px;left:0}
+.speedo{min-width:90px;text-align:center}.finish-gate{position:absolute;z-index:7;left:13%;right:13%;top:-180px;height:105px;border-top:24px repeating-linear-gradient(90deg,#fff 0 18px,#222 18px 36px);border-left:14px solid #eee;border-right:14px solid #eee;text-align:center;font-size:28px;font-weight:1000;color:#fff;text-shadow:0 2px 3px #000;display:none}
+.distance-sign{position:absolute;z-index:6;right:14%;top:24%;background:#fff;border:4px solid #222;padding:7px 10px;border-radius:8px;font-weight:1000;display:none}
+.drive.gas{background:#bdf0c5}.drive.brake{background:#ffd0c9}.drive.active{transform:scale(.92);box-shadow:inset 0 0 0 4px #244}
+.controls{align-items:flex-end}.pedals{display:flex;gap:10px}.steer{display:flex;gap:10px}
+@media(max-width:520px){.race-map{top:60px}.drive{width:66px;height:66px}.finish-gate{font-size:22px}}

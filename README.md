@@ -259,3 +259,15 @@ Integrated solo racing prototype, isolated under `/static/race/`.
 - Finish bonus: +100.
 - Dashboard entry added.
 This prototype intentionally has no multiplayer persistence yet. Its purpose is to validate driving, question interruption, audio and scoring before building 2–5 player synchronization.
+
+
+## V6.1 – Real Driving & Finish Progression
+- Hold ▲ to accelerate; releasing it causes natural deceleration.
+- Hold ▼ to brake harder.
+- ◀/▶ change lanes.
+- Real-time km/h display, with 125 km/h normal maximum.
+- Correct Bible answer still grants a 3-second turbo, now pushing speed toward ~145–165 km/h.
+- START→ZIEL mini-map shows the car moving along the route.
+- From halfway onward a distance-to-finish sign appears.
+- From ~82% onward the finish gate becomes visible and approaches on the road.
+- Question pickup reduces momentum, so the player must accelerate again after answering.
