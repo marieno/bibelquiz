@@ -1,0 +1,65 @@
+name: BibelQuiz Email Worker
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send-pending-email:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Process BibelQuiz email queue
+        env:
+          BIBELQUIZ_URL: ${{ secrets.BIBELQUIZ_URL }}
+          EMAIL_WORKER_SECRET: ${{ secrets.EMAIL_WORKER_SECRET }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_FROM_EMAIL: ${{ secrets.BREVO_FROM_EMAIL }}
+        shell: python
+        run: |
+          import json, os, urllib.request, urllib.error
+
+          base=os.environ["BIBELQUIZ_URL"].rstrip("/")
+          secret=os.environ["EMAIL_WORKER_SECRET"]
+          brevo=os.environ["BREVO_API_KEY"]
+          sender=os.environ["BREVO_FROM_EMAIL"]
+
+          def request(url,method="GET",data=None,headers=None):
+              h=headers or {}
+              body=None if data is None else json.dumps(data).encode()
+              if body is not None:h["Content-Type"]="application/json"
+              req=urllib.request.Request(url,data=body,headers=h,method=method)
+              with urllib.request.urlopen(req,timeout=25) as r:
+                  return json.loads(r.read().decode() or "{}")
+
+          queue=request(base+"/api/internal/email-queue",headers={"Authorization":"Bearer "+secret})
+          emails=queue.get("emails",[])
+          print("Pending:",len(emails))
+
+          for item in emails:
+              try:
+                  payload={
+                    "sender":{"name":"BibelQuiz","email":sender},
+                    "to":[{"email":item["recipient"]}],
+                    "subject":item["subject"],
+                    "textContent":item["body"],
+                    "tags":["bibelquiz-recovery"]
+                  }
+                  result=request("https://api.brevo.com/v3/smtp/email","POST",payload,{
+                    "api-key":brevo,"accept":"application/json"
+                  })
+                  request(base+f"/api/internal/email-queue/{item['id']}/result","POST",
+                          {"status":"sent"},{"Authorization":"Bearer "+secret})
+                  print("SENT",item["id"],bool(result.get("messageId")))
+              except Exception as e:
+                  print("FAILED",item["id"],type(e).__name__,str(e)[:180])
+                  try:
+                      request(base+f"/api/internal/email-queue/{item['id']}/result","POST",
+                              {"status":"failed","error":type(e).__name__+": "+str(e)[:300]},
+                              {"Authorization":"Bearer "+secret})
+                  except Exception as report_error:
+                      print("REPORT FAILED",item["id"],type(report_error).__name__)

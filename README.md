@@ -211,3 +211,12 @@ This prevents `profile` from being interpreted as a room code.
 - Worker removes the lock when it exits.
 - Queue remains the source of truth: transient failures stay pending for later retry.
 - The temporary `/api/system/subprocess-test` diagnostic endpoint is not included in this release.
+
+
+## V5.4.7 – External free email worker
+- SQLite remains the production database.
+- Web requests only enqueue recovery mail; no Brevo/subprocess call from Uvicorn.
+- Private queue API is protected by `EMAIL_WORKER_SECRET`.
+- GitHub Actions polls every 5 minutes, sends through Brevo, then reports `sent`/`failed`.
+- Required GitHub Actions secrets: `BIBELQUIZ_URL`, `EMAIL_WORKER_SECRET`, `BREVO_API_KEY`, `BREVO_FROM_EMAIL`.
+- `EMAIL_WORKER_SECRET` must also exist in `/home/MarieNo/.bibelquiz.env`.
