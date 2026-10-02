@@ -228,3 +228,14 @@ This prevents `profile` from being interpreted as a room code.
 - Login username remains read-only/private.
 - Saving account settings updates display name, language and recovery email together.
 - Existing external GitHub/Brevo email worker remains unchanged.
+
+
+## V5.5 – Group Game Levels
+Host selects the group difficulty before creating the room:
+- `enfant` → Kinder / Enfant
+- `facile` → Einfach / Facile
+- `moyen` → Mittel / Moyen
+- `difficile` → Schwer / Difficile
+- `alle` → all levels
+
+Each game still has exactly 10 questions. `alle` is balanced as 3 enfant + 3 facile + 2 moyen + 2 difficile, shuffled afterward. The selected difficulty is visible in the lobby/game/podium and stored in multiplayer history. Group levels are independent of Solo unlock progress.

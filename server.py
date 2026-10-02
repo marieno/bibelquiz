@@ -30,6 +30,8 @@ class Auth(BaseModel):
     email:str|None=None
 class RoomReady(BaseModel):
     ready:bool=True
+class GroupCreate(BaseModel):
+    difficulty:str="alle"
 class RoomJoin(BaseModel):
     code:str
 class GroupAnswer(BaseModel):
@@ -325,12 +327,14 @@ def recovery_password_reset(a:PasswordReset):
  return {"ok":True}
 
 @app.post("/api/group/create")
-def group_create(authorization:str|None=Header(None)):
+def group_create(a:GroupCreate,authorization:str|None=Header(None)):
  u=uid(authorization)
+ difficulty=a.difficulty.strip().lower()
+ if difficulty not in ("enfant","facile","moyen","difficile","alle"):raise HTTPException(400,"INVALID_DIFFICULTY")
  for _ in range(30):
   code=str(random.randint(100000,999999))
   if not database.room(code):
-   database.create_room(u,code)
+   database.create_room(u,code,difficulty)
    return database.room(code)
  raise HTTPException(503,"ROOM_CODE_UNAVAILABLE")
 
@@ -358,9 +362,25 @@ def group_leave(code:str,authorization:str|None=Header(None)):
  u=uid(authorization);database.leave_room(u,code);return {"ok":True}
 
 
-def group_question_pool():
- # Group mode is deliberately independent from solo unlocks.
- return QUESTIONS
+def group_question_pool(difficulty):
+ # Group mode is independent from Solo unlocks.
+ if difficulty=="alle":return QUESTIONS
+ return [q for q in QUESTIONS if q["niveau"]==difficulty]
+
+def choose_group_questions(difficulty):
+ if difficulty!="alle":
+  pool=group_question_pool(difficulty)
+  if len(pool)<10:raise HTTPException(409,"NOT_ENOUGH_QUESTIONS")
+  return random.sample(pool,10)
+ # Balanced mix: 3 enfant + 3 facile + 2 moyen + 2 difficile.
+ distribution={"enfant":3,"facile":3,"moyen":2,"difficile":2}
+ chosen=[]
+ for level,count in distribution.items():
+  pool=[q for q in QUESTIONS if q["niveau"]==level]
+  if len(pool)<count:raise HTTPException(409,"NOT_ENOUGH_QUESTIONS")
+  chosen.extend(random.sample(pool,count))
+ random.shuffle(chosen)
+ return chosen
 
 def group_public_state(uid_,code):
  r=database.room(code)
@@ -372,7 +392,7 @@ def group_public_state(uid_,code):
  if not st:return {"room":r,"phase":"lobby","is_host":is_host,"host_name":host_name}
  if st["status"]=="finished" or st["current_index"]>=len(st["question_ids"]):
   database.finalize_multiplayer_results(code)
-  return {"room":r,"phase":"finished","scores":st["scores"],"stats":database.multiplayer_stats(uid_)}
+  return {"room":r,"phase":"finished","scores":st["scores"],"stats":database.multiplayer_stats(uid_),"difficulty":r.get("difficulty") or "alle"}
  i=st["current_index"];qid=st["question_ids"][i];q=next(x for x in QUESTIONS if x["id"]==qid)
  started=datetime.fromisoformat(st["question_started_at"])
  elapsed=max(0,(datetime.now(timezone.utc)-started).total_seconds())
@@ -391,9 +411,9 @@ def group_public_state(uid_,code):
 @app.post("/api/group/{code}/start")
 def group_start(code:str,authorization:str|None=Header(None)):
  u=uid(authorization)
- pool=group_question_pool()
- # Diverse random sample across whole bank.
- chosen=random.sample(pool,min(10,len(pool)))
+ room=database.room(code)
+ if not room:raise HTTPException(404,"ROOM_NOT_FOUND")
+ chosen=choose_group_questions(room.get("difficulty") or "alle")
  try:database.start_game(u,code,[q["id"] for q in chosen])
  except ValueError as e:raise HTTPException(400,str(e))
  return group_public_state(u,code)

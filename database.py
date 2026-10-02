@@ -114,12 +114,15 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS game_answers(room_code TEXT NOT NULL,question_index INTEGER NOT NULL,user_id BIGINT NOT NULL,choice TEXT NOT NULL,correct INTEGER NOT NULL,elapsed_ms INTEGER NOT NULL,points INTEGER NOT NULL,UNIQUE(room_code,question_index,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS game_scores(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL DEFAULT 0,correct_count INTEGER NOT NULL DEFAULT 0,UNIQUE(room_code,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS multiplayer_results(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,position INTEGER NOT NULL,best_answer_ms INTEGER,finished_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
+  for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE multiplayer_results ADD COLUMN difficulty TEXT DEFAULT 'alle'"]:
+   try:c.execute(text(stmt))
+   except Exception:pass
 
-def create_room(uid,code):
+def create_room(uid,code,difficulty='alle'):
  now=datetime.now(timezone.utc).isoformat()
  with engine.begin() as c:
   name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
-  c.execute(text("INSERT INTO game_rooms(code,host_user_id,status,created_at) VALUES(:c,:u,'lobby',:d)"),{"c":code,"u":uid,"d":now})
+  c.execute(text("INSERT INTO game_rooms(code,host_user_id,status,created_at,difficulty) VALUES(:c,:u,'lobby',:d,:lv)"),{"c":code,"u":uid,"d":now,"lv":difficulty})
   c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,1,:d)"),{"c":code,"u":uid,"n":name,"d":now})
 
 def room(code):
@@ -219,8 +222,9 @@ def finalize_multiplayer_results(code):
     WHERE s.room_code=:c GROUP BY s.user_id,s.score,s.correct_count
     ORDER BY s.score DESC,s.correct_count DESC,best_ms ASC"""),{"c":code}).all()
   for pos,row in enumerate(scores,1):
-   c.execute(text("""INSERT INTO multiplayer_results(room_code,user_id,score,correct_count,position,best_answer_ms,finished_at)
-     VALUES(:c,:u,:s,:n,:p,:b,:d)"""),{"c":code,"u":row[0],"s":row[1],"n":row[2],"p":pos,"b":row[3],"d":now})
+   difficulty=c.execute(text("SELECT COALESCE(difficulty,'alle') FROM game_rooms WHERE code=:c"),{"c":code}).scalar() or "alle"
+   c.execute(text("""INSERT INTO multiplayer_results(room_code,user_id,score,correct_count,position,best_answer_ms,finished_at,difficulty)
+     VALUES(:c,:u,:s,:n,:p,:b,:d,:lv)"""),{"c":code,"u":row[0],"s":row[1],"n":row[2],"p":pos,"b":row[3],"d":now,"lv":difficulty})
  return True
 
 def multiplayer_stats(uid):
@@ -232,7 +236,7 @@ def multiplayer_stats(uid):
 
 def multiplayer_history(uid,limit=10):
  with engine.connect() as c:
-  rows=c.execute(text("""SELECT room_code,score,correct_count,position,best_answer_ms,finished_at
+  rows=c.execute(text("""SELECT room_code,score,correct_count,position,best_answer_ms,finished_at,COALESCE(difficulty,'alle') difficulty
    FROM multiplayer_results WHERE user_id=:u ORDER BY finished_at DESC LIMIT :n"""),{"u":uid,"n":limit}).mappings().all()
  return [dict(r) for r in rows]
 

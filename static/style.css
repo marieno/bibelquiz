@@ -67,3 +67,10 @@ body{overflow-x:hidden}
 .switchline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
 
 .update-banner{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:21000;width:min(92vw,520px);background:#fff8cf;border:2px solid #e7bd3d;border-radius:20px;padding:15px;box-shadow:0 15px 50px #163d5c55;text-align:center}.update-banner button{margin-top:8px}
+
+/* V5.5 group difficulty */
+.group-level-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 16px}
+.group-level-grid .group-level:last-child{grid-column:1/-1}
+.group-level.selected{outline:3px solid #f0c653;background:#fff3b5;transform:translateY(-1px)}
+.level-pill{display:inline-block;padding:8px 13px;border-radius:999px;background:#fff3b5;border:1px solid #e6c75c;font-weight:900;margin-top:7px}
+@media(max-width:520px){.group-level-grid{grid-template-columns:1fr}}

@@ -93,20 +93,29 @@ function stopGroupPoll(){if(groupPoll){clearInterval(groupPoll);groupPoll=null}}
 function groupHome(){
  stopGroupPoll();brandJourney("group");
  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"} • 10 ${lang==="de"?"Fragen":"questions"}</p></div>
- <div class=levels><div class=card><h2>🎮 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2><button class="btn green full" onclick="groupCreate()">${lang==="de"?"ERSTELLEN":"CRÉER"}</button></div>
+ <div class=levels><div class=card><h2>🎮 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2><p><b>${lang==="de"?"Schwierigkeitsgrad wählen":"Choisir le niveau"}</b></p><div class=group-level-grid>
+ <button class="btn group-level selected" data-level=enfant onclick="selectGroupLevel(this)">🧒 ${lang==="de"?"KINDER":"ENFANT"}</button>
+ <button class="btn group-level" data-level=facile onclick="selectGroupLevel(this)">🌱 ${lang==="de"?"EINFACH":"FACILE"}</button>
+ <button class="btn group-level" data-level=moyen onclick="selectGroupLevel(this)">📖 ${lang==="de"?"MITTEL":"MOYEN"}</button>
+ <button class="btn group-level" data-level=difficile onclick="selectGroupLevel(this)">🔥 ${lang==="de"?"SCHWER":"DIFFICILE"}</button>
+ <button class="btn group-level" data-level=alle onclick="selectGroupLevel(this)">🎲 ${lang==="de"?"ALLE LEVEL":"TOUS LES NIVEAUX"}</button></div>
+ <button class="btn green full" onclick="groupCreate()">${lang==="de"?"ERSTELLEN":"CRÉER"}</button></div>
  <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><input id=roomCode inputmode=numeric maxlength=6 placeholder="123456"><button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p></div></div></div>`
 }
-async function groupCreate(){let r=await api("/api/group/create",{method:"POST",body:"{}"});groupCode=r.code;groupLobby()}
+let selectedGroupLevel="enfant";
+function selectGroupLevel(btn){selectedGroupLevel=btn.dataset.level;document.querySelectorAll(".group-level").forEach(x=>x.classList.toggle("selected",x===btn))}
+function groupLevelLabel(l){let de={enfant:"🧒 KINDER",facile:"🌱 EINFACH",moyen:"📖 MITTEL",difficile:"🔥 SCHWER",alle:"🎲 ALLE LEVEL"},fr={enfant:"🧒 ENFANT",facile:"🌱 FACILE",moyen:"📖 MOYEN",difficile:"🔥 DIFFICILE",alle:"🎲 TOUS LES NIVEAUX"};return (lang==="de"?de:fr)[l]||l}
+async function groupCreate(){let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({difficulty:selectedGroupLevel})});groupCode=r.code;groupLobby()}
 async function groupJoin(){try{let r=await api("/api/group/join",{method:"POST",body:JSON.stringify({code:roomCode.value})});groupCode=r.code;groupLobby()}catch(e){gmsg.textContent=e.message}}
 async function groupLobby(){
  stopGroupPoll();let r;try{r=await api("/api/group/"+groupCode)}catch(e){groupHome();return}
  let host=r.host_user_id===r.me, mine=r.players.find(p=>p.user_id===r.me);
- A.innerHTML=`<div class=wrap>${back("groupLeave()")}<div class="card hero"><h1>🎮 ${lang==="de"?"Lobby":"Salon"}</h1><p>${lang==="de"?"Raumcode":"Code"}:</p><div style="font-size:48px;font-weight:900;letter-spacing:8px">${r.code}</div><p>${r.players.length}/5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
+ A.innerHTML=`<div class=wrap>${back("groupLeave()")}<div class="card hero"><h1>🎮 ${lang==="de"?"Lobby":"Salon"}</h1><p>${lang==="de"?"Raumcode":"Code"}:</p><div style="font-size:48px;font-weight:900;letter-spacing:8px">${r.code}</div><p>${r.players.length}/5 ${lang==="de"?"Spieler":"joueurs"}</p><div class=level-pill>${groupLevelLabel(r.difficulty||"alle")} • 10 ${lang==="de"?"Fragen":"questions"}</div></div>
  <div class=card><h2>👥 ${lang==="de"?"Spieler":"Joueurs"}</h2>${r.players.map(p=>`<p style="font-size:18px">${p.user_id===r.host_user_id?"👑":"👤"} <b>${esc(p.display_name)}</b> <span style="float:right">${p.ready?"🟢 "+(lang==="de"?"Bereit":"Prêt"):"⚪ "+(lang==="de"?"Nicht bereit":"Pas prêt")}</span></p>`).join("")}
  ${!host?`<button class="btn ${mine&&mine.ready?"ghost":"green"} full" onclick="groupReady(${!(mine&&mine.ready)})">${mine&&mine.ready?(lang==="de"?"NICHT BEREIT":"PAS PRÊT"):(lang==="de"?"ICH BIN BEREIT":"JE SUIS PRÊT")}</button>`:""}
  ${host?`<button class="btn green full" onclick="groupStart()" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""}>▶ ${lang==="de"?"SPIEL STARTEN":"DÉMARRER"}</button>`:""}</div>
  <p><button class="btn ghost" onclick="groupLeave()">🚪 ${lang==="de"?"Gruppe verlassen":"Quitter le groupe"}</button></p></div>`
- groupPoll=setInterval(async()=>{try{let n=await api("/api/group/"+groupCode);if(n.status==="playing"){stopGroupPoll();groupGame();return}let snapshot=JSON.stringify(n.players)+n.host_user_id;if(window._gs!==snapshot){window._gs=snapshot;groupLobby()}}catch(e){stopGroupPoll()}},1800)
+ groupPoll=setInterval(async()=>{try{let n=await api("/api/group/"+groupCode);if(n.status==="playing"){stopGroupPoll();groupGame();return}let snapshot=JSON.stringify(n.players)+n.host_user_id+(n.difficulty||"");if(window._gs!==snapshot){window._gs=snapshot;groupLobby()}}catch(e){stopGroupPoll()}},1800)
 }
 
 async function groupStart(){stopGroupPoll();await api(`/api/group/${groupCode}/start`,{method:"POST",body:"{}"});groupGame()}
@@ -118,7 +127,7 @@ async function groupGame(){
  let q=x.question,r=q.reponses[lang],host=Boolean(x.is_host);
  let audioKey=groupCode+":"+x.index;if(window._lastGroupAudio!==audioKey){window._lastGroupAudio=audioKey;maybeAutoSpeak(q)}
  let answers=x.answers||[];
- A.innerHTML=`<div class="wrap group-game-wrap"><div class=top><span class=pill>👥 ${groupCode} &nbsp; 👑 ${esc(x.host_name||"Host")}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
+ A.innerHTML=`<div class="wrap group-game-wrap"><div class=top><span class=pill>👥 ${groupCode} &nbsp; 👑 ${esc(x.host_name||"Host")} &nbsp; ${groupLevelLabel(x.room.difficulty||"alle")}</span><b>🏆 ${x.scores.find(s=>s.user_id===x.room.me)?.score||0}</b></div>
  <div class=progress><i style="width:${100*(x.index+1)/10}%"></i></div><div class=top><p>${lang==="de"?"Frage":"Question"} ${x.index+1}/10</p><h2>⏱ ${Math.ceil(x.remaining)}s</h2></div>
  <div class="card question">${esc(q.question[lang])}</div>${audioQuestionTools(q)}
  <div class=answers>${["A","B","C","D"].map(a=>`<button id=g${a} class="btn answer ${x.phase==="reveal"&&a===x.correct_choice?"good":""}" ${x.phase==="reveal"||x.my_answered?"disabled":""} onclick="groupAnswer('${a}')"><b>${a}</b>&nbsp;&nbsp; ${esc(r[a])}</button>`).join("")}</div>
@@ -135,7 +144,7 @@ async function groupPodium(x){
  stopGroupPoll();confetti();fly("🏆");
  let badge=await api("/api/multiplayer/claim-badges",{method:"POST",body:"{}"});me=badge.user||me;
  let s=x.scores,st=badge.stats;
- A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars><img class=result-crown src="/static/identity/crown.svg" alt="Crown"><br>⭐⭐⭐</div><h1 style="text-align:center">${lang==="de"?"Endergebnis":"Résultat final"}</h1>${s.map((p,i)=>`<p style="font-size:${i===0?24:18}px;text-align:center">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(p.username)}</b> — ${p.score} ⭐ <small>(${p.correct_count}/10)</small></p>`).join("")}<hr><p style="text-align:center">🎮 ${st.games} &nbsp; 🥇 ${st.wins} &nbsp; 🎖️ ${st.podiums}</p><button class="btn full" onclick="groupProfile()">🏆 ${lang==="de"?"MEIN MULTIPLAYER-PROFIL":"MON PROFIL MULTIJOUEUR"}</button><button class="btn green full" onclick="groupHome()">👥 ${lang==="de"?"NEUE GRUPPE":"NOUVEAU GROUPE"}</button><button class="btn ghost full" onclick="dashboard()">🏠 Dashboard</button></div></div>`;
+ A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars><img class=result-crown src="/static/identity/crown.svg" alt="Crown"><br>⭐⭐⭐</div><h1 style="text-align:center">${lang==="de"?"Endergebnis":"Résultat final"}</h1><p style="text-align:center"><b>${groupLevelLabel(x.difficulty||x.room?.difficulty||"alle")}</b> • 10 ${lang==="de"?"Fragen":"questions"}</p>${s.map((p,i)=>`<p style="font-size:${i===0?24:18}px;text-align:center">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(p.username)}</b> — ${p.score} ⭐ <small>(${p.correct_count}/10)</small></p>`).join("")}<hr><p style="text-align:center">🎮 ${st.games} &nbsp; 🥇 ${st.wins} &nbsp; 🎖️ ${st.podiums}</p><button class="btn full" onclick="groupProfile()">🏆 ${lang==="de"?"MEIN MULTIPLAYER-PROFIL":"MON PROFIL MULTIJOUEUR"}</button><button class="btn green full" onclick="groupHome()">👥 ${lang==="de"?"NEUE GRUPPE":"NOUVEAU GROUPE"}</button><button class="btn ghost full" onclick="dashboard()">🏠 Dashboard</button></div></div>`;
  if(badge.rewards&&badge.rewards.length)setTimeout(()=>showRewards(badge.rewards),450)
 }
 async function groupProfile(){
@@ -145,7 +154,7 @@ async function groupProfile(){
  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>🏆 ${lang==="de"?"Multiplayer-Profil":"Profil multijoueur"}</h1></div>
  <div class=stats><div class=card><h2>🎮 ${st.games}</h2><p>${lang==="de"?"Spiele":"Parties"}</p></div><div class=card><h2>🥇 ${st.wins}</h2><p>${lang==="de"?"Siege":"Victoires"}</p></div><div class=card><h2>🎖️ ${st.podiums}</h2><p>Podiums</p></div><div class=card><h2>⚡ ${best}</h2><p>${lang==="de"?"Beste Antwort":"Meilleure réponse"}</p></div></div>
  <div class=card style="margin-top:14px"><h2>🎖️ Badges</h2><div class=badges>${x.rewards.length?x.rewards.map(r=>`<span class=badge>${esc(r.title)}</span>`).join(""):`<span>${lang==="de"?"Noch kein Multiplayer-Badge.":"Pas encore de badge multijoueur."}</span>`}</div></div>
- <div class=card style="margin-top:14px"><h2>📜 ${lang==="de"?"Letzte Spiele":"Dernières parties"}</h2>${x.history.length?x.history.map(h=>`<p>${h.position==1?"🥇":h.position==2?"🥈":h.position==3?"🥉":"#"+h.position} <b>${h.score} ⭐</b> — ${h.correct_count}/10 <small>(${h.room_code})</small></p>`).join(""):`<p>—</p>`}</div></div>`
+ <div class=card style="margin-top:14px"><h2>📜 ${lang==="de"?"Letzte Spiele":"Dernières parties"}</h2>${x.history.length?x.history.map(h=>`<p>${h.position==1?"🥇":h.position==2?"🥈":h.position==3?"🥉":"#"+h.position} <b>${h.score} ⭐</b> — ${h.correct_count}/10 • ${groupLevelLabel(h.difficulty||"alle")} <small>(${h.room_code})</small></p>`).join(""):`<p>—</p>`}</div></div>`
  }
  catch(e){
   stopGroupPoll();
