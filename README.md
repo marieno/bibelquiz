@@ -239,3 +239,9 @@ Host selects the group difficulty before creating the room:
 - `alle` → all levels
 
 Each game still has exactly 10 questions. `alle` is balanced as 3 enfant + 3 facile + 2 moyen + 2 difficile, shuffled afterward. The selected difficulty is visible in the lobby/game/podium and stored in multiplayer history. Group levels are independent of Solo unlock progress.
+
+
+## V5.5.1 – Dashboard cleanup
+- Removed the decorative `Wort / Abenteuer / Frieden / Erfolg` identity tiles.
+- Added a compact logout action to the top of the dashboard.
+- Existing account/game functionality is unchanged.
