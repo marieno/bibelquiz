@@ -326,6 +326,14 @@ def recovery_password_reset(a:PasswordReset):
  except ValueError as e:raise HTTPException(400,str(e))
  return {"ok":True}
 
+@app.get("/api/race/questions/{level}")
+def race_questions(level:str,authorization:str|None=Header(None)):
+ uid(authorization)
+ if level not in LEVELS:raise HTTPException(400,"INVALID_LEVEL")
+ pool=[q for q in QUESTIONS if q["niveau"]==level]
+ chosen=random.sample(pool,min(20,len(pool)))
+ return [{"id":q["id"],"question":q["question"],"reponses":q["reponses"],"correcte":q["correcte"],"reference":q["reference"]} for q in chosen]
+
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
  u=uid(authorization)

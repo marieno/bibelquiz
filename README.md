@@ -245,3 +245,17 @@ Each game still has exactly 10 questions. `alle` is balanced as 3 enfant + 3 fac
 - Removed the decorative `Wort / Abenteuer / Frieden / Erfolg` identity tiles.
 - Added a compact logout action to the top of the dashboard.
 - Existing account/game functionality is unchanged.
+
+
+## V6.0 – BibelRennen prototype
+Integrated solo racing prototype, isolated under `/static/race/`.
+- Touch left/right driving on phone/tablet.
+- Four existing question levels.
+- Track pickups: Bible questions and stars.
+- A/B/C/D only; no free-text answers.
+- DE/FR speech synthesis for question + choices.
+- Correct answer: +100 and 3-second turbo.
+- Star pickup: +20.
+- Finish bonus: +100.
+- Dashboard entry added.
+This prototype intentionally has no multiplayer persistence yet. Its purpose is to validate driving, question interruption, audio and scoring before building 2–5 player synchronization.
