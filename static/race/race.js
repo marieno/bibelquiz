@@ -10,9 +10,38 @@ function renderRace(){root.innerHTML=`<div class=race id=road>${Array.from({leng
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span>🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div></div>
 <div class=distance-sign id=distanceSign>500 m → ZIEL</div><div class=finish-gate id=finishGate>🏁 ZIEL 🏁</div>
 <div class=car id=car></div>
-<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein" onpointerdown="setBrake(true)" onpointerup="setBrake(false)" onpointercancel="setBrake(false)">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer" onpointerdown="setGas(true)" onpointerup="setGas(false)" onpointercancel="setGas(false)">▲</button></div></div></div>`;placeCar()}
-function setGas(v){gas=v;document.querySelector("#gasBtn")?.classList.toggle("active",v)}
-function setBrake(v){braking=v;document.querySelector("#brakeBtn")?.classList.toggle("active",v)}
+<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer">▲</button></div></div></div>`;placeCar();bindPedals()}
+function bindHold(btn,onStart,onEnd){
+ if(!btn)return;
+ const start=e=>{e.preventDefault();onStart();};
+ const end=e=>{e.preventDefault();onEnd();};
+ if(window.PointerEvent){
+  btn.addEventListener("pointerdown",start,{passive:false});
+  btn.addEventListener("pointerup",end,{passive:false});
+  btn.addEventListener("pointercancel",end,{passive:false});
+  btn.addEventListener("pointerleave",e=>{if(e.buttons===0)end(e)},{passive:false});
+ }else{
+  btn.addEventListener("touchstart",start,{passive:false});
+  btn.addEventListener("touchend",end,{passive:false});
+  btn.addEventListener("touchcancel",end,{passive:false});
+  btn.addEventListener("mousedown",start);
+  btn.addEventListener("mouseup",end);
+ }
+}
+function bindPedals(){
+ bindHold(document.querySelector("#gasBtn"),()=>setGas(true),()=>setGas(false));
+ bindHold(document.querySelector("#brakeBtn"),()=>setBrake(true),()=>setBrake(false));
+}
+function setGas(v){
+ gas=v;
+ document.querySelector("#gasBtn")?.classList.toggle("active",v);
+ if(v&&running){speed=Math.max(speed,8);if(spd)spd.textContent=Math.round(speed)}
+}
+function setBrake(v){
+ braking=v;
+ document.querySelector("#brakeBtn")?.classList.toggle("active",v);
+ if(v&&running){speed=Math.max(0,speed-12);if(spd)spd.textContent=Math.round(speed)}
+}
 function move(d){if(!running)return;lane=Math.max(0,Math.min(2,lane+d));placeCar()}
 function placeCar(){let c=document.querySelector("#car");if(c)c.style.left=[22,44,66][lane]+"%"}
 function spawn(){let el=document.createElement("div");el.className="pickup";el.textContent=Math.random()<.72?"📖":"⭐";let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.kind=el.textContent==="📖"?"q":"star";el.style.left=[24,47,70][l]+"%";el.style.top="-60px";road.appendChild(el);pickups.push({el,y:-60,lane:l,kind:el.dataset.kind})}

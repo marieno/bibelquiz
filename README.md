@@ -279,3 +279,11 @@ This prototype intentionally has no multiplayer persistence yet. Its purpose is 
 - Accelerator is explicitly labelled `▲ GAS`; brake `▼ FREIN`.
 - Car position is raised on short/mobile displays so controls never cover it.
 - Added extra bottom track space for phone aspect ratios.
+
+
+## V6.1.2 – Reliable touch pedals
+- Accelerator/brake use explicit non-passive touch/pointer listeners.
+- Browser gestures are disabled on pedals only.
+- Pressing GAS immediately gives visible speed feedback and holding accelerates.
+- Pressing FREIN immediately reduces speed and holding brakes strongly.
+- Active pedals visibly change state while held.
