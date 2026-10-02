@@ -69,3 +69,8 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 }
 .drive.gas.active{background:#70dc83;box-shadow:inset 0 0 0 4px #197c32,0 5px 16px #0005}
 .drive.brake.active{background:#ff8e82;box-shadow:inset 0 0 0 4px #a92d22,0 5px 16px #0005}
+
+/* V6.1.3 clearer finish progression */
+.progress-percent{text-align:center;font-size:13px;margin-top:3px}
+.finish-gate{transform-origin:center top;transition:transform .12s linear,opacity .12s linear}
+.distance-sign{top:31%;font-size:17px;box-shadow:0 5px 10px #0004}

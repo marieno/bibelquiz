@@ -287,3 +287,11 @@ This prototype intentionally has no multiplayer persistence yet. Its purpose is 
 - Pressing GAS immediately gives visible speed feedback and holding accelerates.
 - Pressing FREIN immediately reduces speed and holding brakes strongly.
 - Active pedals visibly change state while held.
+
+
+## V6.1.3 – Continuous acceleration and explicit finish distance
+- Driving loop reads the actual held state of GAS/BRAKE every animation frame.
+- GAS acceleration strengthened and should climb continuously while held.
+- Progress HUD now shows exact meters remaining and percentage.
+- Road signs appear from 25% onward with 750/500/250/100m milestones.
+- Finish gate appears from 75%, grows and moves toward the player as ZIEL approaches.
