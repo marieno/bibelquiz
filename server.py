@@ -43,6 +43,7 @@ class AudioPreferences(BaseModel):
 class AccountUpdate(BaseModel):
     display_name:str
     language:str
+    email:str|None=None
 class PasswordChange(BaseModel):
     current_password:str
     new_password:str
@@ -245,7 +246,7 @@ def account_audio(a:AudioPreferences,authorization:str|None=Header(None)):
 @app.put("/api/account")
 def account_update(a:AccountUpdate,authorization:str|None=Header(None)):
  u=uid(authorization)
- try:database.update_account(u,a.display_name,a.language)
+ try:database.update_account(u,a.display_name,a.language,a.email)
  except ValueError as e:raise HTTPException(400,str(e))
  return {"user":database.user(u)}
 

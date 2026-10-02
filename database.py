@@ -26,11 +26,13 @@ def account_migrate():
   c.execute(text("CREATE TABLE IF NOT EXISTS recovery_tokens(token_hash TEXT PRIMARY KEY,email TEXT NOT NULL,purpose TEXT NOT NULL,user_id BIGINT,expires_at TEXT NOT NULL,used INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS email_queue(id INTEGER PRIMARY KEY AUTOINCREMENT,recipient TEXT NOT NULL,subject TEXT NOT NULL,body TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pending',attempts INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL,sent_at TEXT,last_error TEXT)"))
 
-def update_account(uid,display_name,language):
+def update_account(uid,display_name,language,email=None):
  display_name=display_name.strip()
  if len(display_name)<2:raise ValueError("DISPLAY_NAME_TOO_SHORT")
  if language not in ("de","fr"):raise ValueError("INVALID_LANGUAGE")
- with engine.begin() as c:c.execute(text("UPDATE users SET display_name=:n,language=:l WHERE id=:u"),{"n":display_name,"l":language,"u":uid})
+ email=(email or "").strip().lower()
+ if email and ("@" not in email or "." not in email.split("@")[-1]):raise ValueError("INVALID_EMAIL")
+ with engine.begin() as c:c.execute(text("UPDATE users SET display_name=:n,language=:l,email=:e WHERE id=:u"),{"n":display_name,"l":language,"e":email,"u":uid})
 
 def change_password(uid,current_password,new_password):
  if len(new_password)<8:raise ValueError("PASSWORD_TOO_SHORT")

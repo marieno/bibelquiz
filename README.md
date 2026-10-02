@@ -220,3 +220,11 @@ This prevents `profile` from being interpreted as a room code.
 - GitHub Actions polls every 5 minutes, sends through Brevo, then reports `sent`/`failed`.
 - Required GitHub Actions secrets: `BIBELQUIZ_URL`, `EMAIL_WORKER_SECRET`, `BREVO_API_KEY`, `BREVO_FROM_EMAIL`.
 - `EMAIL_WORKER_SECRET` must also exist in `/home/MarieNo/.bibelquiz.env`.
+
+
+## V5.4.8 – Editable family email
+- `Mein Konto / Mon compte` can edit the family recovery email.
+- Email remains non-unique: siblings/parents may share one address.
+- Login username remains read-only/private.
+- Saving account settings updates display name, language and recovery email together.
+- Existing external GitHub/Brevo email worker remains unchanged.
