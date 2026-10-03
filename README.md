@@ -299,3 +299,9 @@ This prototype intentionally has no multiplayer persistence yet. Its purpose is 
 
 ## V6.1.5 – Mobile race diagnostic
 Temporary on-screen telemetry: animation frame count, running flag, GAS state, brake state, speed and dt. Runtime JavaScript errors are rendered in red directly on the race screen. This build is for diagnosis only and should be removed after the mobile loop issue is identified.
+
+
+## V6.1.6 – Speed loop fix
+- Explicit `MAX_SPEED=125` and `TRACK=1000` declarations.
+- Fixes the frame-1 `ReferenceError` that stopped acceleration and distance progression.
+- Diagnostic overlay hidden for normal play.
