@@ -326,6 +326,78 @@ def recovery_password_reset(a:PasswordReset):
  except ValueError as e:raise HTTPException(400,str(e))
  return {"ok":True}
 
+class RaceCreate(BaseModel):
+ difficulty:str="enfant"
+class RaceJoin(BaseModel):
+ code:str
+class RaceReady(BaseModel):
+ ready:bool=True
+ car:str="red"
+class RaceSync(BaseModel):
+ distance:float
+ speed:float
+ score:int
+ lane:int
+ finished:bool=False
+
+@app.post("/api/race-multi/create")
+def race_multi_create(a:RaceCreate,authorization:str|None=Header(None)):
+ u=uid(authorization);lv=a.difficulty.lower()
+ if lv not in LEVELS and lv!="alle":raise HTTPException(400,"INVALID_LEVEL")
+ for _ in range(30):
+  code=str(random.randint(100000,999999))
+  if not database.race_room(code):
+   database.race_create_room(u,code,lv);r=database.race_room(code);r["me"]=u;return r
+ raise HTTPException(503,"ROOM_CODE_UNAVAILABLE")
+
+@app.post("/api/race-multi/join")
+def race_multi_join(a:RaceJoin,authorization:str|None=Header(None)):
+ u=uid(authorization)
+ try:database.race_join(u,a.code.strip())
+ except ValueError as e:raise HTTPException(400,str(e))
+ r=database.race_room(a.code.strip());r["me"]=u;return r
+
+@app.get("/api/race-multi/{code}")
+def race_multi_room(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);r=database.race_room(code)
+ if not r:raise HTTPException(404,"ROOM_NOT_FOUND")
+ if not any(p["user_id"]==u for p in r["players"]):raise HTTPException(403)
+ r["me"]=u;return r
+
+@app.post("/api/race-multi/{code}/ready")
+def race_multi_ready(code:str,a:RaceReady,authorization:str|None=Header(None)):
+ u=uid(authorization);database.race_ready(u,code,a.ready,a.car);r=database.race_room(code);r["me"]=u;return r
+
+@app.post("/api/race-multi/{code}/start")
+def race_multi_start(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);r=database.race_room(code)
+ if not r:raise HTTPException(404,"ROOM_NOT_FOUND")
+ lv=r["difficulty"];pool=QUESTIONS if lv=="alle" else [q for q in QUESTIONS if q["niveau"]==lv]
+ chosen=random.sample(pool,min(10,len(pool)))
+ try:database.race_start(u,code,[q["id"] for q in chosen])
+ except ValueError as e:raise HTTPException(400,str(e))
+ r=database.race_room(code);r["me"]=u
+ r["questions"]=[{"id":q["id"],"question":q["question"],"reponses":q["reponses"],"correcte":q["correcte"]} for q in chosen]
+ return r
+
+@app.get("/api/race-multi/{code}/questions")
+def race_multi_questions(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);r=database.race_room(code)
+ if not r or not any(p["user_id"]==u for p in r["players"]):raise HTTPException(403)
+ ids=[int(x) for x in (r.get("question_ids") or "").split(",") if x]
+ return {"questions":[{"id":q["id"],"question":q["question"],"reponses":q["reponses"],"correcte":q["correcte"]} for q in QUESTIONS if q["id"] in ids]}
+
+@app.post("/api/race-multi/{code}/sync")
+def race_multi_sync(code:str,a:RaceSync,authorization:str|None=Header(None)):
+ u=uid(authorization)
+ try:database.race_sync(u,code,max(0,min(1000,a.distance)),max(0,min(200,a.speed)),max(0,a.score),max(0,min(2,a.lane)),a.finished)
+ except ValueError as e:raise HTTPException(400,str(e))
+ r=database.race_room(code);r["me"]=u
+ # Effective score includes finish bonus once finished.
+ for p in r["players"]:
+  p["total_score"]=p["score"]+(database.race_finish_bonus(p["finish_order"]) if p["finished"] else 0)
+ return r
+
 @app.get("/api/race/questions/{level}")
 def race_questions(level:str,authorization:str|None=Header(None)):
  uid(authorization)

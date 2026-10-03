@@ -305,3 +305,16 @@ Temporary on-screen telemetry: animation frame count, running flag, GAS state, b
 - Explicit `MAX_SPEED=125` and `TRACK=1000` declarations.
 - Fixes the frame-1 `ReferenceError` that stopped acceleration and distance progression.
 - Diagnostic overlay hidden for normal play.
+
+
+## V6.2 – BibelRennen Multiplayer (first playable slice)
+- 2–5 authenticated players per race room.
+- Host creates a six-digit room and selects Kinder/Einfach/Mittel/Schwer/Alle.
+- Players join by code, select a car and mark Ready.
+- Host starts only when at least 2 players are present and all are ready.
+- Same 10-question set is shared by the room.
+- Each phone renders driving locally; distance/speed/score/lane are synchronized every ~800ms.
+- Other racers are rendered relative to the local player's progress.
+- Finish order gives secondary bonuses: 100/70/50/30/20.
+- Final winner is sorted by total points, not arrival order.
+This is the first multiplayer race slice; anti-cheat/server-authoritative scoring and richer track visuals remain later work.

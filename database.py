@@ -114,6 +114,8 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS game_answers(room_code TEXT NOT NULL,question_index INTEGER NOT NULL,user_id BIGINT NOT NULL,choice TEXT NOT NULL,correct INTEGER NOT NULL,elapsed_ms INTEGER NOT NULL,points INTEGER NOT NULL,UNIQUE(room_code,question_index,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS game_scores(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL DEFAULT 0,correct_count INTEGER NOT NULL DEFAULT 0,UNIQUE(room_code,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS multiplayer_results(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,position INTEGER NOT NULL,best_answer_ms INTEGER,finished_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS race_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,difficulty TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',question_ids TEXT,created_at TEXT NOT NULL,started_at TEXT)"))
+  c.execute(text("CREATE TABLE IF NOT EXISTS race_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,car TEXT NOT NULL DEFAULT 'red',distance REAL NOT NULL DEFAULT 0,speed REAL NOT NULL DEFAULT 0,score INTEGER NOT NULL DEFAULT 0,lane INTEGER NOT NULL DEFAULT 1,finished INTEGER NOT NULL DEFAULT 0,finish_order INTEGER,updated_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
   for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE multiplayer_results ADD COLUMN difficulty TEXT DEFAULT 'alle'"]:
    try:c.execute(text(stmt))
    except Exception:pass
@@ -326,3 +328,57 @@ def weekly_leaderboard(week,limit=50):
     WHERE a.week_key=:w AND a.ranked=1
     ORDER BY a.score DESC,a.correct_count DESC,a.duration_ms ASC LIMIT :n"""),{"w":week,"n":limit}).mappings().all()
  return [dict(r) for r in rows]
+
+def race_create_room(uid,code,difficulty):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
+  c.execute(text("INSERT INTO race_rooms(code,host_user_id,difficulty,status,created_at) VALUES(:c,:u,:lv,'lobby',:d)"),{"c":code,"u":uid,"lv":difficulty,"d":now})
+  c.execute(text("INSERT INTO race_players(room_code,user_id,display_name,ready,updated_at) VALUES(:c,:u,:n,1,:d)"),{"c":code,"u":uid,"n":name,"d":now})
+
+def race_room(code):
+ with engine.connect() as c:
+  r=c.execute(text("SELECT * FROM race_rooms WHERE code=:c"),{"c":code}).mappings().first()
+  if not r:return None
+  ps=c.execute(text("SELECT * FROM race_players WHERE room_code=:c ORDER BY user_id"),{"c":code}).mappings().all()
+ out=dict(r);out["players"]=[dict(x) for x in ps];return out
+
+def race_join(uid,code):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  r=c.execute(text("SELECT status FROM race_rooms WHERE code=:c"),{"c":code}).first()
+  if not r:raise ValueError("ROOM_NOT_FOUND")
+  if r[0]!="lobby":raise ValueError("ROOM_ALREADY_STARTED")
+  if c.execute(text("SELECT COUNT(*) FROM race_players WHERE room_code=:c"),{"c":code}).scalar_one()>=5:raise ValueError("ROOM_FULL")
+  if c.execute(text("SELECT 1 FROM race_players WHERE room_code=:c AND user_id=:u"),{"c":code,"u":uid}).first():return
+  name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
+  c.execute(text("INSERT INTO race_players(room_code,user_id,display_name,ready,updated_at) VALUES(:c,:u,:n,0,:d)"),{"c":code,"u":uid,"n":name,"d":now})
+
+def race_ready(uid,code,ready,car):
+ with engine.begin() as c:c.execute(text("UPDATE race_players SET ready=:r,car=:car,updated_at=:d WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"car":car,"d":datetime.now(timezone.utc).isoformat(),"c":code,"u":uid})
+
+def race_start(uid,code,question_ids):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  r=c.execute(text("SELECT host_user_id,status FROM race_rooms WHERE code=:c"),{"c":code}).first()
+  if not r or r[0]!=uid:raise ValueError("HOST_ONLY")
+  if r[1]!="lobby":raise ValueError("ALREADY_STARTED")
+  ps=c.execute(text("SELECT ready FROM race_players WHERE room_code=:c"),{"c":code}).all()
+  if len(ps)<2:raise ValueError("NOT_ENOUGH_PLAYERS")
+  if any(not x[0] for x in ps):raise ValueError("PLAYERS_NOT_READY")
+  c.execute(text("UPDATE race_rooms SET status='playing',question_ids=:q,started_at=:d WHERE code=:c"),{"q":",".join(map(str,question_ids)),"d":now,"c":code})
+
+def race_sync(uid,code,distance,speed,score,lane,finished):
+ now=datetime.now(timezone.utc).isoformat()
+ with engine.begin() as c:
+  r=c.execute(text("SELECT finished FROM race_players WHERE room_code=:c AND user_id=:u"),{"c":code,"u":uid}).first()
+  if not r:raise ValueError("NOT_IN_ROOM")
+  order=None
+  if finished and not r[0]:
+   order=c.execute(text("SELECT COUNT(*)+1 FROM race_players WHERE room_code=:c AND finished=1"),{"c":code}).scalar_one()
+  c.execute(text("""UPDATE race_players SET distance=:di,speed=:sp,score=:sc,lane=:l,finished=:f,
+    finish_order=COALESCE(finish_order,:o),updated_at=:d WHERE room_code=:c AND user_id=:u"""),
+    {"di":distance,"sp":speed,"sc":score,"l":lane,"f":1 if finished else 0,"o":order,"d":now,"c":code,"u":uid})
+
+def race_finish_bonus(order):
+ return {1:100,2:70,3:50,4:30,5:20}.get(order or 5,20)

@@ -74,3 +74,5 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .progress-percent{text-align:center;font-size:13px;margin-top:3px}
 .finish-gate{transform-origin:center top;transition:transform .12s linear,opacity .12s linear}
 .distance-sign{top:31%;font-size:17px;box-shadow:0 5px 10px #0004}
+
+.opponent{position:absolute;z-index:9;font-size:42px;transition:left .2s,bottom .35s;filter:drop-shadow(0 5px 4px #0006)}
