@@ -295,3 +295,7 @@ This prototype intentionally has no multiplayer persistence yet. Its purpose is 
 - Progress HUD now shows exact meters remaining and percentage.
 - Road signs appear from 25% onward with 750/500/250/100m milestones.
 - Finish gate appears from 75%, grows and moves toward the player as ZIEL approaches.
+
+
+## V6.1.5 – Mobile race diagnostic
+Temporary on-screen telemetry: animation frame count, running flag, GAS state, brake state, speed and dt. Runtime JavaScript errors are rendered in red directly on the race screen. This build is for diagnosis only and should be removed after the mobile loop issue is identified.

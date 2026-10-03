@@ -1,5 +1,5 @@
 const root=document.querySelector("#raceApp");
-const token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
+let debugFrames=0,debugLastDt=0;const token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
 const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen und hole die meisten Punkte!",start:"RENNEN STARTEN",back:"← BibelQuiz",question:"Frage",finish:"ZIEL!",points:"Punkte",race:"Rennen",listen:"Vorlesen"},fr:{title:"🏎️ Course Biblique",sub:"Conduis, collecte les questions et gagne le plus de points !",start:"DÉMARRER",back:"← BibelQuiz",question:"Question",finish:"ARRIVÉE !",points:"Points",race:"Course",listen:"Écouter"}};
 async function api(path,opt={}){let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
 function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><div class=levels>${[["enfant","🧒 KINDER / ENFANT"],["facile","🌱 EINFACH / FACILE"],["moyen","📖 MITTEL / MOYEN"],["difficile","🔥 SCHWER / DIFFICILE"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
@@ -9,7 +9,7 @@ function renderRace(){root.innerHTML=`<div class=race id=road>${Array.from({leng
 <div class=hud><span class=pill>⭐ <b id=sc>0</b></span><span class="pill speedo">🏎️ <b id=spd>0</b> km/h</span><span class=pill id=boost>⚡</span></div>
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
 <div class=distance-sign id=distanceSign>500 m → ZIEL</div><div class=finish-gate id=finishGate>🏁 ZIEL 🏁</div>
-<div class=car id=car></div>
+<div id=raceDebug style="position:absolute;z-index:100;left:8px;top:150px;background:#111e;color:#7CFC00;padding:8px 10px;border-radius:9px;font:700 12px monospace;line-height:1.35">FRAME: 0<br>RUN: ?<br>GAS: ?<br>BRAKE: ?<br>SPEED: 0<br>DT: 0</div><div class=car id=car></div>
 <div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer">▲</button></div></div></div>`;placeCar();bindPedals()}
 function bindHold(btn,onStart,onEnd){
  if(!btn)return;
@@ -50,7 +50,12 @@ function setBrake(v){
 function move(d){if(!running)return;lane=Math.max(0,Math.min(2,lane+d));placeCar()}
 function placeCar(){let c=document.querySelector("#car");if(c)c.style.left=[22,44,66][lane]+"%"}
 function spawn(){let el=document.createElement("div");el.className="pickup";el.textContent=Math.random()<.72?"📖":"⭐";let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.kind=el.textContent==="📖"?"q":"star";el.style.left=[24,47,70][l]+"%";el.style.top="-60px";road.appendChild(el);pickups.push({el,y:-60,lane:l,kind:el.dataset.kind})}
-function loop(now){if(!running)return;let dt=Math.min(.05,(now-last)/1000);last=now;
+function loop(now){
+ debugFrames++;
+ let rawDt=(now-last)/1000,dt=Math.min(.05,Math.max(0,rawDt));last=now;debugLastDt=dt;
+ const dbg=document.getElementById("raceDebug");
+ if(dbg)dbg.innerHTML=`FRAME: ${debugFrames}<br>RUN: ${running}<br>GAS: ${gas} / ${document.getElementById("gasBtn")?.dataset.pressed||"0"}<br>BRAKE: ${braking}<br>SPEED: ${speed.toFixed(1)}<br>DT: ${dt.toFixed(4)}`;
+ if(!running)return;
  let isTurbo=turbo>now,max=isTurbo?165:MAX_SPEED;
  let gasHeld=gas||document.querySelector("#gasBtn")?.dataset.pressed==="1";
  let brakeHeld=braking||document.querySelector("#brakeBtn")?.dataset.pressed==="1";
@@ -76,3 +81,12 @@ function showQuestion(){let q=questions[qi++%questions.length],r=q.reponses[lang
 function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
 function finish(){running=false;let arrival=100;score+=arrival;root.querySelector(".race").insertAdjacentHTML("beforeend",`<div class=finish><div class=panel><div class=big>🏁🏆</div><h1>${labels[lang].finish}</h1><h2>⭐ ${score} ${labels[lang].points}</h2><p>🏎️ +${arrival} ${lang==="de"?"Zielbonus":"bonus arrivée"}</p><button class="btn start" onclick="menu()">${lang==="de"?"NOCH EIN RENNEN":"REJOUER"}</button><p><button class=btn onclick="location.href='/'">${labels[lang].back}</button></p></div></div>`)}
 menu();
+
+window.addEventListener("error",e=>{
+ const d=document.getElementById("raceDebug");
+ if(d){d.style.color="#fff";d.style.background="#b00020";d.innerHTML+="<br>ERROR: "+String(e.message).slice(0,90)}
+});
+window.addEventListener("unhandledrejection",e=>{
+ const d=document.getElementById("raceDebug");
+ if(d){d.style.color="#fff";d.style.background="#b00020";d.innerHTML+="<br>PROMISE: "+String(e.reason).slice(0,90)}
+});
