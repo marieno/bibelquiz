@@ -1,3 +1,4 @@
+let raceStarting=false;
 let raceRoom="",racePoll=null,raceSyncTimer=null,raceMe=null,racePlayers=[];
 function multiMenu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️🏎️</div><h1>BibelRennen Multiplayer</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p>
 <h3>${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h3><div class=levels>${[["enfant","🧒 Kinder"],["facile","🌱 Einfach"],["moyen","📖 Mittel"],["difficile","🔥 Schwer"],["alle","🎲 Alle"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn start" onclick="raceCreate()">🎮 ${lang==="de"?"ERSTELLEN":"CRÉER"}</button>
@@ -5,12 +6,42 @@ function multiMenu(){let t=labels[lang];root.innerHTML=`<div class=menu><div cla
 async function raceCreate(){let r=await api("/api/race-multi/create",{method:"POST",body:JSON.stringify({difficulty:level})});raceRoom=r.code;raceLobby()}
 async function raceJoin(){try{let r=await api("/api/race-multi/join",{method:"POST",body:JSON.stringify({code:raceCode.value.trim()})});raceRoom=r.code;raceLobby()}catch(e){alert(e.message)}}
 async function raceLobby(){clearInterval(racePoll);let r=await api("/api/race-multi/"+raceRoom);raceMe=r.me;let host=r.host_user_id===r.me,mine=r.players.find(x=>x.user_id===r.me);root.innerHTML=`<div class=menu><div class=panel><h1>🏁 Lobby ${r.code}</h1><h3>${groupLevel(r.difficulty)}</h3>${r.players.map(p=>`<p>${p.user_id===r.host_user_id?"👑":"🏎️"} <b>${p.display_name}</b> <span style="float:right">${p.ready?"🟢":"⚪"}</span></p>`).join("")}<h3>🚗 Auto</h3><div>${["red","blue","green","yellow","purple"].map(c=>`<button class=btn onclick="raceReady('${c}')">${carEmoji(c)} ${c}</button>`).join("")}</div>${host?`<button class="btn start" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""} onclick="raceMultiStart()">▶ START</button>`:`<button class="btn start" onclick="raceReady('${mine?.car||"red"}')">${mine?.ready?"✅ READY":"ICH BIN BEREIT / JE SUIS PRÊT"}</button>`}<p><button class=btn onclick="multiMenu()">←</button></p></div></div>`;
-racePoll=setInterval(async()=>{let n=await api("/api/race-multi/"+raceRoom);if(n.status==="playing"){clearInterval(racePoll);raceMultiPlay()}else if(JSON.stringify(n.players)!==JSON.stringify(r.players))raceLobby()},1500)}
+racePoll=setInterval(async()=>{
+ try{
+  let n=await api("/api/race-multi/"+raceRoom);
+  if(n.status==="playing"){
+   clearInterval(racePoll);racePoll=null;
+   await enterStartedRace();
+   return;
+  }
+  if(JSON.stringify(n.players)!==JSON.stringify(r.players))raceLobby();
+ }catch(e){}
+},700)}
 function carEmoji(c){return {red:"🔴",blue:"🔵",green:"🟢",yellow:"🟡",purple:"🟣"}[c]||"🚗"}
 function groupLevel(l){return {enfant:"🧒 Kinder",facile:"🌱 Einfach",moyen:"📖 Mittel",difficile:"🔥 Schwer",alle:"🎲 Alle Level"}[l]||l}
 async function raceReady(car){await api(`/api/race-multi/${raceRoom}/ready`,{method:"POST",body:JSON.stringify({ready:true,car})});raceLobby()}
-async function raceMultiStart(){await api(`/api/race-multi/${raceRoom}/start`,{method:"POST",body:"{}"});clearInterval(racePoll);raceMultiPlay()}
-async function raceMultiPlay(){let q=await api(`/api/race-multi/${raceRoom}/questions`);questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceSyncTimer=setInterval(syncRace,800)}
+async function raceMultiStart(){
+ if(raceStarting)return;
+ raceStarting=true;
+ try{
+  await api(`/api/race-multi/${raceRoom}/start`,{method:"POST",body:"{}"});
+  if(racePoll){clearInterval(racePoll);racePoll=null}
+  await enterStartedRace();
+ }catch(e){raceStarting=false;alert(e.message)}
+}
+async function enterStartedRace(){
+ if(raceStarting&&running)return;
+ raceStarting=true;
+ if(racePoll){clearInterval(racePoll);racePoll=null}
+ root.innerHTML=`<div class=menu><div class=panel><div class=big>🏁</div><h1>${lang==="de"?"Das Rennen startet…":"La course démarre…"}</h1><p>${lang==="de"?"Der Host hat das Rennen gestartet.":"Le Host a lancé la course."}</p></div></div>`;
+ try{await raceMultiPlay()}finally{raceStarting=false}
+}
+async function raceMultiPlay(){
+ let room=await api(`/api/race-multi/${raceRoom}`);
+ if(room.status!=="playing"){raceStarting=false;raceLobby();return}
+ let q=await api(`/api/race-multi/${raceRoom}/questions`);
+ if(!q.questions||!q.questions.length){throw new Error("RACE_QUESTIONS_NOT_READY")}
+ questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceSyncTimer=setInterval(syncRace,800)}
 async function syncRace(){if(!raceRoom)return;try{let r=await api(`/api/race-multi/${raceRoom}/sync`,{method:"POST",body:JSON.stringify({distance,speed,score,lane,finished:distance>=TRACK})});racePlayers=r.players;renderOpponents(r);if(r.players.every(p=>p.finished)){clearInterval(raceSyncTimer);showRaceResults(r)}}catch(e){}}
 function renderOpponents(r){
  document.querySelectorAll(".opponent,.live-board,.offscreen-racer").forEach(x=>x.remove());

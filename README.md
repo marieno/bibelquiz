@@ -327,3 +327,12 @@ This is the first multiplayer race slice; anti-cheat/server-authoritative scorin
 - A compact LIVE board shows track order, progress percentage and current Bible points.
 - Racers more than 150m away remain visible as ▲ ahead / ▼ behind indicators.
 - LIVE order is explicitly track position only; final podium remains total-points based.
+
+
+## V6.3.1 – Host start synchronization
+- Lobby clients poll room status every ~700ms.
+- `status=playing` immediately transitions every joined device into the race.
+- Host and guests use the same race-entry path.
+- Guests see `Das Rennen startet… / La course démarre…` during transition.
+- Shared room questions are fetched before the local race loop starts.
+- Transition guard prevents duplicate race starts from overlapping poll requests.
