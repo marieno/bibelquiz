@@ -12,7 +12,35 @@ async function raceReady(car){await api(`/api/race-multi/${raceRoom}/ready`,{met
 async function raceMultiStart(){await api(`/api/race-multi/${raceRoom}/start`,{method:"POST",body:"{}"});clearInterval(racePoll);raceMultiPlay()}
 async function raceMultiPlay(){let q=await api(`/api/race-multi/${raceRoom}/questions`);questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceSyncTimer=setInterval(syncRace,800)}
 async function syncRace(){if(!raceRoom)return;try{let r=await api(`/api/race-multi/${raceRoom}/sync`,{method:"POST",body:JSON.stringify({distance,speed,score,lane,finished:distance>=TRACK})});racePlayers=r.players;renderOpponents(r);if(r.players.every(p=>p.finished)){clearInterval(raceSyncTimer);showRaceResults(r)}}catch(e){}}
-function renderOpponents(r){document.querySelectorAll(".opponent").forEach(x=>x.remove());for(let p of r.players.filter(x=>x.user_id!==r.me)){let e=document.createElement("div");e.className="opponent";e.textContent="🏎️";e.style.left=[22,44,66][p.lane]+"%";let gap=Math.max(-160,Math.min(160,(p.distance-distance)*1.2));e.style.bottom=`calc(25% + ${gap}px)`;e.title=p.display_name;road.appendChild(e)}}
+function renderOpponents(r){
+ document.querySelectorAll(".opponent,.live-board,.offscreen-racer").forEach(x=>x.remove());
+ let me=r.players.find(x=>x.user_id===r.me),roadEl=document.getElementById("road");
+ if(!me||!roadEl)return;
+ // Live ranking here is track position only, not final winner.
+ let byTrack=[...r.players].sort((a,b)=>b.distance-a.distance);
+ let board=document.createElement("div");board.className="live-board";
+ board.innerHTML=`<b>🏁 LIVE</b>${byTrack.map((p,i)=>`<div><span>${i+1}. ${escRace(p.display_name)} ${p.user_id===r.me?"(MOI)":""}</span><span>${Math.floor(p.distance/10)}% · ⭐${p.score}</span></div>`).join("")}`;
+ roadEl.appendChild(board);
+
+ for(let p of r.players.filter(x=>x.user_id!==r.me)){
+   let gap=p.distance-me.distance;
+   // Nearby opponents are rendered on the road. Interpolation is CSS-driven.
+   if(Math.abs(gap)<=150){
+     let e=document.createElement("div");e.className="opponent";
+     e.dataset.uid=p.user_id;
+     e.style.left=[22,44,66][p.lane]+"%";
+     let y=Math.max(21,Math.min(72,47-gap*.17));
+     e.style.top=y+"%";
+     e.innerHTML=`<span class="racer-name">${escRace(p.display_name)}</span><span class="racer-car car-${p.car||"blue"}">🏎️</span><span class="racer-gap">${gap>=0?"+":""}${Math.round(gap)} m</span>`;
+     roadEl.appendChild(e);
+   }else{
+     let tag=document.createElement("div");tag.className="offscreen-racer "+(gap>0?"ahead":"behind");
+     tag.innerHTML=`${gap>0?"▲":"▼"} ${escRace(p.display_name)} ${gap>0?"+":""}${Math.round(gap)} m`;
+     roadEl.appendChild(tag);
+   }
+ }
+}
+function escRace(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function showRaceResults(r){running=false;let sorted=[...r.players].sort((a,b)=>(b.total_score||b.score)-(a.total_score||a.score));root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"Endstand":"Classement final"}</h1>${sorted.map((p,i)=>`<h2>${["🥇","🥈","🥉","4.","5."][i]} ${p.display_name} — ${p.total_score||p.score} ⭐</h2>`).join("")}<button class="btn start" onclick="multiMenu()">🏎️ ${lang==="de"?"NEUES RENNEN":"NOUVELLE COURSE"}</button></div></div>`}
 // Add multiplayer entry to solo menu after it renders.
 const oldMenu=menu;menu=function(){oldMenu();let panel=document.querySelector(".panel");if(panel)panel.insertAdjacentHTML("beforeend",`<p><button class="btn start" onclick="multiMenu()">👥🏎️ MULTIPLAYER 2–5</button></p>`)}

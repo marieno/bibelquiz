@@ -318,3 +318,12 @@ Temporary on-screen telemetry: animation frame count, running flag, GAS state, b
 - Finish order gives secondary bonuses: 100/70/50/30/20.
 - Final winner is sorted by total points, not arrival order.
 This is the first multiplayer race slice; anti-cheat/server-authoritative scoring and richer track visuals remain later work.
+
+
+## V6.3 – Live Racers
+- Nearby opponents are visibly rendered on the same road relative to the local racer.
+- Every opponent has player name, selected car color cue and live meter gap.
+- CSS interpolation smooths the ~800ms network updates.
+- A compact LIVE board shows track order, progress percentage and current Bible points.
+- Racers more than 150m away remain visible as ▲ ahead / ▼ behind indicators.
+- LIVE order is explicitly track position only; final podium remains total-points based.

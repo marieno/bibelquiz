@@ -76,3 +76,35 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .distance-sign{top:31%;font-size:17px;box-shadow:0 5px 10px #0004}
 
 .opponent{position:absolute;z-index:9;font-size:42px;transition:left .2s,bottom .35s;filter:drop-shadow(0 5px 4px #0006)}
+
+/* V6.3 live racers */
+.opponent{
+ position:absolute;z-index:12;width:86px;margin-left:-43px;
+ display:flex;flex-direction:column;align-items:center;
+ transition:left .45s ease,top .65s linear;pointer-events:none;
+}
+.racer-name,.racer-gap{
+ background:#fffef0e8;color:#15324b;border-radius:999px;padding:3px 7px;
+ font-size:11px;font-weight:1000;white-space:nowrap;box-shadow:0 2px 5px #0003;
+}
+.racer-car{font-size:42px;line-height:45px;filter:drop-shadow(0 5px 4px #0006)}
+.car-red{filter:drop-shadow(0 0 5px #e53935) drop-shadow(0 5px 4px #0006)}
+.car-blue{filter:drop-shadow(0 0 5px #1685ff) drop-shadow(0 5px 4px #0006)}
+.car-green{filter:drop-shadow(0 0 5px #26b54a) drop-shadow(0 5px 4px #0006)}
+.car-yellow{filter:drop-shadow(0 0 5px #ffd31a) drop-shadow(0 5px 4px #0006)}
+.car-purple{filter:drop-shadow(0 0 5px #a84cff) drop-shadow(0 5px 4px #0006)}
+.live-board{
+ position:absolute;z-index:35;top:122px;left:8px;width:min(205px,46vw);
+ background:#102d46dc;color:white;border-radius:14px;padding:8px;
+ font-size:11px;box-shadow:0 5px 15px #0005;pointer-events:none
+}
+.live-board>div{display:flex;justify-content:space-between;gap:7px;padding-top:3px}
+.offscreen-racer{
+ position:absolute;z-index:34;right:8px;background:#fff9;border-radius:999px;
+ padding:5px 9px;font-size:11px;font-weight:1000;pointer-events:none
+}
+.offscreen-racer.ahead{top:122px}.offscreen-racer.behind{bottom:110px}
+@media(max-width:520px){
+ .live-board{top:118px;width:47vw;font-size:10px}
+ .racer-car{font-size:36px}.racer-name,.racer-gap{font-size:10px}
+}
