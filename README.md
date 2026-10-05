@@ -401,3 +401,12 @@ Consolidates all validated manual fixes plus live race synchronization:
 - Fixes invalid `showQuestion` function signature introduced by the music integration.
 - JavaScript syntax validated with Node `--check` for race-bundle.js, music.js, app.js and service-worker.js before packaging.
 - Keeps V6.8.1 shared race runtime, live multiplayer, 20-second DNF, common ranking and DE/FR music.
+
+
+## V7.0 – BibelRennen Arcade
+- New behind-the-car perspective road and horizon.
+- Animated roadside scenery.
+- Player car rendered from rear arcade viewpoint.
+- Multiplayer opponents projected by real distance and lane: distant cars are smaller near the horizon, approaching cars grow naturally.
+- Existing group, questions, live sync, 20-second DNF, common ranking and DE/FR music preserved.
+- JavaScript syntax validated before packaging.

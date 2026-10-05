@@ -120,3 +120,26 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
  box-shadow:0 4px 12px #0004;touch-action:manipulation
 }
 @media(max-width:520px){.music-toggle{top:82px;right:10px;width:48px;height:48px;font-size:22px}}
+
+/* ===== V7 ARCADE ===== */
+.arcade-road{overflow:hidden;background:#71c957!important}
+.arcade-world{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.arcade-sky{position:absolute;left:0;right:0;top:0;height:38%;background:linear-gradient(#62c8ff,#dff6ff)}
+.arcade-sky .sun{position:absolute;right:10%;top:13%;font-size:42px}
+.arcade-sky .cloud{position:absolute;font-size:36px;opacity:.88}.arcade-sky .c1{left:12%;top:16%}.arcade-sky .c2{left:62%;top:7%;font-size:27px}
+.arcade-hills{position:absolute;left:-10%;width:120%;height:17%;top:25%;border-radius:50% 50% 0 0;background:#65ad55}
+.arcade-hills.h2{top:29%;left:-25%;width:150%;height:15%;background:#4d9549}
+.arcade-track{position:absolute;left:0;right:0;top:31%;bottom:0;clip-path:polygon(43% 0,57% 0,94% 100%,6% 100%);background:linear-gradient(90deg,#555 0,#6b6b6b 50%,#555 100%);overflow:visible}
+.track-edge{position:absolute;top:0;bottom:0;width:3%;background:repeating-linear-gradient(180deg,#fff 0 22px,#e33 22px 44px)}
+.track-edge.left{left:0}.track-edge.right{right:0}
+.lane-perspective{position:absolute;top:0;bottom:0;width:2px;background:repeating-linear-gradient(180deg,#fff 0 25px,transparent 25px 55px);transform-origin:top}
+.lane-perspective.l1{left:34%;transform:skewX(-13deg)}.lane-perspective.l2{right:34%;transform:skewX(13deg)}
+.arcade-player-wrap{position:absolute;top:79%;left:50%;z-index:12;transition:left .12s ease;transform-origin:center bottom;text-align:center}
+.arcade-player-name{font-weight:1000;font-size:13px;background:#fffddd;border-radius:10px;padding:2px 7px;margin:auto;width:max-content}
+.arcade-player-car{font-size:72px;filter:drop-shadow(0 9px 4px #0005)}
+.arcade-opponent{position:absolute;z-index:9;text-align:center;transform-origin:center bottom;white-space:nowrap}
+.arcade-opponent b,.arcade-opponent small{display:block;background:#fffde8e8;border-radius:8px;padding:1px 5px;font-size:12px}
+.arcade-opponent span{display:block;font-size:62px;filter:drop-shadow(0 5px 3px #0005)}
+.scenery{position:absolute;z-index:3;font-size:55px;transform-origin:center bottom}
+.race-map,.hud,.controls,.distance-sign,.finish-gate,.question-overlay,.music-toggle{z-index:30!important}
+@media(max-width:520px){.arcade-player-car{font-size:60px}.arcade-opponent span{font-size:52px}.scenery{font-size:45px}}

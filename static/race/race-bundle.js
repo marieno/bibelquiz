@@ -13,7 +13,7 @@ function renderRace(){raceMusic.installButton();raceMusic.start();root.innerHTML
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
 <div class=distance-sign id=distanceSign>500 m → ZIEL</div><div class=finish-gate id=finishGate>🏁 ZIEL 🏁</div>
 <div id=raceDebug style="display:none;position:absolute;z-index:100;left:8px;top:150px;background:#111e;color:#7CFC00;padding:8px 10px;border-radius:9px;font:700 12px monospace;line-height:1.35">FRAME: 0<br>RUN: ?<br>GAS: ?<br>BRAKE: ?<br>SPEED: 0<br>DT: 0</div><div class=car id=car></div>
-<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer">▲</button></div></div></div>`;placeCar();bindPedals()}
+<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer">▲</button></div></div></div>`;placeCar();bindPedals();arcadeInit()}
 function bindHold(btn,onStart,onEnd){
  if(!btn)return;
  const start=e=>{e.preventDefault();onStart();};
@@ -234,7 +234,7 @@ async function unifiedSync(){
   else if(unifiedWaiting)showWaiting(st);
  }catch(e){}
 }
-function renderUnifiedRacers(st){
+function renderUnifiedRacers(st){arcadeRenderOpponents(st);
  let me=st.players.find(p=>Number(p.user_id)===Number(st.me)),roadEl=document.getElementById("road");if(!me||!roadEl)return;
  document.querySelectorAll(".opponent,.live-board,.offscreen-racer").forEach(x=>x.remove());
  let board=document.createElement("div");board.className="live-board";
@@ -258,3 +258,72 @@ function showUnifiedResults(st){raceMusic.restore();
 }
 const unifiedCode=new URLSearchParams(location.search).get("group");
 if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else{raceHome()}
+
+/* ===== V7 ARCADE VISUAL ENGINE ===== */
+let arcadeFrame=0;
+function arcadeInit(){
+ const road=document.getElementById("road"); if(!road)return;
+ road.classList.add("arcade-road");
+ if(!document.getElementById("arcadeWorld")){
+  const world=document.createElement("div");
+  world.id="arcadeWorld";world.className="arcade-world";
+  world.innerHTML=`
+   <div class="arcade-sky"><span class="sun">☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
+   <div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
+   <div class="arcade-track">
+    <div class="track-edge left"></div><div class="track-edge right"></div>
+    <div class="lane-perspective l1"></div><div class="lane-perspective l2"></div>
+    <div id="arcadeScenery"></div><div id="arcadePickups"></div><div id="arcadeOpponents"></div>
+    <div class="arcade-player-wrap" id="arcadePlayer"><div class="arcade-player-name">DU</div><div class="arcade-player-car">🏎️</div></div>
+   </div>`;
+  road.prepend(world);
+ }
+ // Hide old flat player/road markings, but preserve controls and HUD.
+ const oldCar=document.getElementById("car");if(oldCar)oldCar.style.opacity="0";
+ road.querySelectorAll(".road-line").forEach(x=>x.style.opacity="0");
+ arcadeRender();
+}
+function arcadeProject(gap,laneIndex){
+ // gap > 0 means opponent/object ahead. 0..220m mapped from bottom to horizon.
+ const g=Math.max(0,Math.min(220,gap));
+ const depth=g/220;
+ const y=82-depth*59;
+ const scale=1-depth*.72;
+ const center=50;
+ const spread=(1-depth*.72)*23;
+ const laneX=center+(laneIndex-1)*spread;
+ return {x:laneX,y,scale,visible:gap>-18&&gap<225};
+}
+function arcadeRender(){
+ const world=document.getElementById("arcadeWorld");if(!world)return;
+ arcadeFrame++;
+ const player=document.getElementById("arcadePlayer");
+ if(player){
+  player.style.left=([27,50,73][lane]||50)+"%";
+  player.style.transform=`translateX(-50%) scale(${1+Math.min(speed,160)/1200})`;
+ }
+ const scenery=document.getElementById("arcadeScenery");
+ if(scenery){
+  const phase=(distance*2.2)%180;
+  let out="";
+  for(let i=0;i<8;i++){
+   const d=(i*31+phase)%220,p=arcadeProject(d,1),side=i%2===0?"left":"right";
+   const x=side==="left" ? 7+(1-d/220)*8 : 93-(1-d/220)*8;
+   out+=`<span class="scenery ${side}" style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${i%3===0?"🌲":i%3===1?"🏠":"🌳"}</span>`;
+  }
+  scenery.innerHTML=out;
+ }
+ requestAnimationFrame(arcadeRender);
+}
+function arcadeRenderOpponents(st){
+ const box=document.getElementById("arcadeOpponents");if(!box)return;
+ const me=st.players.find(p=>Number(p.user_id)===Number(st.me));if(!me)return;
+ box.innerHTML=st.players.filter(p=>Number(p.user_id)!==Number(st.me)).map(p=>{
+  const gap=p.race_distance-me.race_distance,pr=arcadeProject(gap,p.race_lane);
+  if(!pr.visible)return "";
+  const car={red:"🏎️",blue:"🚙",green:"🚗",yellow:"🚕",purple:"🏁"}[p.car]||"🚗";
+  return `<div class="arcade-opponent" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})">
+    <b>${escRace(p.display_name)}</b><span>${car}</span><small>${gap>=0?"+":""}${Math.round(gap)} m</small>
+   </div>`;
+ }).join("");
+}
