@@ -378,3 +378,14 @@ Consolidates all validated manual fixes plus live race synchronization:
 - `/api/version` returns 6.7.1.
 - Group screen visibly shows V6.7.1.
 - Service worker cache: bibelquiz-v6-7-1-consolidated.
+
+
+## V6.8 – BibelRennen music
+- German race music: `10 GeboteV2.m4a`.
+- French race music: `être disciple de Jésus.m4a`.
+- Language selects the soundtrack automatically.
+- Music loops during the race.
+- Music button toggles soundtrack on/off.
+- Browser-safe start is retried on GAS user gesture.
+- Music volume ducks during question/wait overlays and restores afterward.
+- Version endpoint reports 6.8 / race-music.

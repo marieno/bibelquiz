@@ -149,12 +149,12 @@ function renderUnifiedRacers(st){
   else{let e=document.createElement("div");e.className="offscreen-racer "+(gap>0?"ahead":"behind");e.textContent=`${gap>0?"▲":"▼"} ${p.display_name} ${gap>0?"+":""}${Math.round(gap)} m`;roadEl.appendChild(e)}
  }
 }
-function showWaiting(st){
+function showWaiting(st){raceMusic.duck();
  let existing=document.getElementById("multiFinish");if(existing)existing.remove();
  let me=st.players.find(p=>Number(p.user_id)===Number(st.me)),left=st.players.filter(p=>!p.race_finished);
  document.body.insertAdjacentHTML("beforeend",`<div class=question-overlay id=multiFinish><div class=question><h1>🏁 ZIEL!</h1><h2>⭐ ${me?.race_score||score}</h2><h2>⏱️ ${st.remaining_seconds??20}s</h2><p>${left.length?(lang==="de"?"Warten auf: ":"En attente de : ")+left.map(x=>escRace(x.display_name)+" "+Math.floor(x.race_distance/10)+"%").join(", "):""}</p></div></div>`)
 }
-function showUnifiedResults(st){
+function showUnifiedResults(st){raceMusic.restore();
  running=false;document.getElementById("multiFinish")?.remove();
  let sorted=[...st.players].sort((a,b)=>b.total_score-a.total_score);
  root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"ENDERGEBNIS":"CLASSEMENT FINAL"}</h1>${sorted.map((p,i)=>`<p style="font-size:20px"><b>${["🥇","🥈","🥉","4.","5."][i]} ${escRace(p.display_name)}</b> — ⭐ ${p.total_score} <small>(${p.race_score}+${p.finish_bonus}${p.dnf?" · DNF":""})</small></p>`).join("")}<h2>🏆 ${escRace(sorted[0]?.display_name||"")} — ${sorted[0]?.total_score||0} ⭐</h2><button class="btn start" onclick="location.href='/'">← BibelQuiz</button></div></div>`
