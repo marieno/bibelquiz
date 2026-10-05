@@ -336,3 +336,13 @@ This is the first multiplayer race slice; anti-cheat/server-authoritative scorin
 - Guests see `Das Rennen startet… / La course démarre…` during transition.
 - Shared room questions are fetched before the local race loop starts.
 - Transition guard prevents duplicate race starts from overlapping poll requests.
+
+
+## V6.4 – Clean BibelRennen flow
+State flow is now explicit: Mode Select → Solo Setup OR Multiplayer Create/Join → Lobby → Host Start → Starting → Racing → Finished.
+- Multiplayer create button is `RAUM ERSTELLEN`, never `Rennen starten`.
+- Only the actual host sees `RENNEN STARTEN` in the lobby.
+- Guests only have Ready/Cancel Ready and wait for the host.
+- Car selection is independent from Ready state.
+- All guests auto-transition when room status changes to `playing`.
+- Removed the previous menu monkey-patching that could leave duplicate start affordances.

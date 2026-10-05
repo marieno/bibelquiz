@@ -108,3 +108,7 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
  .live-board{top:118px;width:47vw;font-size:10px}
  .racer-car{font-size:36px}.racer-name,.racer-gap{font-size:10px}
 }
+
+.lobby-players{text-align:left;background:#f5f9fc;border-radius:16px;padding:7px 14px;margin:10px 0}
+.lobby-players p{border-bottom:1px solid #dfe8ee;padding:8px 0;margin:0}
+.lobby-players p:last-child{border-bottom:0}
