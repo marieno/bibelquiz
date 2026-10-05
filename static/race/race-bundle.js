@@ -259,57 +259,64 @@ function showUnifiedResults(st){raceMusic.restore();
 const unifiedCode=new URLSearchParams(location.search).get("group");
 if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else{raceHome()}
 
-/* ===== V7 ARCADE VISUAL ENGINE ===== */
-let arcadeFrame=0;
+/* ===== V7.1 REAL ARCADE VISUAL ENGINE ===== */
+let arcadeFrame=0,arcadeCurve=0;
+function trackCurveAt(d){
+ const z=(distance+d)/145;
+ return Math.sin(z)*.72+Math.sin(z*.43+1.8)*.34;
+}
 function arcadeInit(){
- const road=document.getElementById("road"); if(!road)return;
+ const road=document.getElementById("road");if(!road)return;
  road.classList.add("arcade-road");
  if(!document.getElementById("arcadeWorld")){
-  const world=document.createElement("div");
-  world.id="arcadeWorld";world.className="arcade-world";
-  world.innerHTML=`
-   <div class="arcade-sky"><span class="sun">☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
-   <div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
-   <div class="arcade-track">
-    <div class="track-edge left"></div><div class="track-edge right"></div>
-    <div class="lane-perspective l1"></div><div class="lane-perspective l2"></div>
-    <div id="arcadeScenery"></div><div id="arcadePickups"></div><div id="arcadeOpponents"></div>
-    <div class="arcade-player-wrap" id="arcadePlayer"><div class="arcade-player-name">DU</div><div class="arcade-player-car">🏎️</div></div>
-   </div>`;
+  const world=document.createElement("div");world.id="arcadeWorld";world.className="arcade-world";
+  world.innerHTML=`<div class="arcade-sky"><span class=sun>☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
+  <div class="mountains">⛰️　🏔️　⛰️</div><div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
+  <div class="arcade-track" id=arcadeTrack><div class="track-surface"></div><div id=curveStripes></div>
+  <div id=arcadeScenery></div><div id=arcadePickups></div><div id=arcadeOpponents></div>
+  <div class=arcade-player-wrap id=arcadePlayer><div class=arcade-player-name>DU</div><div class=arcade-player-car><span class=rear-window></span><span class=tail-light l></span><span class=tail-light r></span><span class=plate>BIBEL</span></div></div></div>`;
   road.prepend(world);
  }
- // Hide old flat player/road markings, but preserve controls and HUD.
  const oldCar=document.getElementById("car");if(oldCar)oldCar.style.opacity="0";
  road.querySelectorAll(".road-line").forEach(x=>x.style.opacity="0");
  arcadeRender();
 }
 function arcadeProject(gap,laneIndex){
- // gap > 0 means opponent/object ahead. 0..220m mapped from bottom to horizon.
- const g=Math.max(0,Math.min(220,gap));
- const depth=g/220;
- const y=82-depth*59;
- const scale=1-depth*.72;
- const center=50;
- const spread=(1-depth*.72)*23;
- const laneX=center+(laneIndex-1)*spread;
- return {x:laneX,y,scale,visible:gap>-18&&gap<225};
+ const g=Math.max(0,Math.min(240,gap)),depth=g/240;
+ const y=84-depth*61,scale=1-depth*.78;
+ const curve=trackCurveAt(g);
+ const center=50+curve*(1-depth)*19;
+ const spread=(1-depth*.76)*22;
+ return{x:center+(laneIndex-1)*spread,y,scale,visible:gap>-22&&gap<245,curve};
+}
+function renderRoadStripes(){
+ const box=document.getElementById("curveStripes");if(!box)return;
+ let out="";
+ for(let i=0;i<14;i++){
+  const d=(i*18+(distance*2.5)%18),p=arcadeProject(d,1);
+  const width=8*(1-d/270)+.7;
+  out+=`<i class=curve-stripe style="left:${p.x}%;top:${p.y}%;width:${width}%;transform:translate(-50%,-50%) scale(${p.scale})"></i>`;
+ }
+ box.innerHTML=out;
 }
 function arcadeRender(){
  const world=document.getElementById("arcadeWorld");if(!world)return;
- arcadeFrame++;
+ arcadeFrame++;arcadeCurve=trackCurveAt(10);
  const player=document.getElementById("arcadePlayer");
  if(player){
-  player.style.left=([27,50,73][lane]||50)+"%";
-  player.style.transform=`translateX(-50%) scale(${1+Math.min(speed,160)/1200})`;
+  const px=([27,50,73][lane]||50)-arcadeCurve*8;
+  player.style.left=px+"%";
+  player.style.transform=`translateX(-50%) rotate(${arcadeCurve*-2.8}deg) scale(${1+Math.min(speed,170)/1500})`;
  }
+ renderRoadStripes();
  const scenery=document.getElementById("arcadeScenery");
  if(scenery){
-  const phase=(distance*2.2)%180;
-  let out="";
-  for(let i=0;i<8;i++){
-   const d=(i*31+phase)%220,p=arcadeProject(d,1),side=i%2===0?"left":"right";
-   const x=side==="left" ? 7+(1-d/220)*8 : 93-(1-d/220)*8;
-   out+=`<span class="scenery ${side}" style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${i%3===0?"🌲":i%3===1?"🏠":"🌳"}</span>`;
+  const phase=(distance*2.1)%220;let out="";
+  for(let i=0;i<12;i++){
+   const d=(i*23+phase)%240,p=arcadeProject(d,1),side=i%2===0?-1:1;
+   const x=p.x+side*(28*(1-d/300)+10);
+   const icon=i%4===0?"🌲":i%4===1?"🏠":i%4===2?"🌳":"🪨";
+   out+=`<span class=scenery style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${icon}</span>`;
   }
   scenery.innerHTML=out;
  }
@@ -321,9 +328,7 @@ function arcadeRenderOpponents(st){
  box.innerHTML=st.players.filter(p=>Number(p.user_id)!==Number(st.me)).map(p=>{
   const gap=p.race_distance-me.race_distance,pr=arcadeProject(gap,p.race_lane);
   if(!pr.visible)return "";
-  const car={red:"🏎️",blue:"🚙",green:"🚗",yellow:"🚕",purple:"🏁"}[p.car]||"🚗";
-  return `<div class="arcade-opponent" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})">
-    <b>${escRace(p.display_name)}</b><span>${car}</span><small>${gap>=0?"+":""}${Math.round(gap)} m</small>
-   </div>`;
+  return `<div class="arcade-opponent car-${p.car}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})">
+   <b>${escRace(p.display_name)}</b><span class=opponent-car><i></i><em></em><small></small></span><label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
  }).join("");
 }

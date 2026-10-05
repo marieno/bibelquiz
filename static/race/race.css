@@ -143,3 +143,24 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .scenery{position:absolute;z-index:3;font-size:55px;transform-origin:center bottom}
 .race-map,.hud,.controls,.distance-sign,.finish-gate,.question-overlay,.music-toggle{z-index:30!important}
 @media(max-width:520px){.arcade-player-car{font-size:60px}.arcade-opponent span{font-size:52px}.scenery{font-size:45px}}
+
+/* ===== V7.1 REAL ARCADE ===== */
+.arcade-world{perspective:650px}
+.mountains{position:absolute;z-index:1;top:18%;left:0;width:100%;text-align:center;font-size:72px;letter-spacing:18px;opacity:.72;filter:saturate(.8)}
+.arcade-track{clip-path:polygon(44% 0,56% 0,99% 100%,1% 100%)!important;background:linear-gradient(90deg,#3d3d3d,#747474 48%,#444)!important}
+.track-surface{position:absolute;inset:0;background:linear-gradient(90deg,#ffffff08,#0000 25%,#ffffff0a 50%,#0000 75%,#ffffff08)}
+.curve-stripe{position:absolute;height:8px;background:#fff;border-radius:6px;opacity:.82;transform-origin:center}
+.arcade-player-wrap{top:72%!important;z-index:16!important}
+.arcade-player-car{position:relative;width:190px;height:112px;font-size:0!important;border-radius:54% 54% 28% 28%/50% 50% 22% 22%;background:linear-gradient(180deg,#ff3d31 0 20%,#c71812 55%,#7d0c09 100%);box-shadow:0 18px 12px #0007,inset 0 -8px 0 #4e0807}
+.arcade-player-car:before{content:"";position:absolute;left:35px;right:35px;top:9px;height:42px;border-radius:50% 50% 25% 25%;background:linear-gradient(#8edaff,#1c405c);border:5px solid #9b120e}
+.arcade-player-car:after{content:"";position:absolute;left:15px;right:15px;bottom:18px;height:19px;border-radius:10px;background:linear-gradient(90deg,#ff241b 0 22%,#222 22% 78%,#ff241b 78%)}
+.arcade-player-car .plate{position:absolute;z-index:3;left:67px;bottom:8px;width:56px;height:20px;background:#fff;color:#111;font:900 12px/20px Arial;border-radius:3px}
+.arcade-player-car .tail-light{position:absolute;z-index:4;bottom:26px;width:39px;height:11px;background:#ff382f;box-shadow:0 0 12px #ff3128}.arcade-player-car .tail-light.l{left:18px}.arcade-player-car .tail-light.r{right:18px}
+.arcade-player-name{margin-bottom:4px!important}
+.opponent-car{display:block;position:relative;width:110px;height:65px;border-radius:50% 50% 25% 25%;background:#2e7ee8;box-shadow:0 9px 7px #0006}
+.car-green .opponent-car{background:#31a94a}.car-yellow .opponent-car{background:#f2bf25}.car-purple .opponent-car{background:#9a55d5}.car-red .opponent-car{background:#df3029}
+.opponent-car:before{content:"";position:absolute;left:22px;right:22px;top:7px;height:24px;border-radius:50%;background:#91dafa;border:3px solid #3338}
+.opponent-car:after{content:"";position:absolute;left:10px;right:10px;bottom:10px;height:9px;background:linear-gradient(90deg,#ff3028 0 25%,#222 25% 75%,#ff3028 75%);border-radius:5px}
+.arcade-opponent b,.arcade-opponent label{display:block;width:max-content;margin:auto;background:#17283ddd;color:#fff;border-radius:10px;padding:2px 7px;font:800 12px Arial}
+.arcade-opponent label{margin-top:2px;font-size:10px}
+@media(max-width:520px){.arcade-player-car{width:150px;height:91px}.arcade-player-car .plate{left:51px;width:48px}.opponent-car{width:90px;height:54px}.mountains{font-size:50px}}

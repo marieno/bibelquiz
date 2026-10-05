@@ -417,7 +417,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"7.0","build":"arcade-perspective"}
+ return {"version":"7.1","build":"real-arcade-curves"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
