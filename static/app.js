@@ -90,35 +90,42 @@ function progressView(){fly("🏅");A.innerHTML=`<div class=wrap>${back("dashboa
 
 
 function stopGroupPoll(){if(groupPoll){clearInterval(groupPoll);groupPoll=null}}
+let groupGameType="quiz",selectedGroupLevel="enfant";
 function groupHome(){
  stopGroupPoll();brandJourney("group");
- A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"} • 10 ${lang==="de"?"Fragen":"questions"}</p></div>
- <div class=levels><div class=card><h2>🎮 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2><p><b>${lang==="de"?"Schwierigkeitsgrad wählen":"Choisir le niveau"}</b></p><div class=group-level-grid>
+ A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
+ <div class=levels><div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
+ <p><b>${lang==="de"?"Spiel wählen":"Choisir le jeu"}</b></p>
+ <div class=group-level-grid><button class="btn group-type selected" data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>
+ <p><b>${lang==="de"?"Schwierigkeitsgrad":"Niveau"}</b></p>
+ <div class=group-level-grid>
  <button class="btn group-level selected" data-level=enfant onclick="selectGroupLevel(this)">🧒 ${lang==="de"?"KINDER":"ENFANT"}</button>
  <button class="btn group-level" data-level=facile onclick="selectGroupLevel(this)">🌱 ${lang==="de"?"EINFACH":"FACILE"}</button>
  <button class="btn group-level" data-level=moyen onclick="selectGroupLevel(this)">📖 ${lang==="de"?"MITTEL":"MOYEN"}</button>
  <button class="btn group-level" data-level=difficile onclick="selectGroupLevel(this)">🔥 ${lang==="de"?"SCHWER":"DIFFICILE"}</button>
- <button class="btn group-level" data-level=alle onclick="selectGroupLevel(this)">🎲 ${lang==="de"?"ALLE LEVEL":"TOUS LES NIVEAUX"}</button></div>
- <button class="btn green full" onclick="groupCreate()">${lang==="de"?"ERSTELLEN":"CRÉER"}</button></div>
- <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><input id=roomCode inputmode=numeric maxlength=6 placeholder="123456"><button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p></div></div></div>`
+ <button class="btn group-level" data-level=alle onclick="selectGroupLevel(this)">🎲 ${lang==="de"?"ALLE":"TOUS"}</button></div>
+ <button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button></div>
+ <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><p>${lang==="de"?"Nur den 6-stelligen Code eingeben.":"Entre seulement le code à 6 chiffres."}</p><input id=roomCode inputmode=numeric maxlength=6 placeholder="123456"><button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p></div></div></div>`
 }
-let selectedGroupLevel="enfant";
+function selectGroupType(btn){groupGameType=btn.dataset.type;document.querySelectorAll(".group-type").forEach(x=>x.classList.toggle("selected",x===btn))}
 function selectGroupLevel(btn){selectedGroupLevel=btn.dataset.level;document.querySelectorAll(".group-level").forEach(x=>x.classList.toggle("selected",x===btn))}
-function groupLevelLabel(l){let de={enfant:"🧒 KINDER",facile:"🌱 EINFACH",moyen:"📖 MITTEL",difficile:"🔥 SCHWER",alle:"🎲 ALLE LEVEL"},fr={enfant:"🧒 ENFANT",facile:"🌱 FACILE",moyen:"📖 MOYEN",difficile:"🔥 DIFFICILE",alle:"🎲 TOUS LES NIVEAUX"};return (lang==="de"?de:fr)[l]||l}
-async function groupCreate(){let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({difficulty:selectedGroupLevel})});groupCode=r.code;groupLobby()}
+async function groupCreate(){let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:groupGameType,difficulty:selectedGroupLevel})});groupCode=r.code;groupLobby()}
 async function groupJoin(){try{let r=await api("/api/group/join",{method:"POST",body:JSON.stringify({code:roomCode.value})});groupCode=r.code;groupLobby()}catch(e){gmsg.textContent=e.message}}
 async function groupLobby(){
  stopGroupPoll();let r;try{r=await api("/api/group/"+groupCode)}catch(e){groupHome();return}
- let host=r.host_user_id===r.me, mine=r.players.find(p=>p.user_id===r.me);
- A.innerHTML=`<div class=wrap>${back("groupLeave()")}<div class="card hero"><h1>🎮 ${lang==="de"?"Lobby":"Salon"}</h1><p>${lang==="de"?"Raumcode":"Code"}:</p><div style="font-size:48px;font-weight:900;letter-spacing:8px">${r.code}</div><p>${r.players.length}/5 ${lang==="de"?"Spieler":"joueurs"}</p><div class=level-pill>${groupLevelLabel(r.difficulty||"alle")} • 10 ${lang==="de"?"Fragen":"questions"}</div></div>
- <div class=card><h2>🏎️ ${lang==="de"?"BibelRennen":"Course Biblique"}</h2><p>${lang==="de"?"Fahren • Fragen sammeln • Punkte gewinnen":"Conduire • Questions • Gagner des points"}</p><button class="btn green full" onclick="location.href='/static/race/index.html'">🏁 ${lang==="de"?"RENNEN STARTEN":"DÉMARRER LA COURSE"}</button></div><div class=card><h2>👥 ${lang==="de"?"Spieler":"Joueurs"}</h2>${r.players.map(p=>`<p style="font-size:18px">${p.user_id===r.host_user_id?"👑":"👤"} <b>${esc(p.display_name)}</b> <span style="float:right">${p.ready?"🟢 "+(lang==="de"?"Bereit":"Prêt"):"⚪ "+(lang==="de"?"Nicht bereit":"Pas prêt")}</span></p>`).join("")}
- ${!host?`<button class="btn ${mine&&mine.ready?"ghost":"green"} full" onclick="groupReady(${!(mine&&mine.ready)})">${mine&&mine.ready?(lang==="de"?"NICHT BEREIT":"PAS PRÊT"):(lang==="de"?"ICH BIN BEREIT":"JE SUIS PRÊT")}</button>`:""}
- ${host?`<button class="btn green full" onclick="groupStart()" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""}>▶ ${lang==="de"?"SPIEL STARTEN":"DÉMARRER"}</button>`:""}</div>
- <p><button class="btn ghost" onclick="groupLeave()">🚪 ${lang==="de"?"Gruppe verlassen":"Quitter le groupe"}</button></p></div>`
- groupPoll=setInterval(async()=>{try{let n=await api("/api/group/"+groupCode);if(n.status==="playing"){stopGroupPoll();groupGame();return}let snapshot=JSON.stringify(n.players)+n.host_user_id+(n.difficulty||"");if(window._gs!==snapshot){window._gs=snapshot;groupLobby()}}catch(e){stopGroupPoll()}},1800)
+ const host=Number(r.host_user_id)===Number(r.me),mine=r.players.find(p=>Number(p.user_id)===Number(r.me)),isRace=r.game_type==="race";
+ A.innerHTML=`<div class=wrap>${back("groupLeave()")}<div class="card hero"><h1>🏁 Lobby</h1><div style="font-size:46px;font-weight:900;letter-spacing:8px">${r.code}</div><p>${isRace?"🏎️ BibelRennen":"❓ Quiz"} · ${groupLevelLabel(r.difficulty||"alle")} · ${r.players.length}/5</p></div>
+ <div class=card><h2>👥 ${lang==="de"?"Spieler":"Joueurs"}</h2>${r.players.map(p=>`<p>${Number(p.user_id)===Number(r.host_user_id)?"👑":"👤"} <b>${esc(p.display_name)}</b><span style="float:right">${isRace?raceCarDot(p.car):""} ${p.ready?"🟢 "+(lang==="de"?"Bereit":"Prêt"):"⚪ "+(lang==="de"?"Wartet":"Attend")}</span></p>`).join("")}
+ ${!host&&isRace?`<h3>🚗 ${lang==="de"?"Dein Auto":"Ta voiture"}</h3><div>${["red","blue","green","yellow","purple"].map(c=>`<button class="btn ${mine?.car===c?"selected":""}" onclick="groupCar('${c}',${mine?.ready?1:0})">${raceCarDot(c)}</button>`).join("")}</div>`:""}
+ ${!host?`<button class="btn ${mine?.ready?"ghost":"green"} full" onclick="groupReady(${!(mine&&mine.ready)})">${mine?.ready?(lang==="de"?"NICHT BEREIT":"PAS PRÊT"):(lang==="de"?"BEREIT":"PRÊT")}</button><p>⏳ ${lang==="de"?"Der Host startet das Spiel.":"Le Host démarre le jeu."}</p>`:""}
+ ${host?`<p>👑 ${lang==="de"?"Nur der Host kann starten.":"Seul le Host peut démarrer."}</p><button class="btn green full" onclick="groupStart()" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""}>▶ ${isRace?(lang==="de"?"RENNEN STARTEN":"DÉMARRER LA COURSE"):(lang==="de"?"SPIEL STARTEN":"DÉMARRER LE JEU")}</button>`:""}</div>
+ <p><button class="btn ghost" onclick="groupLeave()">🚪 ${lang==="de"?"Gruppe verlassen":"Quitter le groupe"}</button></p></div>`;
+ const snap=JSON.stringify(r.players.map(p=>[p.user_id,p.ready,p.car]))+"|"+r.status;
+ groupPoll=setInterval(async()=>{try{let n=await api("/api/group/"+groupCode);if(n.status==="playing"){stopGroupPoll();if(n.game_type==="race"){location.href="/static/race/index.html?group="+encodeURIComponent(groupCode)}else groupGame();return}let ns=JSON.stringify(n.players.map(p=>[p.user_id,p.ready,p.car]))+"|"+n.status;if(ns!==snap){stopGroupPoll();groupLobby()}}catch(e){stopGroupPoll()}},700)
 }
-
-async function groupStart(){stopGroupPoll();await api(`/api/group/${groupCode}/start`,{method:"POST",body:"{}"});groupGame()}
+function raceCarDot(c){return {red:"🔴",blue:"🔵",green:"🟢",yellow:"🟡",purple:"🟣"}[c]||"🔴"}
+async function groupCar(car,ready){await api(`/api/group/${groupCode}/ready`,{method:"POST",body:JSON.stringify({ready:Boolean(ready),car})});groupLobby()}
+async function groupStart(){stopGroupPoll();let r=await api(`/api/group/${groupCode}/start`,{method:"POST",body:"{}"});if(r.room?.game_type==="race"||r.game_type==="race"){location.href="/static/race/index.html?group="+encodeURIComponent(groupCode)}else groupGame()}
 async function groupGame(){
  stopGroupPoll();let x;
  try{x=await api(`/api/group/${groupCode}/game`)}catch(e){groupHome();return}

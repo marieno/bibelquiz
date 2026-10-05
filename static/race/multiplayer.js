@@ -118,4 +118,15 @@ function renderOpponents(r){
 function escRace(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function showRaceResults(r){running=false;let sorted=[...r.players].sort((a,b)=>(b.total_score||b.score)-(a.total_score||a.score));root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"Endstand":"Classement final"}</h1>${sorted.map((p,i)=>`<h2>${["🥇","🥈","🥉","4.","5."][i]} ${p.display_name} — ${p.total_score||p.score} ⭐</h2>`).join("")}<button class="btn start" onclick="multiMenu()">🏎️ ${lang==="de"?"NEUES RENNEN":"NOUVELLE COURSE"}</button></div></div>`}
 
-raceHome();
+
+async function unifiedRaceFromGroup(code){
+ raceRoom=code;
+ let room=await api("/api/group/"+code);
+ if(room.game_type!=="race"){location.href="/";return}
+ let q=await api(`/api/group/${code}/questions`);
+ questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;
+ renderRace();running=true;last=performance.now();requestAnimationFrame(loop);
+ // First unified slice: sync opponents via existing race visual layer will follow after shared sync endpoint migration.
+}
+const unifiedCode=new URLSearchParams(location.search).get("group");
+if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else{raceHome()}

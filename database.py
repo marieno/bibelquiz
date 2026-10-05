@@ -116,22 +116,22 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS multiplayer_results(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,position INTEGER NOT NULL,best_answer_ms INTEGER,finished_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS race_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,difficulty TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',question_ids TEXT,created_at TEXT NOT NULL,started_at TEXT)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS race_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,car TEXT NOT NULL DEFAULT 'red',distance REAL NOT NULL DEFAULT 0,speed REAL NOT NULL DEFAULT 0,score INTEGER NOT NULL DEFAULT 0,lane INTEGER NOT NULL DEFAULT 1,finished INTEGER NOT NULL DEFAULT 0,finish_order INTEGER,updated_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
-  for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE multiplayer_results ADD COLUMN difficulty TEXT DEFAULT 'alle'"]:
+  for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE game_rooms ADD COLUMN game_type TEXT DEFAULT 'quiz'","ALTER TABLE game_players ADD COLUMN car TEXT DEFAULT 'red'","ALTER TABLE multiplayer_results ADD COLUMN difficulty TEXT DEFAULT 'alle'"]:
    try:c.execute(text(stmt))
    except Exception:pass
 
-def create_room(uid,code,difficulty='alle'):
+def create_room(uid,code,difficulty='alle',game_type='quiz'):
  now=datetime.now(timezone.utc).isoformat()
  with engine.begin() as c:
   name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
-  c.execute(text("INSERT INTO game_rooms(code,host_user_id,status,created_at,difficulty) VALUES(:c,:u,'lobby',:d,:lv)"),{"c":code,"u":uid,"d":now,"lv":difficulty})
+  c.execute(text("INSERT INTO game_rooms(code,host_user_id,status,created_at,difficulty,game_type) VALUES(:c,:u,'lobby',:d,:lv,:gt)"),{"c":code,"u":uid,"d":now,"lv":difficulty,"gt":game_type})
   c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,1,:d)"),{"c":code,"u":uid,"n":name,"d":now})
 
 def room(code):
  with engine.connect() as c:
   r=c.execute(text("SELECT * FROM game_rooms WHERE code=:c"),{"c":code}).mappings().first()
   if not r:return None
-  ps=c.execute(text("SELECT user_id,display_name,ready,joined_at FROM game_players WHERE room_code=:c ORDER BY joined_at"),{"c":code}).mappings().all()
+  ps=c.execute(text("SELECT user_id,display_name,ready,joined_at,COALESCE(car,'red') car FROM game_players WHERE room_code=:c ORDER BY joined_at"),{"c":code}).mappings().all()
  out=dict(r);out["players"]=[dict(x) for x in ps];return out
 
 def join_room(uid,code):

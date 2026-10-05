@@ -346,3 +346,14 @@ State flow is now explicit: Mode Select → Solo Setup OR Multiplayer Create/Joi
 - Car selection is independent from Ready state.
 - All guests auto-transition when room status changes to `playing`.
 - Removed the previous menu monkey-patching that could leave duplicate start affordances.
+
+
+## V6.6 – Unified Group Lobby
+One multiplayer entry and one room code for both Quiz and BibelRennen.
+- Host alone chooses game type (`quiz` or `race`) and difficulty before creating the group.
+- Guest only enters the six-digit code.
+- Lobby exposes game type/level as read-only to guests.
+- Race guests choose car and Ready; quiz guests only Ready.
+- Only host receives the start action; server also enforces HOST_ONLY.
+- Host start changes the shared room to playing; guests auto-transition.
+- Race launches from the same group code via `/static/race/index.html?group=CODE`.

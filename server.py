@@ -29,9 +29,13 @@ class Auth(BaseModel):
     display_name:str|None=None
     email:str|None=None
 class RoomReady(BaseModel):
-    ready:bool=True
+    ready:bool
+    car:str|None=None
 class GroupCreate(BaseModel):
     difficulty:str="alle"
+class UnifiedGroupCreate(BaseModel):
+    game_type:str="quiz"
+    difficulty:str="enfant"
 class RoomJoin(BaseModel):
     code:str
 class GroupAnswer(BaseModel):
@@ -415,7 +419,7 @@ def group_create(a:GroupCreate,authorization:str|None=Header(None)):
  for _ in range(30):
   code=str(random.randint(100000,999999))
   if not database.room(code):
-   database.create_room(u,code,difficulty)
+   database.create_room(u,code,difficulty,game_type)
    return database.room(code)
  raise HTTPException(503,"ROOM_CODE_UNAVAILABLE")
 
@@ -436,7 +440,7 @@ def group_room(code:str,authorization:str|None=Header(None)):
 
 @app.post("/api/group/{code}/ready")
 def group_ready(code:str,a:RoomReady,authorization:str|None=Header(None)):
- u=uid(authorization);database.set_ready(u,code,a.ready);return database.room(code)
+ u=uid(authorization);database.set_ready(u,code,a.ready,a.car);return database.room(code)
 
 @app.post("/api/group/{code}/leave")
 def group_leave(code:str,authorization:str|None=Header(None)):
@@ -489,11 +493,21 @@ def group_public_state(uid_,code):
   out["answers"]=database.game_answer_details(code,i)
  return out
 
+@app.get("/api/group/{code}/questions")
+def unified_group_questions(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);r=database.room(code)
+ if not r or not any(int(p["user_id"])==int(u) for p in r["players"]):raise HTTPException(403)
+ st=database.game_state(code)
+ if not st:return {"questions":[]}
+ ids=st["question_ids"]
+ return {"questions":[{"id":q["id"],"question":q["question"],"reponses":q["reponses"],"correcte":q["correcte"],"reference":q["reference"]} for q in QUESTIONS if q["id"] in ids]}
+
 @app.post("/api/group/{code}/start")
 def group_start(code:str,authorization:str|None=Header(None)):
  u=uid(authorization)
  room=database.room(code)
  if not room:raise HTTPException(404,"ROOM_NOT_FOUND")
+ if int(room["host_user_id"])!=int(u):raise HTTPException(403,"HOST_ONLY")
  chosen=choose_group_questions(room.get("difficulty") or "alle")
  try:database.start_game(u,code,[q["id"] for q in chosen])
  except ValueError as e:raise HTTPException(400,str(e))
