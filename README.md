@@ -365,3 +365,16 @@ One multiplayer entry and one room code for both Quiz and BibelRennen.
 - Clicking BibelRennen/Quiz updates a single explicit global selector state.
 - Group creation validates and defaults game type to quiz and difficulty to enfant.
 - Prevents stale/redeclared JavaScript state from blocking group creation.
+
+
+## V6.7.1 – Consolidated unified multiplayer build
+Consolidates all validated manual fixes plus live race synchronization:
+- GroupCreate carries game_type + difficulty with Quiz/Kinder defaults.
+- create_room persists game_type.
+- set_ready supports car.
+- groupLevelLabel restored.
+- host-only start remains enforced.
+- unified race sync, visible opponents, LIVE board, 20-second finish window, DNF and common final ranking.
+- `/api/version` returns 6.7.1.
+- Group screen visibly shows V6.7.1.
+- Service worker cache: bibelquiz-v6-7-1-consolidated.

@@ -153,8 +153,12 @@ def join_room(uid,code):
   name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
   c.execute(text("INSERT INTO game_players(room_code,user_id,display_name,ready,joined_at) VALUES(:c,:u,:n,0,:d)"),{"c":code,"u":uid,"n":name,"d":now})
 
-def set_ready(uid,code,ready):
- with engine.begin() as c:c.execute(text("UPDATE game_players SET ready=:r WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"c":code,"u":uid})
+def set_ready(uid,code,ready,car=None):
+ with engine.begin() as c:
+  if car is None:
+   c.execute(text("UPDATE game_players SET ready=:r WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"c":code,"u":uid})
+  else:
+   c.execute(text("UPDATE game_players SET ready=:r,car=:car WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"car":car,"c":code,"u":uid})
 
 def leave_room(uid,code):
  with engine.begin() as c:

@@ -95,7 +95,7 @@ function groupHome(){
  stopGroupPoll();brandJourney("group");
  window.groupGameType="quiz";
  window.selectedGroupLevel="enfant";
- A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
+ A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V6.7.1</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
  <div class=levels><div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
  <p><b>${lang==="de"?"Spiel wählen":"Choisir le jeu"}</b></p>
  <div class=group-level-grid><button class="btn group-type selected" id=groupTypeQuiz data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" id=groupTypeRace data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>
@@ -126,6 +126,11 @@ async function groupCreate(){
  }catch(e){alert(e.message)}
 }
 async function groupJoin(){try{let r=await api("/api/group/join",{method:"POST",body:JSON.stringify({code:roomCode.value})});groupCode=r.code;groupLobby()}catch(e){gmsg.textContent=e.message}}
+function groupLevelLabel(level){
+ const de={enfant:"🧒 KINDER",facile:"🌱 EINFACH",moyen:"📖 MITTEL",difficile:"🔥 SCHWER",alle:"🎲 ALLE"};
+ const fr={enfant:"🧒 ENFANT",facile:"🌱 FACILE",moyen:"📖 MOYEN",difficile:"🔥 DIFFICILE",alle:"🎲 TOUS"};
+ return (lang==="de"?de:fr)[level]||level;
+}
 async function groupLobby(){
  stopGroupPoll();let r;try{r=await api("/api/group/"+groupCode)}catch(e){groupHome();return}
  const host=Number(r.host_user_id)===Number(r.me),mine=r.players.find(p=>Number(p.user_id)===Number(r.me)),isRace=r.game_type==="race";

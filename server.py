@@ -32,8 +32,6 @@ class RoomReady(BaseModel):
     ready:bool
     car:str|None=None
 class GroupCreate(BaseModel):
-    difficulty:str="alle"
-class UnifiedGroupCreate(BaseModel):
     game_type:str="quiz"
     difficulty:str="enfant"
 class RoomJoin(BaseModel):
@@ -417,10 +415,16 @@ def race_questions(level:str,authorization:str|None=Header(None)):
  chosen=random.sample(pool,min(20,len(pool)))
  return [{"id":q["id"],"question":q["question"],"reponses":q["reponses"],"correcte":q["correcte"],"reference":q["reference"]} for q in chosen]
 
+@app.get("/api/version")
+def app_version():
+ return {"version":"6.7.1","build":"unified-live-race"}
+
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
  u=uid(authorization)
- difficulty=a.difficulty.strip().lower()
+ game_type=(a.game_type or "quiz").strip().lower()
+ difficulty=(a.difficulty or "enfant").strip().lower()
+ if game_type not in ("quiz","race"):raise HTTPException(400,"INVALID_GAME_TYPE")
  if difficulty not in ("enfant","facile","moyen","difficile","alle"):raise HTTPException(400,"INVALID_DIFFICULTY")
  for _ in range(30):
   code=str(random.randint(100000,999999))
