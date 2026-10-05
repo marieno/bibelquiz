@@ -372,6 +372,7 @@ def race_multi_ready(code:str,a:RaceReady,authorization:str|None=Header(None)):
 def race_multi_start(code:str,authorization:str|None=Header(None)):
  u=uid(authorization);r=database.race_room(code)
  if not r:raise HTTPException(404,"ROOM_NOT_FOUND")
+ if int(r["host_user_id"])!=int(u):raise HTTPException(403,"HOST_ONLY")
  lv=r["difficulty"];pool=QUESTIONS if lv=="alle" else [q for q in QUESTIONS if q["niveau"]==lv]
  chosen=random.sample(pool,min(10,len(pool)))
  try:database.race_start(u,code,[q["id"] for q in chosen])

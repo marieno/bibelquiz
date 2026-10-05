@@ -5,18 +5,18 @@ function multiMenu(){let t=labels[lang];root.innerHTML=`<div class=menu><div cla
 <hr><h3>${lang==="de"?"Beitreten":"Rejoindre"}</h3><input id=raceCode inputmode=numeric maxlength=6 placeholder="123456" style="font-size:25px;width:100%;padding:12px;border-radius:14px;border:2px solid #ccd"><button class="btn start" style="margin-top:10px" onclick="raceJoin()">🔢 ${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p><button class=btn onclick="menu()">← Solo</button></p></div></div>`}
 async function raceCreate(){let r=await api("/api/race-multi/create",{method:"POST",body:JSON.stringify({difficulty:level})});raceRoom=r.code;raceLobby()}
 async function raceJoin(){try{let r=await api("/api/race-multi/join",{method:"POST",body:JSON.stringify({code:raceCode.value.trim()})});raceRoom=r.code;raceLobby()}catch(e){alert(e.message)}}
-async function raceLobby(){clearInterval(racePoll);let r=await api("/api/race-multi/"+raceRoom);raceMe=r.me;let host=r.host_user_id===r.me,mine=r.players.find(x=>x.user_id===r.me);root.innerHTML=`<div class=menu><div class=panel><h1>🏁 Lobby ${r.code}</h1><h3>${groupLevel(r.difficulty)}</h3>${r.players.map(p=>`<p>${p.user_id===r.host_user_id?"👑":"🏎️"} <b>${p.display_name}</b> <span style="float:right">${p.ready?"🟢":"⚪"}</span></p>`).join("")}<h3>🚗 Auto</h3><div>${["red","blue","green","yellow","purple"].map(c=>`<button class=btn onclick="raceReady('${c}')">${carEmoji(c)} ${c}</button>`).join("")}</div>${host?`<button class="btn start" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""} onclick="raceMultiStart()">▶ START</button>`:`<button class="btn start" onclick="raceReady('${mine?.car||"red"}')">${mine?.ready?"✅ READY":"ICH BIN BEREIT / JE SUIS PRÊT"}</button>`}<p><button class=btn onclick="multiMenu()">←</button></p></div></div>`;
-racePoll=setInterval(async()=>{
- try{
-  let n=await api("/api/race-multi/"+raceRoom);
-  if(n.status==="playing"){
-   clearInterval(racePoll);racePoll=null;
-   await enterStartedRace();
-   return;
-  }
-  if(JSON.stringify(n.players)!==JSON.stringify(r.players))raceLobby();
- }catch(e){}
-},700)}
+async function raceLobby(){
+ clearInterval(racePoll);racePoll=null;
+ let r=await api("/api/race-multi/"+raceRoom);raceMe=r.me;
+ const isHost=Number(r.host_user_id)===Number(r.me),mine=r.players.find(x=>Number(x.user_id)===Number(r.me));
+ root.innerHTML=`<div class=menu><div class=panel><h1>🏁 Lobby ${r.code}</h1><h3>${groupLevel(r.difficulty)}</h3>
+ <p>👑 Host: <b>${escRace((r.players.find(p=>Number(p.user_id)===Number(r.host_user_id))||{}).display_name||"Host")}</b></p>
+ ${r.players.map(p=>`<p>${Number(p.user_id)===Number(r.host_user_id)?"👑":"🏎️"} <b>${escRace(p.display_name)}</b> <span style="float:right">${p.ready?"🟢 READY":"⚪"}</span></p>`).join("")}
+ <h3>🚗 Auto</h3><div>${["red","blue","green","yellow","purple"].map(c=>`<button class=btn onclick="raceReady('${c}')">${carEmoji(c)} ${c}</button>`).join("")}</div>
+ ${isHost?`<button class="btn start" ${r.players.length<2||r.players.some(p=>!p.ready)?"disabled":""} onclick="raceMultiStart()">▶ ${lang==="de"?"RENNEN STARTEN":"DÉMARRER"}</button>`:`<button class="btn start" onclick="raceReady('${mine?.car||"red"}')">${mine?.ready?"✅ READY":(lang==="de"?"ICH BIN BEREIT":"JE SUIS PRÊT")}</button><p>⏳ ${lang==="de"?"Der Host startet das Rennen.":"Le Host démarre la course."}</p>`}</div></div>`;
+ const snap=JSON.stringify(r.players.map(p=>[p.user_id,p.ready,p.car]))+"|"+r.host_user_id+"|"+r.status;
+ racePoll=setInterval(async()=>{try{const n=await api("/api/race-multi/"+raceRoom);if(n.status==="playing"){clearInterval(racePoll);racePoll=null;await enterStartedRace();return}const next=JSON.stringify(n.players.map(p=>[p.user_id,p.ready,p.car]))+"|"+n.host_user_id+"|"+n.status;if(next!==snap){clearInterval(racePoll);racePoll=null;raceLobby()}}catch(e){}},700)
+}
 function carEmoji(c){return {red:"🔴",blue:"🔵",green:"🟢",yellow:"🟡",purple:"🟣"}[c]||"🚗"}
 function groupLevel(l){return {enfant:"🧒 Kinder",facile:"🌱 Einfach",moyen:"📖 Mittel",difficile:"🔥 Schwer",alle:"🎲 Alle Level"}[l]||l}
 async function raceReady(car){await api(`/api/race-multi/${raceRoom}/ready`,{method:"POST",body:JSON.stringify({ready:true,car})});raceLobby()}
