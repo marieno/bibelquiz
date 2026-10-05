@@ -38,6 +38,12 @@ class UnifiedGroupCreate(BaseModel):
     difficulty:str="enfant"
 class RoomJoin(BaseModel):
     code:str
+class UnifiedRaceSync(BaseModel):
+    distance:float
+    speed:float
+    score:int
+    lane:int
+    finished:bool=False
 class GroupAnswer(BaseModel):
     choice:str
     question_index:int
@@ -492,6 +498,23 @@ def group_public_state(uid_,code):
   out["correct_choice"]=q["correcte"];out["reference"]=q["reference"]
   out["answers"]=database.game_answer_details(code,i)
  return out
+
+@app.post("/api/group/{code}/race-sync")
+def unified_group_race_sync(code:str,a:UnifiedRaceSync,authorization:str|None=Header(None)):
+ u=uid(authorization)
+ try:database.unified_race_sync(u,code,max(0,min(1000,a.distance)),max(0,min(200,a.speed)),max(0,a.score),max(0,min(2,a.lane)),a.finished)
+ except ValueError as e:raise HTTPException(400,str(e))
+ st=database.unified_race_state(code)
+ if not st or not any(int(x["user_id"])==int(u) for x in st["players"]):raise HTTPException(403)
+ st["me"]=u
+ return st
+
+@app.get("/api/group/{code}/race-state")
+def unified_group_race_state(code:str,authorization:str|None=Header(None)):
+ u=uid(authorization);st=database.unified_race_state(code)
+ if not st or not any(int(x["user_id"])==int(u) for x in st["players"]):raise HTTPException(403)
+ st["me"]=u
+ return st
 
 @app.get("/api/group/{code}/questions")
 def unified_group_questions(code:str,authorization:str|None=Header(None)):

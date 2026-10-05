@@ -65,7 +65,7 @@ function loop(now){
  if(brakeHeld)speed-=125*dt;
  speed=Math.max(0,Math.min(max,speed));
  if(isTurbo)speed=Math.max(speed,145);
- distance+=speed*dt*.095;if(distance>=TRACK){distance=TRACK;updateProgress();finish();return}
+ distance+=speed*dt*.095;if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
  if(distance>=nextPickup){spawn();nextPickup+=75+Math.random()*70}
  let scroll=(35+speed*2.0)*dt;
  for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&p.lane===lane){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}

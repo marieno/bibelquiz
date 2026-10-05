@@ -116,7 +116,15 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS multiplayer_results(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,position INTEGER NOT NULL,best_answer_ms INTEGER,finished_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS race_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,difficulty TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',question_ids TEXT,created_at TEXT NOT NULL,started_at TEXT)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS race_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,car TEXT NOT NULL DEFAULT 'red',distance REAL NOT NULL DEFAULT 0,speed REAL NOT NULL DEFAULT 0,score INTEGER NOT NULL DEFAULT 0,lane INTEGER NOT NULL DEFAULT 1,finished INTEGER NOT NULL DEFAULT 0,finish_order INTEGER,updated_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
-  for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE game_rooms ADD COLUMN game_type TEXT DEFAULT 'quiz'","ALTER TABLE game_players ADD COLUMN car TEXT DEFAULT 'red'","ALTER TABLE multiplayer_results ADD COLUMN difficulty TEXT DEFAULT 'alle'"]:
+  for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE game_rooms ADD COLUMN game_type TEXT DEFAULT 'quiz'","ALTER TABLE game_players ADD COLUMN car TEXT DEFAULT 'red'",
+   "ALTER TABLE game_rooms ADD COLUMN race_deadline TEXT",
+   "ALTER TABLE game_players ADD COLUMN race_distance REAL DEFAULT 0",
+   "ALTER TABLE game_players ADD COLUMN race_speed REAL DEFAULT 0",
+   "ALTER TABLE game_players ADD COLUMN race_score INTEGER DEFAULT 0",
+   "ALTER TABLE game_players ADD COLUMN race_lane INTEGER DEFAULT 1",
+   "ALTER TABLE game_players ADD COLUMN race_finished INTEGER DEFAULT 0",
+   "ALTER TABLE game_players ADD COLUMN race_finish_order INTEGER",
+   "ALTER TABLE game_players ADD COLUMN race_updated_at TEXT","ALTER TABLE multiplayer_results ADD COLUMN difficulty TEXT DEFAULT 'alle'"]:
    try:c.execute(text(stmt))
    except Exception:pass
 
@@ -382,3 +390,34 @@ def race_sync(uid,code,distance,speed,score,lane,finished):
 
 def race_finish_bonus(order):
  return {1:100,2:70,3:50,4:30,5:20}.get(order or 5,20)
+
+def unified_race_sync(uid,code,distance,speed,score,lane,finished):
+ from datetime import timedelta
+ now=datetime.now(timezone.utc)
+ with engine.begin() as c:
+  room=c.execute(text("SELECT game_type,status,race_deadline FROM game_rooms WHERE code=:c"),{"c":code}).mappings().first()
+  if not room or room["game_type"]!="race" or room["status"]!="playing":raise ValueError("RACE_NOT_PLAYING")
+  old=c.execute(text("SELECT race_finished FROM game_players WHERE room_code=:c AND user_id=:u"),{"c":code,"u":uid}).first()
+  if not old:raise ValueError("NOT_IN_ROOM")
+  order=None
+  if finished and not old[0]:
+   order=c.execute(text("SELECT COUNT(*)+1 FROM game_players WHERE room_code=:c AND race_finished=1"),{"c":code}).scalar_one()
+   if not room["race_deadline"]:c.execute(text("UPDATE game_rooms SET race_deadline=:d WHERE code=:c"),{"d":(now+timedelta(seconds=20)).isoformat(),"c":code})
+  c.execute(text("""UPDATE game_players SET race_distance=:di,race_speed=:sp,race_score=:sc,race_lane=:ln,race_finished=:fi,race_finish_order=COALESCE(race_finish_order,:ord),race_updated_at=:up WHERE room_code=:c AND user_id=:u"""),{"di":distance,"sp":speed,"sc":score,"ln":lane,"fi":1 if finished else 0,"ord":order,"up":now.isoformat(),"c":code,"u":uid})
+
+def unified_race_state(code):
+ with engine.connect() as c:
+  room=c.execute(text("SELECT code,host_user_id,status,difficulty,game_type,race_deadline FROM game_rooms WHERE code=:c"),{"c":code}).mappings().first()
+  if not room:return None
+  ps=c.execute(text("""SELECT user_id,display_name,ready,COALESCE(car,'red') car,COALESCE(race_distance,0) race_distance,COALESCE(race_speed,0) race_speed,COALESCE(race_score,0) race_score,COALESCE(race_lane,1) race_lane,COALESCE(race_finished,0) race_finished,race_finish_order FROM game_players WHERE room_code=:c ORDER BY joined_at"""),{"c":code}).mappings().all()
+ out=dict(room);out["players"]=[dict(x) for x in ps];remaining=None
+ if out.get("race_deadline"):
+  try:remaining=max(0,int((datetime.fromisoformat(out["race_deadline"])-datetime.now(timezone.utc)).total_seconds()+0.999))
+  except:remaining=0
+ out["remaining_seconds"]=remaining
+ all_done=bool(out["players"]) and all(bool(x["race_finished"]) for x in out["players"])
+ out["race_over"]=all_done or (remaining==0 if remaining is not None else False)
+ bonus={1:100,2:70,3:50,4:30,5:20}
+ for x in out["players"]:
+  x["finish_bonus"]=bonus.get(x["race_finish_order"],0) if x["race_finished"] else 0;x["total_score"]=x["race_score"]+x["finish_bonus"];x["dnf"]=bool(out["race_over"] and not x["race_finished"])
+ return out
