@@ -357,3 +357,11 @@ One multiplayer entry and one room code for both Quiz and BibelRennen.
 - Only host receives the start action; server also enforces HOST_ONLY.
 - Host start changes the shared room to playing; guests auto-transition.
 - Race launches from the same group code via `/static/race/index.html?group=CODE`.
+
+
+## V6.6.1 – Game selector fix
+- Quiz is the real default game type on every Group creation screen.
+- Quiz is visibly selected by default.
+- Clicking BibelRennen/Quiz updates a single explicit global selector state.
+- Group creation validates and defaults game type to quiz and difficulty to enfant.
+- Prevents stale/redeclared JavaScript state from blocking group creation.

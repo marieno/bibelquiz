@@ -90,13 +90,15 @@ function progressView(){fly("🏅");A.innerHTML=`<div class=wrap>${back("dashboa
 
 
 function stopGroupPoll(){if(groupPoll){clearInterval(groupPoll);groupPoll=null}}
-let groupGameType="quiz",selectedGroupLevel="enfant";
+window.groupGameType="quiz";window.selectedGroupLevel="enfant";
 function groupHome(){
  stopGroupPoll();brandJourney("group");
+ window.groupGameType="quiz";
+ window.selectedGroupLevel="enfant";
  A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
  <div class=levels><div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
  <p><b>${lang==="de"?"Spiel wählen":"Choisir le jeu"}</b></p>
- <div class=group-level-grid><button class="btn group-type selected" data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>
+ <div class=group-level-grid><button class="btn group-type selected" id=groupTypeQuiz data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" id=groupTypeRace data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>
  <p><b>${lang==="de"?"Schwierigkeitsgrad":"Niveau"}</b></p>
  <div class=group-level-grid>
  <button class="btn group-level selected" data-level=enfant onclick="selectGroupLevel(this)">🧒 ${lang==="de"?"KINDER":"ENFANT"}</button>
@@ -107,9 +109,22 @@ function groupHome(){
  <button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button></div>
  <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><p>${lang==="de"?"Nur den 6-stelligen Code eingeben.":"Entre seulement le code à 6 chiffres."}</p><input id=roomCode inputmode=numeric maxlength=6 placeholder="123456"><button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p></div></div></div>`
 }
-function selectGroupType(btn){groupGameType=btn.dataset.type;document.querySelectorAll(".group-type").forEach(x=>x.classList.toggle("selected",x===btn))}
-function selectGroupLevel(btn){selectedGroupLevel=btn.dataset.level;document.querySelectorAll(".group-level").forEach(x=>x.classList.toggle("selected",x===btn))}
-async function groupCreate(){let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:groupGameType,difficulty:selectedGroupLevel})});groupCode=r.code;groupLobby()}
+function selectGroupType(btn){
+ window.groupGameType=btn.dataset.type==="race"?"race":"quiz";
+ document.querySelectorAll(".group-type").forEach(x=>x.classList.toggle("selected",x===btn));
+}
+function selectGroupLevel(btn){
+ window.selectedGroupLevel=btn.dataset.level||"enfant";
+ document.querySelectorAll(".group-level").forEach(x=>x.classList.toggle("selected",x===btn));
+}
+async function groupCreate(){
+ const gameType=window.groupGameType==="race"?"race":"quiz";
+ const difficulty=["enfant","facile","moyen","difficile","alle"].includes(window.selectedGroupLevel)?window.selectedGroupLevel:"enfant";
+ try{
+  let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:gameType,difficulty})});
+  groupCode=r.code;groupLobby();
+ }catch(e){alert(e.message)}
+}
 async function groupJoin(){try{let r=await api("/api/group/join",{method:"POST",body:JSON.stringify({code:roomCode.value})});groupCode=r.code;groupLobby()}catch(e){gmsg.textContent=e.message}}
 async function groupLobby(){
  stopGroupPoll();let r;try{r=await api("/api/group/"+groupCode)}catch(e){groupHome();return}

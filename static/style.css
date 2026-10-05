@@ -78,3 +78,10 @@ body{overflow-x:hidden}
 /* V5.5.1 dashboard cleanup */
 .top-logout{white-space:nowrap;padding:9px 13px}
 @media(max-width:520px){.top-logout{font-size:13px;padding:8px 10px}}
+
+.group-type.selected,.group-level.selected{
+ background:#fff0a8 !important;
+ color:#173b5c !important;
+ outline:3px solid #e2b72d !important;
+ box-shadow:0 3px 8px #0002;
+}
