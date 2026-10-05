@@ -395,3 +395,9 @@ Consolidates all validated manual fixes plus live race synchronization:
 - Single shared race-bundle.js for solo + multiplayer.
 - Fixes cross-script scope errors.
 - Keeps live multiplayer, 20s DNF, common ranking, DE/FR music.
+
+
+## V6.8.2 – Race bundle syntax fix
+- Fixes invalid `showQuestion` function signature introduced by the music integration.
+- JavaScript syntax validated with Node `--check` for race-bundle.js, music.js, app.js and service-worker.js before packaging.
+- Keeps V6.8.1 shared race runtime, live multiplayer, 20-second DNF, common ranking and DE/FR music.
