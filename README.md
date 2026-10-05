@@ -389,3 +389,9 @@ Consolidates all validated manual fixes plus live race synchronization:
 - Browser-safe start is retried on GAS user gesture.
 - Music volume ducks during question/wait overlays and restores afterward.
 - Version endpoint reports 6.8 / race-music.
+
+
+## V6.8.1
+- Single shared race-bundle.js for solo + multiplayer.
+- Fixes cross-script scope errors.
+- Keeps live multiplayer, 20s DNF, common ranking, DE/FR music.
