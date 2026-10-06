@@ -419,7 +419,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"7.3","build":"home-grid-garage-speech"}
+ return {"version":"7.3.1","build":"clean-home-solo-auth-fix"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):

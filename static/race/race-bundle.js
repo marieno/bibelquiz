@@ -2,12 +2,30 @@
 const TRACK=1000;
 const MAX_SPEED=125;
 const root=document.querySelector("#raceApp");
-let currentRaceQuestion=null;let raceReadAloud=false;let selectedCarModel="sport",selectedCarColor="red";window.raceLanguage="de";let debugFrames=0,debugLastDt=0;const token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
+let currentRaceQuestion=null;let raceReadAloud=false;let selectedCarModel="sport",selectedCarColor="red";window.raceLanguage="de";let debugFrames=0,debugLastDt=0;let token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
 const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen und hole die meisten Punkte!",start:"RENNEN STARTEN",back:"← BibelQuiz",question:"Frage",finish:"ZIEL!",points:"Punkte",race:"Rennen",listen:"Vorlesen"},fr:{title:"🏎️ Course Biblique",sub:"Conduis, collecte les questions et gagne le plus de points !",start:"DÉMARRER",back:"← BibelQuiz",question:"Question",finish:"ARRIVÉE !",points:"Points",race:"Course",listen:"Écouter"}};
-async function api(path,opt={}){let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
-function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><div class=levels>${[["enfant","🧒 KINDER / ENFANT"],["facile","🌱 EINFACH / FACILE"],["moyen","📖 MITTEL / MOYEN"],["difficile","🔥 SCHWER / DIFFICILE"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn" onclick="raceReadAloud=!raceReadAloud;this.textContent=raceReadAloud?(lang==='de'?'🔊 Vorlesen: AN':'🔊 Lecture: OUI'):(lang==='de'?'🔇 Vorlesen: AUS':'🔇 Lecture: NON')">${lang==="de"?"🔇 Vorlesen: AUS":"🔇 Lecture: NON"}</button><button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
+async function api(path,opt={}){token=localStorage.getItem("token")||token||"";let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
+function menu(){
+ let t=labels[lang],de=lang==="de";
+ root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p>
+ <div class=garage-summary>${de?"Auto":"Voiture"}: <b>${selectedCarModel.toUpperCase()}</b> · <span class="mini-color color-${selectedCarColor}"></span> · 🔊 ${raceReadAloud?(de?"AN":"OUI"):(de?"AUS":"NON")}</div>
+ <div class=levels>${[["enfant",de?"🧒 KINDER":"🧒 ENFANT"],["facile",de?"🌱 EINFACH":"🌱 FACILE"],["moyen",de?"📖 MITTEL":"📖 MOYEN"],["difficile",de?"🔥 SCHWER":"🔥 DIFFICILE"],["alle",de?"🎲 ALLE":"🎲 TOUS"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div>
+ <button class="btn start" onclick=start()>${t.start}</button>
+ <p><button class=btn onclick="renderV73Garage()">← ${de?"Garage":"Garage"}</button></p></div></div>`;
+}
 function choose(v,b){level=v;document.querySelectorAll(".levels .btn").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")}
-async function start(){try{let me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
+async function start(){
+ try{
+  token=localStorage.getItem("token")||"";
+  if(!token){alert(lang==="de"?"Bitte zuerst in BibelQuiz anmelden.":"Connecte-toi d'abord à BibelQuiz.");location.href="/";return}
+  let me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang);
+  questions=await api(`/api/race/questions/${level}`);
+  qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;
+  renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceMusic.start();
+ }catch(e){
+  alert((lang==="de"?"Rennen konnte nicht gestartet werden: ":"Impossible de démarrer la course : ")+e.message);
+ }
+}
 function renderRace(){raceMusic.installButton();raceMusic.start();root.innerHTML=`<div class=race id=road>${Array.from({length:8},(_,i)=>`<i class=road-line style="top:${i*15-15}%"></i>`).join("")}
 <div class=hud><span class=pill>⭐ <b id=sc>0</b></span><span class="pill speedo">🏎️ <b id=spd>0</b> km/h</span><span class=pill id=boost>⚡</span></div>
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
@@ -278,5 +296,11 @@ function renderV73Garage(){
  <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
 const unifiedCode=new URLSearchParams(location.search).get("group");
-async function initRacePage(){try{const me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang)}catch(e){}if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else raceHome()}
+async function initRacePage(){
+ token=localStorage.getItem("token")||"";
+ if(!token){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/";return}
+ try{const me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang)}
+ catch(e){alert((lang==="de"?"Sitzung konnte nicht geladen werden: ":"Impossible de charger la session : ")+e.message);location.href="/";return}
+ if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else raceHome()
+}
 initRacePage()
