@@ -84,11 +84,10 @@ function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.ind
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
 function showQuestion(){
  running=false;gas=false;braking=false;raceMusic.duck();
- let q=questions[qi++%questions.length],rr=q.reponses[lang]||q.reponses.de,t=labels[lang];
- currentRaceQuestion=q;let txt=q.question[lang]+" "+["A","B","C","D"].map(k=>k+". "+rr[k]).join(". ");
+ let q=questions[qi++%questions.length],rr=q.reponses[lang]||q.reponses.de,t=labels[lang];currentRaceQuestion=q;
  let d=document.createElement("div");d.className="question-overlay";
- d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(txt)})'>🔊 ${lang==="de"?"NOCHMAL VORLESEN":"RELIRE"}</button><div class=answers>${["A","B","C","D"].map(x=>`<button class=answer onclick="answerRace('${x}',this)"><b>${x}</b> ${rr[x]}</button>`).join("")}</div></div>`;
- road.appendChild(d);window.raceQ=q;if(raceReadAloud)setTimeout(()=>speak(txt),120);
+ d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick="speakCurrentRaceQuestion(true)">🔊 ${lang==="de"?"NOCHMAL VORLESEN":"RELIRE"}</button><div class=answers>${["A","B","C","D"].map(x=>`<button class=answer onclick="answerRace('${x}',this)"><b>${x}</b> ${rr[x]}</button>`).join("")}</div></div>`;
+ road.appendChild(d);window.raceQ=q;if(raceReadAloud)setTimeout(()=>speakCurrentRaceQuestion(false),180);
 }
 function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
 function finish(){raceMusic.restore();running=false;let arrival=100;score+=arrival;root.querySelector(".race").insertAdjacentHTML("beforeend",`<div class=finish><div class=panel><div class=big>🏁🏆</div><h1>${labels[lang].finish}</h1><h2>⭐ ${score} ${labels[lang].points}</h2><p>🏎️ +${arrival} ${lang==="de"?"Zielbonus":"bonus arrivée"}</p><button class="btn start" onclick="menu()">${lang==="de"?"NOCH EIN RENNEN":"REJOUER"}</button><p><button class=btn onclick="location.href='/'">${labels[lang].back}</button></p></div></div>`)}
@@ -289,7 +288,7 @@ function arcadeInit(){
   world.innerHTML=`<div class=arcade-sky><span class=sun>☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
   <div class=mountains>⛰️　🏔️　⛰️</div><div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
   <div class=arcade-track><div class=track-surface></div><div id=curveStripes></div><div id=arcadeScenery></div><div id=arcadeOpponents></div>
-  <div class="arcade-player-wrap model-${selectedCarModel} color-${selectedCarColor}" id=arcadePlayer><div class=arcade-player-name>${lang==="de"?"DU":"TOI"}</div><div class=arcade-player-car><span class=plate>BIBEL</span></div></div></div>`;
+  <div class="arcade-player-wrap" id=arcadePlayer><div class=arcade-player-name>${lang==="de"?"DU":"TOI"}</div><div id=arcadePlayerBody>${carMarkup(selectedCarModel,selectedCarColor,false)}</div></div></div>`;
   road.prepend(world);
  }
  const old=document.getElementById("car");if(old)old.style.opacity="0";
@@ -302,7 +301,8 @@ function arcadeRender(){
   arcadeFrame++;
   const curve=trackCurveAt(10),player=document.getElementById("arcadePlayer");
   if(player){
-   player.className=`arcade-player-wrap model-${selectedCarModel} color-${selectedCarColor}`;
+   player.className="arcade-player-wrap";
+   const body=document.getElementById("arcadePlayerBody");if(body&&body.dataset.spec!==selectedCarModel+"|"+selectedCarColor){body.dataset.spec=selectedCarModel+"|"+selectedCarColor;body.innerHTML=carMarkup(selectedCarModel,selectedCarColor,false)};
    player.style.left=(([27,50,73][lane]||50)-curve*8)+"%";
    player.style.transform=`translateX(-50%) rotate(${curve*-2.8}deg)`;
   }
@@ -327,17 +327,25 @@ function arcadeRenderOpponents(st){
  box.innerHTML=st.players.filter(p=>Number(p.user_id)!==Number(st.me)).map(p=>{
   const gap=p.race_distance-me.race_distance,pr=arcadeProject(gap,p.race_lane);
   if(!pr.visible)return "";
-  return `<div class="arcade-opponent model-${p.car_model||"sport"} color-${p.car||"red"}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})"><b>${escRace(p.display_name)}</b><span class=opponent-car></span><label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
+  return `<div class="arcade-opponent model-${p.car_model||"sport"} color-${p.car||"red"}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})"><b>${escRace(p.display_name)}</b>${carMarkup(p.car_model||"sport",p.car||"red",true)}<label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
  }).join("");
 }
 /* ===== V7.4 FOUR-FLOW ROUTER ===== */
 const v74Models=["sport","coupe","suv","kart"],v74Colors=["red","blue","green","yellow","purple","black","white"];
 let v74Mode="solo";
+
+function carMarkup(model,color,small=false){
+ model=model||"sport";color=color||"red";const cls=`real-car model-${model} color-${color} ${small?"small":""}`;
+ if(model==="kart")return `<div class="${cls}"><span class=kart-seat></span><span class=kart-driver>🪖</span><i class="wheel wl"></i><i class="wheel wr"></i><span class=kart-engine></span></div>`;
+ if(model==="suv")return `<div class="${cls}"><span class=suv-window></span><span class=suv-tailgate></span><i class="wheel wl"></i><i class="wheel wr"></i><i class="light ll"></i><i class="light lr"></i><b>BIBEL</b></div>`;
+ if(model==="coupe")return `<div class="${cls}"><span class=coupe-glass></span><span class=coupe-deck></span><i class="wheel wl"></i><i class="wheel wr"></i><i class="light ll"></i><i class="light lr"></i><b>BIBEL</b></div>`;
+ return `<div class="${cls}"><span class=sport-glass></span><span class=spoiler></span><span class=diffuser></span><i class="wheel wl"></i><i class="wheel wr"></i><i class="light ll"></i><i class="light lr"></i><b>BIBEL</b></div>`;
+}
 function v74ModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
 function v74Garage(){
  const de=lang==="de";
  root.innerHTML=`<div class="menu garage-menu"><div class="panel garage-panel"><h1>🚘 ${de?"DEIN AUTO":"TA VOITURE"}</h1>
- <div class="garage-preview"><div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><b>BIBEL</b></div></div>
+ <div class="garage-preview">${carMarkup(selectedCarModel,selectedCarColor,false)}</div>
  <h3>${de?"Modell":"Modèle"}</h3><div class=garage-grid>${v74Models.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';v74Garage()">${v74ModelLabel(x)}</button>`).join("")}</div>
  <h3>${de?"Farbe":"Couleur"}</h3><div class=color-grid>${v74Colors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';v74Garage()"></button>`).join("")}</div>
  <div class=read-choice><b>🔊 ${de?"Fragen vorlesen":"Lecture automatique"}</b><div class=read-buttons>
@@ -346,12 +354,17 @@ function v74Garage(){
  <div class=garage-action><button class="btn start full" onclick="v74Continue()">${de?"WEITER":"CONTINUER"}</button></div>
  <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
-function testRaceVoice(){
- if(!("speechSynthesis" in window)){alert(lang==="de"?"Sprachausgabe wird nicht unterstützt.":"La synthèse vocale n’est pas disponible.");return}
- speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(lang==="fr"?"La lecture automatique fonctionne.":"Die automatische Sprachausgabe funktioniert.");
- u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.86;u.volume=1;speechSynthesis.resume();speechSynthesis.speak(u);
+let raceSpeechQueue=[],raceSpeechIndex=0;
+function raceSpeakText(text,onDone=null){
+ if(!("speechSynthesis" in window)){if(onDone)onDone();return false}
+ try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(String(text||""));u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.84;u.pitch=1.02;u.volume=1;if(onDone)u.onend=onDone;speechSynthesis.resume();speechSynthesis.speak(u);return true}catch(e){if(onDone)onDone();return false}
 }
+function raceSpeakParts(parts){raceSpeechQueue=(parts||[]).filter(Boolean);raceSpeechIndex=0;const next=()=>{if(raceSpeechIndex>=raceSpeechQueue.length)return;raceSpeakText(raceSpeechQueue[raceSpeechIndex++],next)};next()}
+function raceQuestionParts(q){const rr=q?.reponses?.[lang]||q?.reponses?.de||{};const qq=(typeof q?.question==="object"?(q.question[lang]||q.question.de):q?.question)||"";return [qq,...["A","B","C","D"].map(k=>k+". "+(rr[k]||""))]}
+function speakCurrentRaceQuestion(force=false){if(!currentRaceQuestion||(!raceReadAloud&&!force))return;raceSpeakParts(raceQuestionParts(currentRaceQuestion))}
+function testRaceVoice(){const text=lang==="fr"?"La lecture automatique fonctionne.":"Die automatische Sprachausgabe funktioniert.";if(!raceSpeakText(text))alert(lang==="de"?"Sprachausgabe wird nicht unterstützt.":"La synthèse vocale n’est pas disponible.")}
 function primeSpeech(){testRaceVoice()}
+
 function v74Continue(){
  try{
   if(v74Mode==="solo")v74SoloLevels();
