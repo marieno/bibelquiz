@@ -343,7 +343,7 @@ function v74Garage(){
  <div class=read-choice><b>🔊 ${de?"Fragen vorlesen":"Lecture automatique"}</b><div class=read-buttons>
  <button class="btn ${!raceReadAloud?"sel":""}" onclick="raceReadAloud=false;v74Garage()">${de?"AUS":"NON"}</button>
  <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();v74Garage()">${de?"AN":"OUI"}</button></div><button class="btn voice-test full" onclick="testRaceVoice()">🔊 ${de?"STIMME TESTEN":"TESTER LA VOIX"}</button></div>
- <div class=garage-action><button class="btn start full" onclick="${v74Mode==="solo"?"v74SoloLevels()":"v74RaceGroupHome()"}">${de?"WEITER":"CONTINUER"}</button></div>
+ <div class=garage-action><button class="btn start full" onclick="v74Continue()">${de?"WEITER":"CONTINUER"}</button></div>
  <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
 function testRaceVoice(){
@@ -352,6 +352,31 @@ function testRaceVoice(){
  u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.86;u.volume=1;speechSynthesis.resume();speechSynthesis.speak(u);
 }
 function primeSpeech(){testRaceVoice()}
+function v74Continue(){
+ try{
+  if(v74Mode==="solo")v74SoloLevels();
+  else v74RaceGroupHome();
+ }catch(e){
+  alert((lang==="de"?"Weiter konnte nicht geöffnet werden: ":"Impossible de continuer : ")+e.message);
+ }
+}
+function v74SoloLevels(){
+ const de=lang==="de",t=labels[lang];
+ root.innerHTML=`<div class="menu solo-level-menu"><div class=panel>
+ <h1>${de?"🏎️ AUTORENNEN SOLO":"🏎️ COURSE SOLO"}</h1>
+ <h3>${de?"Schwierigkeitsgrad":"Difficulté"}</h3>
+ <div class=levels>${[
+  ["enfant",de?"🧒 KINDER":"🧒 ENFANT"],
+  ["facile",de?"🌱 EINFACH":"🌱 FACILE"],
+  ["moyen",de?"📖 MITTEL":"📖 MOYEN"],
+  ["difficile",de?"🔥 SCHWER":"🔥 DIFFICILE"],
+  ["alle",de?"🎲 ALLE":"🎲 TOUS"]
+ ].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div>
+ <div class=garage-summary>🚘 <b>${v74ModelLabel(selectedCarModel)}</b> · ${selectedCarColor} · 🔊 ${raceReadAloud?(de?"AN":"OUI"):(de?"AUS":"NON")}</div>
+ <button class="btn start full" onclick="start()">${de?"🏁 RENNEN STARTEN":"🏁 DÉMARRER LA COURSE"}</button>
+ <p><button class=btn onclick="v74Garage()">← ${de?"Garage":"Garage"}</button></p>
+ </div></div>`;
+}
 function v74RaceGroupHome(){
  // Reuse the proven race multiplayer create/join screen, never the Quiz group flow.
  raceMultiHome();

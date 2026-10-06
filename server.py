@@ -418,7 +418,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"7.5.1","build":"mobile-garage-scroll"}
+ return {"version":"7.5.2","build":"garage-continue-fix"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
