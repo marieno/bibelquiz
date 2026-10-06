@@ -118,6 +118,7 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS race_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,car TEXT NOT NULL DEFAULT 'red',distance REAL NOT NULL DEFAULT 0,speed REAL NOT NULL DEFAULT 0,score INTEGER NOT NULL DEFAULT 0,lane INTEGER NOT NULL DEFAULT 1,finished INTEGER NOT NULL DEFAULT 0,finish_order INTEGER,updated_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
   for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE game_rooms ADD COLUMN game_type TEXT DEFAULT 'quiz'",
    "ALTER TABLE game_rooms ADD COLUMN read_aloud INTEGER DEFAULT 0","ALTER TABLE game_players ADD COLUMN car TEXT DEFAULT 'red'",
+   "ALTER TABLE game_players ADD COLUMN car_model TEXT DEFAULT 'sport'",
    "ALTER TABLE game_rooms ADD COLUMN race_deadline TEXT",
    "ALTER TABLE game_players ADD COLUMN race_distance REAL DEFAULT 0",
    "ALTER TABLE game_players ADD COLUMN race_speed REAL DEFAULT 0",

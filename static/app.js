@@ -95,7 +95,7 @@ function groupHome(){
  stopGroupPoll();brandJourney("group");
  window.groupGameType="quiz";
  window.selectedGroupLevel="enfant";
- A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V7.2</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
+ A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V7.2.1</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
  <div class=levels><div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
  <p><b>${lang==="de"?"Spiel wählen":"Choisir le jeu"}</b></p>
  <div class=group-level-grid><button class="btn group-type selected" id=groupTypeQuiz data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" id=groupTypeRace data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>

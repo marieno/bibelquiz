@@ -31,6 +31,7 @@ class Auth(BaseModel):
 class RoomReady(BaseModel):
     ready:bool
     car:str|None=None
+    car_model:str|None=None
 class GroupCreate(BaseModel):
     game_type:str="quiz"
     difficulty:str="enfant"
@@ -418,7 +419,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"7.2","build":"language-audio-solo"}
+ return {"version":"7.2.1","build":"personal-garage-readaloud"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):

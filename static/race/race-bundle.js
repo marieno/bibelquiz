@@ -2,7 +2,7 @@
 const TRACK=1000;
 const MAX_SPEED=125;
 const root=document.querySelector("#raceApp");
-let raceReadAloud=false;window.raceLanguage="de";let debugFrames=0,debugLastDt=0;const token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
+let currentRaceQuestion=null;let raceReadAloud=false;let selectedCarModel="sport",selectedCarColor="red";window.raceLanguage="de";let debugFrames=0,debugLastDt=0;const token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
 const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen und hole die meisten Punkte!",start:"RENNEN STARTEN",back:"← BibelQuiz",question:"Frage",finish:"ZIEL!",points:"Punkte",race:"Rennen",listen:"Vorlesen"},fr:{title:"🏎️ Course Biblique",sub:"Conduis, collecte les questions et gagne le plus de points !",start:"DÉMARRER",back:"← BibelQuiz",question:"Question",finish:"ARRIVÉE !",points:"Points",race:"Course",listen:"Écouter"}};
 async function api(path,opt={}){let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
 function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><div class=levels>${[["enfant","🧒 KINDER / ENFANT"],["facile","🌱 EINFACH / FACILE"],["moyen","📖 MITTEL / MOYEN"],["difficile","🔥 SCHWER / DIFFICILE"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn" onclick="raceReadAloud=!raceReadAloud;this.textContent=raceReadAloud?(lang==='de'?'🔊 Vorlesen: AN':'🔊 Lecture: OUI'):(lang==='de'?'🔇 Vorlesen: AUS':'🔇 Lecture: NON')">${lang==="de"?"🔇 Vorlesen: AUS":"🔇 Lecture: NON"}</button><button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
@@ -81,6 +81,7 @@ function updateProgress(){
 function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score;requestAnimationFrame(loop)}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
 function stopRaceSpeech(){try{speechSynthesis.cancel()}catch(e){}}
+function replayRaceQuestion(){if(currentRaceQuestion)speakRaceQuestion(currentRaceQuestion)}
 function speakRaceQuestion(q){if(!raceReadAloud||!("speechSynthesis" in window))return;stopRaceSpeech();const rr=q.reponses?.[lang]||q.reponses?.de||[];const qq=(typeof q.question==="object"?(q.question[lang]||q.question.de):q.question)||"";const u=new SpeechSynthesisUtterance(qq+" "+rr.map((x,i)=>String.fromCharCode(65+i)+". "+x).join(". "));u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
 function showQuestion(){raceMusic.duck();let q=questions[qi++%questions.length],r=q.reponses[lang],t=labels[lang];let d=document.createElement("div");d.className="question-overlay";d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(q.question[lang]+" "+Object.entries(r).map(([k,v])=>k+": "+v).join(". "))})'>🔊 ${t.listen}</button><div class=answers>${["A","B","C","D"].map(a=>`<button class=answer onclick="answerRace('${a}',this)"><b>${a}</b> ${r[a]}</button>`).join("")}</div></div>`;road.appendChild(d);window.raceQ=q}
 function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
@@ -99,15 +100,13 @@ window.addEventListener("unhandledrejection",e=>{
 /* MULTIPLAYER */
 let raceMode=null;
 
-function raceHome(){
- clearInterval(racePoll);racePoll=null;
- root.innerHTML=`<div class=menu><div class=panel>
- <div class=big>🏎️📖</div><h1>${lang==="de"?"BibelRennen":"Course Biblique"}</h1>
- <p>${lang==="de"?"Wähle deinen Spielmodus":"Choisis ton mode de jeu"}</p>
- <button class="btn start" onclick="soloSetup()">👤 ${lang==="de"?"SOLO":"SOLO"}</button>
- <button class="btn start" style="margin-top:12px" onclick="multiMenu()">👥 ${lang==="de"?"MULTIPLAYER 2–5":"MULTIJOUEUR 2–5"}</button>
- <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
-}
+const garageModels=["sport","coupe","suv","kart"],garageColors=["red","blue","green","yellow","purple","black","white"];
+function garageModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
+function garagePreview(){return `<div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><b>BIBEL</b></div>`}
+let garageMode="solo";
+function raceHome(){root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>BibelRennen</h1><p>${lang==="de"?"Wähle deinen Spielmodus":"Choisis ton mode de jeu"}</p><button class="btn start" onclick="garageMode='solo';renderGarage()">👤 SOLO</button><button class="btn start" onclick="garageMode='multi';renderGarage()">👥 MULTIPLAYER 2–5</button><p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`}
+function renderGarage(){root.innerHTML=`<div class=menu><div class=panel><h1>🚘 ${lang==="de"?"DEIN AUTO":"TA VOITURE"}</h1><div class=garage-preview>${garagePreview()}</div><h3>${lang==="de"?"Modell":"Modèle"}</h3><div class=garage-grid>${garageModels.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';renderGarage()">${garageModelLabel(x)}</button>`).join("")}</div><h3>${lang==="de"?"Farbe":"Couleur"}</h3><div class=color-grid>${garageColors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';renderGarage()"></button>`).join("")}</div><button class="btn full" onclick="raceReadAloud=!raceReadAloud;renderGarage()">${raceReadAloud?(lang==="de"?"🔊 Vorlesen: AN":"🔊 Lecture : OUI"):(lang==="de"?"🔇 Vorlesen: AUS":"🔇 Lecture : NON")}</button><button class="btn start full" onclick="${garageMode==="solo"?"menu()":"raceMultiHome()"}">${lang==="de"?"WEITER":"CONTINUER"}</button><p><button class=btn onclick=raceHome()>← ${lang==="de"?"Zurück":"Retour"}</button></p></div></div>`}
+
 function soloSetup(){
  raceMode="solo";
  // Existing race.js menu is now used only as the solo setup screen.
@@ -223,7 +222,7 @@ async function unifiedRaceFromGroup(code){
  raceRoom=code;
  let profile=await api("/api/me");lang=profile.language||"de";window.raceLanguage=lang;raceMusic.init(lang);let room=await api("/api/group/"+code);
  if(room.game_type!=="race"){location.href="/";return}
- raceReadAloud=Boolean(room.read_aloud);
+ /* personal read-aloud choice retained */
  let q=await api(`/api/group/${code}/questions`);
  questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;
  renderRace();running=true;last=performance.now();requestAnimationFrame(loop);
