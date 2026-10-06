@@ -116,6 +116,8 @@ def multiplayer_init():
   c.execute(text("CREATE TABLE IF NOT EXISTS multiplayer_results(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,position INTEGER NOT NULL,best_answer_ms INTEGER,finished_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
   c.execute(text("CREATE TABLE IF NOT EXISTS race_rooms(code TEXT PRIMARY KEY,host_user_id BIGINT NOT NULL,difficulty TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'lobby',question_ids TEXT,created_at TEXT NOT NULL,started_at TEXT)"))
   c.execute(text("CREATE TABLE IF NOT EXISTS race_players(room_code TEXT NOT NULL,user_id BIGINT NOT NULL,display_name TEXT NOT NULL,ready INTEGER NOT NULL DEFAULT 0,car TEXT NOT NULL DEFAULT 'red',distance REAL NOT NULL DEFAULT 0,speed REAL NOT NULL DEFAULT 0,score INTEGER NOT NULL DEFAULT 0,lane INTEGER NOT NULL DEFAULT 1,finished INTEGER NOT NULL DEFAULT 0,finish_order INTEGER,updated_at TEXT NOT NULL,UNIQUE(room_code,user_id))"))
+  try:c.execute(text("ALTER TABLE race_players ADD COLUMN car_model TEXT DEFAULT 'sport'"))
+  except Exception:pass
   for stmt in ["ALTER TABLE game_rooms ADD COLUMN difficulty TEXT DEFAULT 'alle'","ALTER TABLE game_rooms ADD COLUMN game_type TEXT DEFAULT 'quiz'","ALTER TABLE game_players ADD COLUMN car TEXT DEFAULT 'red'",
    "ALTER TABLE game_rooms ADD COLUMN race_deadline TEXT",
    "ALTER TABLE game_players ADD COLUMN race_distance REAL DEFAULT 0",
@@ -366,8 +368,8 @@ def race_join(uid,code):
   name=c.execute(text("SELECT COALESCE(NULLIF(display_name,''),username) FROM users WHERE id=:u"),{"u":uid}).scalar_one()
   c.execute(text("INSERT INTO race_players(room_code,user_id,display_name,ready,updated_at) VALUES(:c,:u,:n,0,:d)"),{"c":code,"u":uid,"n":name,"d":now})
 
-def race_ready(uid,code,ready,car):
- with engine.begin() as c:c.execute(text("UPDATE race_players SET ready=:r,car=:car,updated_at=:d WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"car":car,"d":datetime.now(timezone.utc).isoformat(),"c":code,"u":uid})
+def race_ready(uid,code,ready,car,car_model='sport'):
+ with engine.begin() as c:c.execute(text("UPDATE race_players SET ready=:r,car=:car,car_model=:m,updated_at=:d WHERE room_code=:c AND user_id=:u"),{"r":1 if ready else 0,"car":car,"m":car_model,"d":datetime.now(timezone.utc).isoformat(),"c":code,"u":uid})
 
 def race_start(uid,code,question_ids):
  now=datetime.now(timezone.utc).isoformat()

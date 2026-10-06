@@ -55,28 +55,6 @@ function placeCar(){let c=document.querySelector("#car");if(c)c.style.left=[22,4
 function spawn(){let el=document.createElement("div");el.className="pickup";el.textContent=Math.random()<.72?"📖":"⭐";let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.kind=el.textContent==="📖"?"q":"star";el.style.left=[24,47,70][l]+"%";el.style.top="-60px";road.appendChild(el);pickups.push({el,y:-60,lane:l,kind:el.dataset.kind})}
 
 
-function normalizePickupDistances(){
- if(!pickups)return;
- pickups.forEach((p,i)=>{if(p.distance==null)p.distance=distance+70+i*35;if(p.lane==null)p.lane=1});
-}
-function bookHitTest(){normalizePickupDistances();
- if(!running||!pickups||!pickups.length)return false;
- const carLane=lane;
- for(let i=0;i<pickups.length;i++){
-  const p=pickups[i];
-  if(p.taken)continue;
-  // Pickup positions are expressed in race distance. Trigger in a forgiving 16 m window.
-  const pd=Number(p.distance ?? p.d ?? p.x ?? 0);
-  const pl=Number(p.lane ?? 1);
-  if(Math.abs(pd-distance)<=16 && Math.abs(pl-carLane)<=0.55){
-   p.taken=true;
-   running=false;gas=false;braking=false;speed=Math.max(0,speed*.35);
-   showQuestion();
-   return true;
-  }
- }
- return false;
-}
 function loop(now){
  debugFrames++;
  let rawDt=(now-last)/1000,dt=Math.min(.05,Math.max(0,rawDt));last=now;debugLastDt=dt;
@@ -90,8 +68,7 @@ function loop(now){
  if(brakeHeld)speed-=125*dt;
  speed=Math.max(0,Math.min(max,speed));
  if(isTurbo)speed=Math.max(speed,145);
- distance+=speed*dt*.095;
- bookHitTest();if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
+ distance+=speed*dt*.095;if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
  if(distance>=nextPickup){spawn();nextPickup+=75+Math.random()*70}
  let scroll=(35+speed*2.0)*dt;
  for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&p.lane===lane){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}
@@ -105,7 +82,14 @@ function updateProgress(){
 }
 function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score;requestAnimationFrame(loop)}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
-function showQuestion(){running=false;gas=false;braking=false;raceMusic.duck();let q=questions[qi++%questions.length],r=q.reponses[lang],t=labels[lang];let d=document.createElement("div");d.className="question-overlay";d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(q.question[lang]+" "+Object.entries(r).map(([k,v])=>k+": "+v).join(". "))})'>🔊 ${t.listen}</button><div class=answers>${["A","B","C","D"].map(a=>`<button class=answer onclick="answerRace('${a}',this)"><b>${a}</b> ${r[a]}</button>`).join("")}</div></div>`;road.appendChild(d);window.raceQ=q}
+function showQuestion(){
+ running=false;gas=false;braking=false;raceMusic.duck();
+ let q=questions[qi++%questions.length],rr=q.reponses[lang]||q.reponses.de,t=labels[lang];
+ currentRaceQuestion=q;let txt=q.question[lang]+" "+["A","B","C","D"].map(k=>k+". "+rr[k]).join(". ");
+ let d=document.createElement("div");d.className="question-overlay";
+ d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(txt)})'>🔊 ${lang==="de"?"NOCHMAL VORLESEN":"RELIRE"}</button><div class=answers>${["A","B","C","D"].map(x=>`<button class=answer onclick="answerRace('${x}',this)"><b>${x}</b> ${rr[x]}</button>`).join("")}</div></div>`;
+ road.appendChild(d);window.raceQ=q;if(raceReadAloud)setTimeout(()=>speak(txt),120);
+}
 function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
 function finish(){raceMusic.restore();running=false;let arrival=100;score+=arrival;root.querySelector(".race").insertAdjacentHTML("beforeend",`<div class=finish><div class=panel><div class=big>🏁🏆</div><h1>${labels[lang].finish}</h1><h2>⭐ ${score} ${labels[lang].points}</h2><p>🏎️ +${arrival} ${lang==="de"?"Zielbonus":"bonus arrivée"}</p><button class="btn start" onclick="menu()">${lang==="de"?"NOCH EIN RENNEN":"REJOUER"}</button><p><button class=btn onclick="location.href='/'">${labels[lang].back}</button></p></div></div>`)}
 menu();
@@ -151,8 +135,8 @@ function multiMenu(){
  <button class="btn start" style="margin-top:10px" onclick="raceJoin()">🔗 ${lang==="de"?"BEITRETEN":"REJOINDRE"}</button>
  <p><button class=btn onclick="raceHome()">← ${lang==="de"?"Spielmodus":"Mode de jeu"}</button></p></div></div>`;
 }
-async function raceCreate(){let r=await api("/api/race-multi/create",{method:"POST",body:JSON.stringify({difficulty:level})});raceRoom=r.code;raceLobby()}
-async function raceJoin(){try{let r=await api("/api/race-multi/join",{method:"POST",body:JSON.stringify({code:raceCode.value.trim()})});raceRoom=r.code;raceLobby()}catch(e){alert(e.message)}}
+async function raceCreate(){let x=await api("/api/race-multi/create",{method:"POST",body:JSON.stringify({difficulty:level})});raceRoom=x.code;await raceSetReady(true,selectedCarColor)}
+async function raceJoin(){try{let x=await api("/api/race-multi/join",{method:"POST",body:JSON.stringify({code:raceCode.value.trim()})});raceRoom=x.code;await raceSetReady(false,selectedCarColor)}catch(e){alert(e.message)}}
 async function raceLobby(){
  clearInterval(racePoll);racePoll=null;
  const r=await api("/api/race-multi/"+raceRoom);raceMe=r.me;
@@ -181,7 +165,7 @@ async function raceLobby(){
    if(next!==snap){clearInterval(racePoll);racePoll=null;raceLobby()}
  }catch(e){}},700);
 }
-async function raceSetReady(ready,car){await api(`/api/race-multi/${raceRoom}/ready`,{method:"POST",body:JSON.stringify({ready,car})});raceLobby()}
+async function raceSetReady(ready,car=selectedCarColor){await api(`/api/race-multi/${raceRoom}/ready`,{method:"POST",body:JSON.stringify({ready,car:car||selectedCarColor,car_model:selectedCarModel})});raceLobby()}
 async function raceChooseCar(car,ready){await api(`/api/race-multi/${raceRoom}/ready`,{method:"POST",body:JSON.stringify({ready:Boolean(ready),car})});raceLobby()}
 function carEmoji(c){return {red:"🔴",blue:"🔵",green:"🟢",yellow:"🟡",purple:"🟣"}[c]||"🚗"}
 function groupLevel(l){return {enfant:"🧒 Kinder",facile:"🌱 Einfach",moyen:"📖 Mittel",difficile:"🔥 Schwer",alle:"🎲 Alle Level"}[l]||l}
@@ -343,7 +327,7 @@ function arcadeRenderOpponents(st){
  box.innerHTML=st.players.filter(p=>Number(p.user_id)!==Number(st.me)).map(p=>{
   const gap=p.race_distance-me.race_distance,pr=arcadeProject(gap,p.race_lane);
   if(!pr.visible)return "";
-  return `<div class="arcade-opponent color-${p.car||"red"}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})"><b>${escRace(p.display_name)}</b><span class=opponent-car></span><label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
+  return `<div class="arcade-opponent model-${p.car_model||"sport"} color-${p.car||"red"}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})"><b>${escRace(p.display_name)}</b><span class=opponent-car></span><label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
  }).join("");
 }
 /* ===== V7.4 FOUR-FLOW ROUTER ===== */
@@ -358,18 +342,16 @@ function v74Garage(){
  <h3>${de?"Farbe":"Couleur"}</h3><div class=color-grid>${v74Colors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';v74Garage()"></button>`).join("")}</div>
  <div class=read-choice><b>🔊 ${de?"Fragen vorlesen":"Lecture automatique"}</b><div class=read-buttons>
  <button class="btn ${!raceReadAloud?"sel":""}" onclick="raceReadAloud=false;v74Garage()">${de?"AUS":"NON"}</button>
- <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();v74Garage()">${de?"AN":"OUI"}</button></div></div>
+ <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();v74Garage()">${de?"AN":"OUI"}</button></div><button class="btn voice-test full" onclick="testRaceVoice()">🔊 ${de?"STIMME TESTEN":"TESTER LA VOIX"}</button></div>
  <button class="btn start full" onclick="${v74Mode==="solo"?"v74SoloLevels()":"v74RaceGroupHome()"}">${de?"WEITER":"CONTINUER"}</button>
  <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
-function primeSpeech(){if(!("speechSynthesis" in window))return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(" ");u.lang=lang==="fr"?"fr-FR":"de-DE";speechSynthesis.speak(u)}catch(e){}}
-function v74SoloLevels(){
- let t=labels[lang],de=lang==="de";
- root.innerHTML=`<div class=menu><div class=panel><h1>${t.title}</h1><p>${de?"Schwierigkeitsgrad":"Difficulté"}</p>
- <div class=levels>${[["enfant",de?"🧒 KINDER":"🧒 ENFANT"],["facile",de?"🌱 EINFACH":"🌱 FACILE"],["moyen",de?"📖 MITTEL":"📖 MOYEN"],["difficile",de?"🔥 SCHWER":"🔥 DIFFICILE"],["alle",de?"🎲 ALLE":"🎲 TOUS"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div>
- <div class=garage-summary>${de?"Auto":"Voiture"}: ${v74ModelLabel(selectedCarModel)} · ${selectedCarColor} · 🔊 ${raceReadAloud?(de?"AN":"OUI"):(de?"AUS":"NON")}</div>
- <button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick=v74Garage()>← Garage</button></p></div></div>`;
+function testRaceVoice(){
+ if(!("speechSynthesis" in window)){alert(lang==="de"?"Sprachausgabe wird nicht unterstützt.":"La synthèse vocale n’est pas disponible.");return}
+ speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(lang==="fr"?"La lecture automatique fonctionne.":"Die automatische Sprachausgabe funktioniert.");
+ u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.86;u.volume=1;speechSynthesis.resume();speechSynthesis.speak(u);
 }
+function primeSpeech(){testRaceVoice()}
 function v74RaceGroupHome(){
  // Reuse the proven race multiplayer create/join screen, never the Quiz group flow.
  raceMultiHome();

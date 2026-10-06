@@ -341,6 +341,7 @@ class RaceJoin(BaseModel):
 class RaceReady(BaseModel):
  ready:bool=True
  car:str="red"
+ car_model:str="sport"
 class RaceSync(BaseModel):
  distance:float
  speed:float
@@ -374,7 +375,7 @@ def race_multi_room(code:str,authorization:str|None=Header(None)):
 
 @app.post("/api/race-multi/{code}/ready")
 def race_multi_ready(code:str,a:RaceReady,authorization:str|None=Header(None)):
- u=uid(authorization);database.race_ready(u,code,a.ready,a.car);r=database.race_room(code);r["me"]=u;return r
+ u=uid(authorization);database.race_ready(u,code,a.ready,a.car,a.car_model);r=database.race_room(code);r["me"]=u;return r
 
 @app.post("/api/race-multi/{code}/start")
 def race_multi_start(code:str,authorization:str|None=Header(None)):
@@ -417,7 +418,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"7.4.1","build":"flow-gameplay-fix"}
+ return {"version":"7.5","build":"acceptance-cleanup"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):

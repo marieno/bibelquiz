@@ -89,3 +89,8 @@ body{overflow-x:hidden}
 .build-tag{display:inline-block;margin-top:4px;padding:3px 7px;border-radius:999px;background:#eef5f8;color:#567;font-size:10px;font-weight:800}
 
 .home-game-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}.home-mode-card{min-height:120px;border:1px solid #c8dce8;border-radius:20px;background:#fff;color:#123e69;display:flex;flex-direction:column;align-items:center;justify-content:center}.home-mode-card span{font-size:32px}.home-mode-card b{font-size:18px}.home-mode-card small{font-size:12px;font-weight:900}.home-footer{display:flex;gap:10px;flex-wrap:wrap}@media(max-width:480px){.home-game-grid{gap:8px}.home-mode-card{min-height:100px}.home-mode-card b{font-size:14px}.home-mode-card small{font-size:10px}}
+
+.quiz-group-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.quiz-group-levels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 20px}
+.quiz-group-levels .btn{margin:0;min-height:58px}.weekly-card{margin-top:18px;background:#fff1b8}
+@media(max-width:700px){.quiz-group-layout{grid-template-columns:1fr}}
