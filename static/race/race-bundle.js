@@ -81,17 +81,11 @@ function updateProgress(){
 function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score;requestAnimationFrame(loop)}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
 function stopRaceSpeech(){try{speechSynthesis.cancel()}catch(e){}}
-function replayRaceQuestion(){if(currentRaceQuestion)speakRaceQuestion(currentRaceQuestion)}
-function speakRaceQuestion(q){if(!raceReadAloud||!("speechSynthesis" in window))return;stopRaceSpeech();const rr=q.reponses?.[lang]||q.reponses?.de||[];const qq=(typeof q.question==="object"?(q.question[lang]||q.question.de):q.question)||"";const u=new SpeechSynthesisUtterance(qq+" "+rr.map((x,i)=>String.fromCharCode(65+i)+". "+x).join(". "));u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
-function showQuestion(){raceMusic.duck();let q=questions[qi++%questions.length],r=q.reponses[lang],t=labels[lang];let d=document.createElement("div");d.className="question-overlay";d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(q.question[lang]+" "+Object.entries(r).map(([k,v])=>k+": "+v).join(". "))})'>🔊 ${t.listen}</button><div class=answers>${["A","B","C","D"].map(a=>`<button class=answer onclick="answerRace('${a}',this)"><b>${a}</b> ${r[a]}</button>`).join("")}</div></div>`;road.appendChild(d);window.raceQ=q}
-function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
-function finish(){raceMusic.restore();running=false;let arrival=100;score+=arrival;root.querySelector(".race").insertAdjacentHTML("beforeend",`<div class=finish><div class=panel><div class=big>🏁🏆</div><h1>${labels[lang].finish}</h1><h2>⭐ ${score} ${labels[lang].points}</h2><p>🏎️ +${arrival} ${lang==="de"?"Zielbonus":"bonus arrivée"}</p><button class="btn start" onclick="menu()">${lang==="de"?"NOCH EIN RENNEN":"REJOUER"}</button><p><button class=btn onclick="location.href='/'">${labels[lang].back}</button></p></div></div>`)}
-menu();
-
-window.addEventListener("error",e=>{
- const d=document.getElementById("raceDebug");
- if(d){d.style.color="#fff";d.style.background="#b00020";d.innerHTML+="<br>ERROR: "+String(e.message).slice(0,90)}
-});
+function replayRaceQuestion(){if(currentRaceQuestion)speakRaceQuestion(currentRaceQuestion,true)}
+function speakRaceQuestion(q,force=false){
+ if((!raceReadAloud&&!force)||!("speechSynthesis" in window)||!q)return;
+ try{speechSynthesis.cancel();const rr=q.reponses?.[lang]||q.reponses?.de||[];const qq=(typeof q.question==="object"?(q.question[lang]||q.question.de):q.question)||"";const u=new SpeechSynthesisUtterance(qq+" "+rr.map((x,i)=>String.fromCharCode(65+i)+". "+x).join(". "));u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.84;speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){}
+}
 window.addEventListener("unhandledrejection",e=>{
  const d=document.getElementById("raceDebug");
  if(d){d.style.color="#fff";d.style.background="#b00020";d.innerHTML+="<br>PROMISE: "+String(e.reason).slice(0,90)}
@@ -104,7 +98,7 @@ const garageModels=["sport","coupe","suv","kart"],garageColors=["red","blue","gr
 function garageModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
 function garagePreview(){return `<div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><b>BIBEL</b></div>`}
 let garageMode="solo";
-function raceHome(){root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>BibelRennen</h1><p>${lang==="de"?"Wähle deinen Spielmodus":"Choisis ton mode de jeu"}</p><button class="btn start" onclick="garageMode='solo';renderGarage()">👤 SOLO</button><button class="btn start" onclick="garageMode='multi';renderGarage()">👥 MULTIPLAYER 2–5</button><p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`}
+function legacyRaceHome(){root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>BibelRennen</h1><p>${lang==="de"?"Wähle deinen Spielmodus":"Choisis ton mode de jeu"}</p><button class="btn start" onclick="garageMode='solo';renderGarage()">👤 SOLO</button><button class="btn start" onclick="garageMode='multi';renderGarage()">👥 MULTIPLAYER 2–5</button><p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`}
 function renderGarage(){root.innerHTML=`<div class=menu><div class=panel><h1>🚘 ${lang==="de"?"DEIN AUTO":"TA VOITURE"}</h1><div class=garage-preview>${garagePreview()}</div><h3>${lang==="de"?"Modell":"Modèle"}</h3><div class=garage-grid>${garageModels.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';renderGarage()">${garageModelLabel(x)}</button>`).join("")}</div><h3>${lang==="de"?"Farbe":"Couleur"}</h3><div class=color-grid>${garageColors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';renderGarage()"></button>`).join("")}</div><button class="btn full" onclick="raceReadAloud=!raceReadAloud;renderGarage()">${raceReadAloud?(lang==="de"?"🔊 Vorlesen: AN":"🔊 Lecture : OUI"):(lang==="de"?"🔇 Vorlesen: AUS":"🔇 Lecture : NON")}</button><button class="btn start full" onclick="${garageMode==="solo"?"menu()":"raceMultiHome()"}">${lang==="de"?"WEITER":"CONTINUER"}</button><p><button class=btn onclick=raceHome()>← ${lang==="de"?"Zurück":"Retour"}</button></p></div></div>`}
 
 function soloSetup(){
@@ -259,79 +253,30 @@ function showUnifiedResults(st){raceMusic.restore();
  let sorted=[...st.players].sort((a,b)=>b.total_score-a.total_score);
  root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"ENDERGEBNIS":"CLASSEMENT FINAL"}</h1>${sorted.map((p,i)=>`<p style="font-size:20px"><b>${["🥇","🥈","🥉","4.","5."][i]} ${escRace(p.display_name)}</b> — ⭐ ${p.total_score} <small>(${p.race_score}+${p.finish_bonus}${p.dnf?" · DNF":""})</small></p>`).join("")}<h2>🏆 ${escRace(sorted[0]?.display_name||"")} — ${sorted[0]?.total_score||0} ⭐</h2><button class="btn start" onclick="location.href='/'">← BibelQuiz</button></div></div>`
 }
-const unifiedCode=new URLSearchParams(location.search).get("group");
-if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else{raceHome()}
 
-/* ===== V7.1 REAL ARCADE VISUAL ENGINE ===== */
-let arcadeFrame=0,arcadeCurve=0;
-function trackCurveAt(d){
- const z=(distance+d)/145;
- return Math.sin(z)*.72+Math.sin(z*.43+1.8)*.34;
+const v73Models=["sport","coupe","suv","kart"],v73Colors=["red","blue","green","yellow","purple","black","white"];
+let v73Mode="solo";
+function v73ModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
+function v73Preview(){return `<div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><span class=garage-window></span><span class=garage-light-left></span><span class=garage-light-right></span><b>BIBEL</b></div>`}
+function primeSpeech(){if(!("speechSynthesis" in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(" ");u.lang=lang==="fr"?"fr-FR":"de-DE";speechSynthesis.speak(u)}catch(e){}}
+function raceHome(){
+ const mode=new URLSearchParams(location.search).get("mode");
+ if(mode==="solo"){v73Mode="solo";renderV73Garage();return}
+ if(mode==="multi"){v73Mode="multi";renderV73Garage();return}
+ root.innerHTML=`<div class=menu><div class=panel><h1>🏎️ BibelRennen</h1><button class="btn start" onclick="v73Mode='solo';renderV73Garage()">👤 SOLO</button><button class="btn start" onclick="v73Mode='multi';renderV73Garage()">👥 MULTIPLAYER</button><p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
-function arcadeInit(){
- const road=document.getElementById("road");if(!road)return;
- road.classList.add("arcade-road");
- if(!document.getElementById("arcadeWorld")){
-  const world=document.createElement("div");world.id="arcadeWorld";world.className="arcade-world";
-  world.innerHTML=`<div class="arcade-sky"><span class=sun>☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
-  <div class="mountains">⛰️　🏔️　⛰️</div><div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
-  <div class="arcade-track" id=arcadeTrack><div class="track-surface"></div><div id=curveStripes></div>
-  <div id=arcadeScenery></div><div id=arcadePickups></div><div id=arcadeOpponents></div>
-  <div class=arcade-player-wrap id=arcadePlayer><div class=arcade-player-name>DU</div><div class=arcade-player-car><span class=rear-window></span><span class=tail-light l></span><span class=tail-light r></span><span class=plate>BIBEL</span></div></div></div>`;
-  road.prepend(world);
- }
- const oldCar=document.getElementById("car");if(oldCar)oldCar.style.opacity="0";
- road.querySelectorAll(".road-line").forEach(x=>x.style.opacity="0");
- arcadeRender();
+function renderV73Garage(){
+ const de=lang==="de";
+ root.innerHTML=`<div class=menu><div class="panel garage-panel"><h1>🚘 ${de?"DEIN AUTO":"TA VOITURE"}</h1>
+ <div class=garage-preview>${v73Preview()}</div>
+ <h3>${de?"Modell":"Modèle"}</h3><div class=garage-grid>${v73Models.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';renderV73Garage()">${v73ModelLabel(x)}</button>`).join("")}</div>
+ <h3>${de?"Farbe":"Couleur"}</h3><div class=color-grid>${v73Colors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';renderV73Garage()"></button>`).join("")}</div>
+ <div class=read-choice><b>🔊 ${de?"Fragen vorlesen":"Lecture automatique"}</b><div class=read-buttons>
+ <button class="btn ${!raceReadAloud?"sel":""}" onclick="raceReadAloud=false;renderV73Garage()">${de?"AUS":"NON"}</button>
+ <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();renderV73Garage()">${de?"AN":"OUI"}</button></div></div>
+ <button class="btn start full" onclick="${v73Mode==="solo"?"menu()":"raceMultiHome()"}">${de?"WEITER":"CONTINUER"}</button>
+ <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
-function arcadeProject(gap,laneIndex){
- const g=Math.max(0,Math.min(240,gap)),depth=g/240;
- const y=84-depth*61,scale=1-depth*.78;
- const curve=trackCurveAt(g);
- const center=50+curve*(1-depth)*19;
- const spread=(1-depth*.76)*22;
- return{x:center+(laneIndex-1)*spread,y,scale,visible:gap>-22&&gap<245,curve};
-}
-function renderRoadStripes(){
- const box=document.getElementById("curveStripes");if(!box)return;
- let out="";
- for(let i=0;i<14;i++){
-  const d=(i*18+(distance*2.5)%18),p=arcadeProject(d,1);
-  const width=8*(1-d/270)+.7;
-  out+=`<i class=curve-stripe style="left:${p.x}%;top:${p.y}%;width:${width}%;transform:translate(-50%,-50%) scale(${p.scale})"></i>`;
- }
- box.innerHTML=out;
-}
-function arcadeRender(){
- const world=document.getElementById("arcadeWorld");if(!world)return;
- arcadeFrame++;arcadeCurve=trackCurveAt(10);
- const player=document.getElementById("arcadePlayer");
- if(player){
-  const px=([27,50,73][lane]||50)-arcadeCurve*8;
-  player.style.left=px+"%";
-  player.style.transform=`translateX(-50%) rotate(${arcadeCurve*-2.8}deg) scale(${1+Math.min(speed,170)/1500})`;
- }
- renderRoadStripes();
- const scenery=document.getElementById("arcadeScenery");
- if(scenery){
-  const phase=(distance*2.1)%220;let out="";
-  for(let i=0;i<12;i++){
-   const d=(i*23+phase)%240,p=arcadeProject(d,1),side=i%2===0?-1:1;
-   const x=p.x+side*(28*(1-d/300)+10);
-   const icon=i%4===0?"🌲":i%4===1?"🏠":i%4===2?"🌳":"🪨";
-   out+=`<span class=scenery style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${icon}</span>`;
-  }
-  scenery.innerHTML=out;
- }
- requestAnimationFrame(arcadeRender);
-}
-function arcadeRenderOpponents(st){
- const box=document.getElementById("arcadeOpponents");if(!box)return;
- const me=st.players.find(p=>Number(p.user_id)===Number(st.me));if(!me)return;
- box.innerHTML=st.players.filter(p=>Number(p.user_id)!==Number(st.me)).map(p=>{
-  const gap=p.race_distance-me.race_distance,pr=arcadeProject(gap,p.race_lane);
-  if(!pr.visible)return "";
-  return `<div class="arcade-opponent car-${p.car}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})">
-   <b>${escRace(p.display_name)}</b><span class=opponent-car><i></i><em></em><small></small></span><label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
- }).join("");
-}
+const unifiedCode=new URLSearchParams(location.search).get("group");
+async function initRacePage(){try{const me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang)}catch(e){}if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else raceHome()}
+initRacePage()
