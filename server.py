@@ -418,7 +418,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"9.3.4","build":"single-language-source"}
+ return {"version":"10.0","build":"bible-adventures"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
