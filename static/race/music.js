@@ -4,8 +4,8 @@ const raceMusic={
  normalVolume:.34,
  questionVolume:.09,
  started:false,
- init(){
-  const current=(typeof lang!=="undefined"?lang:(localStorage.lang||"de")).toLowerCase();
+ init(language){
+  const current=(language||window.raceLanguage||localStorage.lang||"de").toLowerCase();
   const src=current==="fr"
    ?"/static/race/audio/etre-disciple-de-jesus.m4a"
    :"/static/race/audio/10-gebote-v2.m4a";
@@ -15,7 +15,7 @@ const raceMusic={
   this.audio.volume=this.normalVolume;
  },
  async start(){
-  if(!this.audio)this.init();
+  if(!this.audio)this.init(window.raceLanguage||"de");
   if(!this.enabled)return;
   try{await this.audio.play();this.started=true;this.updateButton()}catch(e){this.started=false;this.updateButton()}
  },

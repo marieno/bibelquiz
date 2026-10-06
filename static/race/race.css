@@ -164,3 +164,5 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .arcade-opponent b,.arcade-opponent label{display:block;width:max-content;margin:auto;background:#17283ddd;color:#fff;border-radius:10px;padding:2px 7px;font:800 12px Arial}
 .arcade-opponent label{margin-top:2px;font-size:10px}
 @media(max-width:520px){.arcade-player-car{width:150px;height:91px}.arcade-player-car .plate{left:51px;width:48px}.opponent-car{width:90px;height:54px}.mountains{font-size:50px}}
+
+.read-option{margin:10px 0;padding:8px;border-radius:12px}

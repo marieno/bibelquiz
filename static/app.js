@@ -90,12 +90,12 @@ function progressView(){fly("🏅");A.innerHTML=`<div class=wrap>${back("dashboa
 
 
 function stopGroupPoll(){if(groupPoll){clearInterval(groupPoll);groupPoll=null}}
-window.groupGameType="quiz";window.selectedGroupLevel="enfant";
+window.groupGameType="quiz";window.selectedGroupLevel="enfant";window.groupReadAloud=false;
 function groupHome(){
  stopGroupPoll();brandJourney("group");
  window.groupGameType="quiz";
  window.selectedGroupLevel="enfant";
- A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V7.1</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
+ A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V7.2</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
  <div class=levels><div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
  <p><b>${lang==="de"?"Spiel wählen":"Choisir le jeu"}</b></p>
  <div class=group-level-grid><button class="btn group-type selected" id=groupTypeQuiz data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" id=groupTypeRace data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>
@@ -106,7 +106,7 @@ function groupHome(){
  <button class="btn group-level" data-level=moyen onclick="selectGroupLevel(this)">📖 ${lang==="de"?"MITTEL":"MOYEN"}</button>
  <button class="btn group-level" data-level=difficile onclick="selectGroupLevel(this)">🔥 ${lang==="de"?"SCHWER":"DIFFICILE"}</button>
  <button class="btn group-level" data-level=alle onclick="selectGroupLevel(this)">🎲 ${lang==="de"?"ALLE":"TOUS"}</button></div>
- <button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button></div>
+ <div class=read-option><b>🔊 ${lang==="de"?"Fragen vorlesen":"Lecture automatique"}</b><button class="btn" onclick="window.groupReadAloud=!window.groupReadAloud;this.textContent=window.groupReadAloud?(lang==='de'?'🔊 AN':'🔊 OUI'):(lang==='de'?'🔇 AUS':'🔇 NON')">${lang==="de"?"🔇 AUS":"🔇 NON"}</button></div><button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button></div>
  <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><p>${lang==="de"?"Nur den 6-stelligen Code eingeben.":"Entre seulement le code à 6 chiffres."}</p><input id=roomCode inputmode=numeric maxlength=6 placeholder="123456"><button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p></div></div></div>`
 }
 function selectGroupType(btn){
@@ -121,7 +121,7 @@ async function groupCreate(){
  const gameType=window.groupGameType==="race"?"race":"quiz";
  const difficulty=["enfant","facile","moyen","difficile","alle"].includes(window.selectedGroupLevel)?window.selectedGroupLevel:"enfant";
  try{
-  let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:gameType,difficulty})});
+  let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:gameType,difficulty,read_aloud:Boolean(window.groupReadAloud)})});
   groupCode=r.code;groupLobby();
  }catch(e){alert(e.message)}
 }
