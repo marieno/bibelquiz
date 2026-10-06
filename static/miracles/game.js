@@ -4,4 +4,27 @@ function odd(){let bad=lang==="fr"?"Bonhomme de neige":"Schneemann",o=sh([0,1,2,
 function oddPick(i){if(i!==-1){help(lang==="fr"?'Bonhomme de neige':'Schneemann',missing,lang==="fr"?"Cherche celui qui n’appartient pas au groupe.":"Suche, was nicht zur Gruppe gehört.");return}resetAttempts();missing()}
 function missing(){let m=Math.floor(X.length/2),o=sh([m,...sh([...Array(X.length).keys()].filter(i=>i!==m)).slice(0,3)]);G.innerHTML=`<main><h2>${lang==="fr"?'✨ Un miracle parmi ceux appris a disparu. Lequel ?':'✨ Eines der gelernten Wunder ist verschwunden. Welches?'}</h2><div class=phase>❓ ${lang==="fr"?"3. QUI MANQUE ?":"3. WAS FEHLT?"}</div><div class=slots>${X.map((x,i)=>`<span class=slot>${i===m?"❓":I[i]+" "+x}</span>`).join("")}</div><div class=grid>${o.map(i=>`<button class=choice onclick="miss(${i},${m})">${X[i]}</button>`).join("")}</div></main>`}
 function miss(i,m){if(i!==m){help(X[m],challenge,lang==="fr"?"Observe les éléments déjà appris.":"Schau auf die bereits gelernten Elemente.");return}resetAttempts();challenge()}
-function challenge(){let rem=sh([...Array(X.length).keys()]),q=0;lives=3;function ask(){if(q===X.length)return reward(lang==="fr"?"Miracles de J\u00e9sus \u2013 Champion !":"Wunder Jesu \u2013 Champion!","\u2728");let target=q,o=sh([target,...sh([...Array(X.length).keys()].filter(i=>i!==target)).slice(0,3)]);G.innerHTML=`<main><div class=phase>🏁 ${lang==="fr"?"CHALLENGE":"CHALLENGE"}</div><div class=hearts>${"❤️".repeat(lives)}</div><h2>${lang==="fr"?'Quel miracle de Jésus faut-il reconnaître ?':'Welches Wunder Jesu soll erkannt werden?'}</h2><div class=grid>${o.map(i=>`<button class=choice onclick="window.ans(${i})">${I[i]} ${X[i]}</button>`).join("")}</div></main>`;window.ans=i=>{if(i!==target){lives--;wrong();if(!lives){lives=0}return setTimeout(ask,350)}q++;setTimeout(ask,250)}}ask()}learn();
+function challenge(){
+ let round=0,lives=3;
+ function recognition(){
+  if(round===6)return finalOdd();
+  let target=Math.floor(Math.random()*X.length),opts=sh([target,...sh([...Array(X.length).keys()].filter(i=>i!==target)).slice(0,3)]);
+  G.innerHTML=`<main><div class=phase>🎯 ${lang==="fr"?"RECONNAÎTRE":"ERKENNEN"}</div><div class=hearts>${"❤️".repeat(lives)}</div>
+  <h2>${lang==="fr"?'Trouve le miracle de Jésus demandé.':'Finde das genannte Wunder Jesu.'}</h2>
+  <div class=card><button onclick="say(X[${target}])">🔊 ${lang==="fr"?"ÉCOUTER":"ANHÖREN"}</button></div>
+  <div class=grid>${opts.map(i=>`<button class=choice onclick="window.rec(${i},${target})">${I[i]} ${X[i]}</button>`).join("")}</div></main>`;
+  say(X[target]);
+  window.rec=(i,t)=>{
+   if(i!==t){lives=Math.max(0,lives-1);help(X[t],()=>{round++;lives=3;recognition()},lang==="fr"?"Écoute encore attentivement le nom.":"Höre den Namen noch einmal genau an.");return}
+   resetAttempts();round++;lives=3;toast("✨ "+(lang==="fr"?"Correct !":"Richtig!"));setTimeout(recognition,300);
+  }
+ }
+ function finalOdd(){
+  let bad=lang==="fr"?'Bonhomme de neige ⛄':'Schneemann ⛄',ids=sh([...Array(X.length).keys()]).slice(0,3);
+  G.innerHTML=`<main><div class=phase>🕵️ INTRUS</div><h2>${lang==="fr"?'Lequel n’est PAS un miracle de ce jeu ?':'Was ist KEIN Wunder aus diesem Spiel?'}</h2>
+  <div class=grid>${sh([...ids,-1]).map(i=>`<button class=choice onclick="window.fo(${i})">${i<0?bad:I[i]+" "+X[i]}</button>`).join("")}</div></main>`;
+  window.fo=i=>{if(i!==-1){help(bad,()=>reward(lang==="fr"?"Challenge réussi !":"Challenge geschafft!",'✨'),lang==="fr"?"Cherche celui qui ne fait pas partie du groupe.":"Suche, was nicht zur Gruppe gehört.");return}reward(lang==="fr"?"Challenge réussi !":"Challenge geschafft!",'✨')}
+ }
+ recognition();
+}
+learn();
