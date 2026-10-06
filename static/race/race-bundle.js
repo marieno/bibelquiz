@@ -378,8 +378,8 @@ function v74SoloLevels(){
  </div></div>`;
 }
 function v74RaceGroupHome(){
- // Reuse the proven race multiplayer create/join screen, never the Quiz group flow.
- raceMultiHome();
+ // Open the existing Autorennen multiplayer create/join screen.
+ multiMenu();
 }
 function stopRaceSpeech(){try{speechSynthesis.cancel()}catch(e){}}
 function speakRaceQuestion(q,force=false){
