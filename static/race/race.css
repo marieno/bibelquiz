@@ -184,3 +184,45 @@ h1{font-size:clamp(32px,8vw,58px);margin:5px}.levels{display:grid;grid-template-
 .arcade-opponent.model-suv .opponent-car{height:78px;border-radius:32%}
 .arcade-opponent.model-kart .opponent-car{height:42px;width:90px}
 .arcade-opponent.model-sport .opponent-car{width:118px;height:55px}
+
+/* V7.5.1 — mobile garage accessibility */
+.garage-menu{
+  position:fixed;
+  inset:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  box-sizing:border-box;
+  padding:
+    max(18px,env(safe-area-inset-top))
+    14px
+    calc(120px + env(safe-area-inset-bottom));
+}
+.garage-menu .garage-panel{
+  margin:0 auto;
+  width:min(620px,100%);
+  max-height:none;
+  overflow:visible;
+  box-sizing:border-box;
+}
+.garage-action{
+  position:sticky;
+  bottom:calc(8px + env(safe-area-inset-bottom));
+  z-index:80;
+  margin-top:16px;
+  padding:8px 0;
+  background:linear-gradient(to bottom,rgba(255,255,255,0),rgba(255,255,255,.96) 28%);
+}
+.garage-action .btn{
+  min-height:58px;
+  margin:0;
+  box-shadow:0 5px 16px rgba(0,0,0,.18);
+}
+@media(max-height:700px){
+  .garage-menu{padding-top:10px}
+  .garage-preview{min-height:105px}
+  .garage-car{transform:scale(.82)}
+  .garage-panel h1{margin:.25em 0}
+  .garage-panel h3{margin:.55em 0 .3em}
+}

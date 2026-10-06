@@ -336,14 +336,14 @@ let v74Mode="solo";
 function v74ModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
 function v74Garage(){
  const de=lang==="de";
- root.innerHTML=`<div class=menu><div class="panel garage-panel"><h1>🚘 ${de?"DEIN AUTO":"TA VOITURE"}</h1>
+ root.innerHTML=`<div class="menu garage-menu"><div class="panel garage-panel"><h1>🚘 ${de?"DEIN AUTO":"TA VOITURE"}</h1>
  <div class="garage-preview"><div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><b>BIBEL</b></div></div>
  <h3>${de?"Modell":"Modèle"}</h3><div class=garage-grid>${v74Models.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';v74Garage()">${v74ModelLabel(x)}</button>`).join("")}</div>
  <h3>${de?"Farbe":"Couleur"}</h3><div class=color-grid>${v74Colors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';v74Garage()"></button>`).join("")}</div>
  <div class=read-choice><b>🔊 ${de?"Fragen vorlesen":"Lecture automatique"}</b><div class=read-buttons>
  <button class="btn ${!raceReadAloud?"sel":""}" onclick="raceReadAloud=false;v74Garage()">${de?"AUS":"NON"}</button>
  <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();v74Garage()">${de?"AN":"OUI"}</button></div><button class="btn voice-test full" onclick="testRaceVoice()">🔊 ${de?"STIMME TESTEN":"TESTER LA VOIX"}</button></div>
- <button class="btn start full" onclick="${v74Mode==="solo"?"v74SoloLevels()":"v74RaceGroupHome()"}">${de?"WEITER":"CONTINUER"}</button>
+ <div class=garage-action><button class="btn start full" onclick="${v74Mode==="solo"?"v74SoloLevels()":"v74RaceGroupHome()"}">${de?"WEITER":"CONTINUER"}</button></div>
  <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
 function testRaceVoice(){
