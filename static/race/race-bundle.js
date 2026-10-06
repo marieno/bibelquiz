@@ -2,18 +2,19 @@
 const TRACK=1000;
 const MAX_SPEED=125;
 const root=document.querySelector("#raceApp");
-let raceReadAloud=false,selectedCarModel="sport",selectedCarColor="red",currentRaceQuestion=null;let debugFrames=0,debugLastDt=0;let token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
+let raceReadAloud=false,selectedCarModel="sport",selectedCarColor="red",currentRaceQuestion=null;
+let roadX=0,steerInput=0,offRoad=false,roadObstacles=[],nextObstacleAt=90,impactFlash=0;let debugFrames=0,debugLastDt=0;let token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
 const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen und hole die meisten Punkte!",start:"RENNEN STARTEN",back:"← BibelQuiz",question:"Frage",finish:"ZIEL!",points:"Punkte",race:"Rennen",listen:"Vorlesen"},fr:{title:"🏎️ Course Biblique",sub:"Conduis, collecte les questions et gagne le plus de points !",start:"DÉMARRER",back:"← BibelQuiz",question:"Question",finish:"ARRIVÉE !",points:"Points",race:"Course",listen:"Écouter"}};
 async function api(path,opt={}){token=localStorage.getItem("token")||token||"";let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
 function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><div class=levels>${[["enfant","🧒 KINDER / ENFANT"],["facile","🌱 EINFACH / FACILE"],["moyen","📖 MITTEL / MOYEN"],["difficile","🔥 SCHWER / DIFFICILE"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
 function choose(v,b){level=v;document.querySelectorAll(".levels .btn").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")}
-async function start(){try{let me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
+async function start(){try{let me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;roadX=0;steerInput=0;offRoad=false;roadObstacles=[];nextObstacleAt=90;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
 function renderRace(){raceMusic.installButton();raceMusic.start();root.innerHTML=`<div class=race id=road>${Array.from({length:8},(_,i)=>`<i class=road-line style="top:${i*15-15}%"></i>`).join("")}
 <div class=hud><span class=pill>⭐ <b id=sc>0</b></span><span class="pill speedo">🏎️ <b id=spd>0</b> km/h</span><span class=pill id=boost>⚡</span></div>
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
 <div class=distance-sign id=distanceSign>500 m → ZIEL</div><div class=finish-gate id=finishGate>🏁 ZIEL 🏁</div>
 <div id=raceDebug style="display:none;position:absolute;z-index:100;left:8px;top:150px;background:#111e;color:#7CFC00;padding:8px 10px;border-radius:9px;font:700 12px monospace;line-height:1.35">FRAME: 0<br>RUN: ?<br>GAS: ?<br>BRAKE: ?<br>SPEED: 0<br>DT: 0</div><div class=car id=car></div>
-<div class=controls><div class=steer><button class=drive onpointerdown="move(-1)">◀</button><button class=drive onpointerdown="move(1)">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer">▲</button></div></div></div>`;placeCar();bindPedals();arcadeInit()}
+<div class=controls><div class=steer><button class=drive onpointerdown="steerInput=-1;move(-1)" onpointerup="steerInput=0" onpointercancel="steerInput=0">◀</button><button class=drive onpointerdown="steerInput=1;move(1)" onpointerup="steerInput=0" onpointercancel="steerInput=0">▶</button></div><div class=pedals><button class="drive brake" id=brakeBtn title="Bremse / Frein">▼</button><button class="drive gas" id=gasBtn title="Gas / Accélérer">▲</button></div></div></div>`;placeCar();bindPedals();arcadeInit()}
 function bindHold(btn,onStart,onEnd){
  if(!btn)return;
  const start=e=>{e.preventDefault();onStart();};
@@ -50,14 +51,20 @@ function setBrake(v){
  document.querySelector("#brakeBtn")?.classList.toggle("active",v);
  if(v&&running){speed=Math.max(0,speed-12);const e=document.getElementById("spd");if(e)e.textContent=Math.round(speed)}
 }
-function move(d){if(!running)return;lane=Math.max(0,Math.min(2,lane+d));placeCar()}
+function move(d){roadX=Math.max(-1.42,Math.min(1.42,roadX+d*.22));lane=roadX<-.28?0:roadX>.28?2:1;placeCar()}
+
 function placeCar(){let c=document.querySelector("#car");if(c)c.style.left=[22,44,66][lane]+"%"}
 function spawn(){let el=document.createElement("div");el.className="pickup";el.textContent=Math.random()<.72?"📖":"⭐";let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.kind=el.textContent==="📖"?"q":"star";el.style.left=[24,47,70][l]+"%";el.style.top="-60px";road.appendChild(el);pickups.push({el,y:-60,lane:l,kind:el.dataset.kind})}
 
 
+function updateRoadPhysics(ms){const s=Math.min(.05,Math.max(0,ms/1000)),curve=typeof trackCurveAt==="function"?trackCurveAt(8):0;roadX+=steerInput*(.55+speed/190)*s;roadX+=curve*(speed/170)*.20*s;roadX=Math.max(-1.48,Math.min(1.48,roadX));offRoad=Math.abs(roadX)>.82;if(offRoad){speed=Math.max(0,speed-(38+speed*.12)*s);turbo=Math.max(0,turbo-22*s)}else if(Math.abs(roadX)>.70)speed=Math.max(0,speed-8*s);lane=roadX<-.28?0:roadX>.28?2:1;if(impactFlash>0)impactFlash=Math.max(0,impactFlash-ms)}
+function spawnRoadObstacle(){if(distance<nextObstacleAt)return;const types=["rock","puddle","barrier"],type=types[Math.floor(Math.random()*types.length)];roadObstacles.push({type,distance:distance+145,x:Math.random()*1.36-.68,hit:false});nextObstacleAt=distance+110+Math.random()*110}
+function obstacleCollision(){for(const o of roadObstacles){if(o.hit)continue;const gap=o.distance-distance;if(Math.abs(gap)<9&&Math.abs(o.x-roadX)<.24){o.hit=true;impactFlash=420;if(o.type==="puddle"){speed*=.62;roadX+=(Math.random()>.5?1:-1)*.18}else if(o.type==="rock")speed*=.34;else{speed*=.45;roadX*=.82}}}roadObstacles=roadObstacles.filter(o=>o.distance>distance-35)}
+function renderRoadObstacles(){const box=document.getElementById("arcadeObstacles");if(!box)return;box.innerHTML=roadObstacles.filter(o=>!o.hit).map(o=>{const gap=o.distance-distance;if(gap<0||gap>240)return "";const depth=gap/240,y=84-depth*61,scale=1-depth*.78,curve=trackCurveAt(gap),center=50+curve*(1-depth)*19,x=center+o.x*(1-depth*.76)*30,icon=o.type==="rock"?"🪨":o.type==="puddle"?"💧":"🚧";return `<span class="road-obstacle obstacle-${o.type}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) scale(${scale})">${icon}</span>`}).join("")}
+function renderOffroadState(){const road=document.getElementById("road");if(!road)return;road.classList.toggle("is-offroad",offRoad);road.classList.toggle("impact",impactFlash>0);let w=document.getElementById("offroadWarning");if(!w){w=document.createElement("div");w.id="offroadWarning";w.className="offroad-warning";road.appendChild(w)}w.textContent=offRoad?(lang==="de"?"⚠️ OFFROAD – ZURÜCK AUF DIE STRASSE":"⚠️ HORS-PISTE – REVIENS SUR LA ROUTE"):""}
 function loop(now){
  debugFrames++;
- let rawDt=(now-last)/1000,dt=Math.min(.05,Math.max(0,rawDt));last=now;debugLastDt=dt;
+ let rawDt=(now-last)/1000,dt=Math.min(.05,Math.max(0,rawDt));last=now;debugLastDt=dt;updateRoadPhysics(dt*1000);spawnRoadObstacle();obstacleCollision();
  const dbg=document.getElementById("raceDebug");
  if(dbg)dbg.innerHTML=`FRAME: ${debugFrames}<br>RUN: ${running}<br>GAS: ${gas} / ${document.getElementById("gasBtn")?.dataset.pressed||"0"}<br>BRAKE: ${braking}<br>SPEED: ${speed.toFixed(1)}<br>DT: ${dt.toFixed(4)}`;
  if(!running)return;
@@ -71,7 +78,7 @@ function loop(now){
  distance+=speed*dt*.095;if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
  if(distance>=nextPickup){spawn();nextPickup+=75+Math.random()*70}
  let scroll=(35+speed*2.0)*dt;
- for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&p.lane===lane){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}
+ for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&Math.abs(((p.lane??1)-1)*.65-roadX)<.42){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}
  updateProgress();requestAnimationFrame(loop)}
 function updateProgress(){
  let pct=Math.min(100,distance/TRACK*100),remain=Math.max(0,TRACK-distance);
@@ -287,7 +294,7 @@ function arcadeInit(){
   const world=document.createElement("div");world.id="arcadeWorld";world.className="arcade-world";
   world.innerHTML=`<div class=arcade-sky><span class=sun>☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
   <div class=mountains>⛰️　🏔️　⛰️</div><div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
-  <div class=arcade-track><div class=track-surface></div><div id=curveStripes></div><div id=arcadeScenery></div><div id=arcadeOpponents></div>
+  <div class=arcade-track><div class=track-surface></div><div id=curveStripes></div><div id=arcadeScenery></div><div id=arcadeObstacles></div><div id=arcadeOpponents></div>
   <div class="arcade-player-wrap" id=arcadePlayer><div class=arcade-player-name>${lang==="de"?"DU":"TOI"}</div><div id=arcadePlayerBody>${carMarkup(selectedCarModel,selectedCarColor,false)}</div></div></div>`;
   road.prepend(world);
  }
@@ -303,7 +310,7 @@ function arcadeRender(){
   if(player){
    player.className="arcade-player-wrap";
    const body=document.getElementById("arcadePlayerBody");if(body&&body.dataset.spec!==selectedCarModel+"|"+selectedCarColor){body.dataset.spec=selectedCarModel+"|"+selectedCarColor;body.innerHTML=carMarkup(selectedCarModel,selectedCarColor,false)};
-   player.style.left=(([27,50,73][lane]||50)-curve*8)+"%";
+   player.style.left=(50+roadX*28-curve*8)+"%";
    player.style.transform=`translateX(-50%) rotate(${curve*-2.8}deg)`;
   }
   const stripes=document.getElementById("curveStripes");
@@ -319,7 +326,7 @@ function arcadeRender(){
    scenery.innerHTML=out;
   }
  }
- requestAnimationFrame(arcadeRender);
+ renderRoadObstacles();renderOffroadState();requestAnimationFrame(arcadeRender);
 }
 function arcadeRenderOpponents(st){
  const box=document.getElementById("arcadeOpponents");if(!box)return;
