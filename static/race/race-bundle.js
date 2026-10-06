@@ -2,30 +2,12 @@
 const TRACK=1000;
 const MAX_SPEED=125;
 const root=document.querySelector("#raceApp");
-let currentRaceQuestion=null;let raceReadAloud=false;let selectedCarModel="sport",selectedCarColor="red";window.raceLanguage="de";let debugFrames=0,debugLastDt=0;let token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
+let raceReadAloud=false,selectedCarModel="sport",selectedCarColor="red",currentRaceQuestion=null;let debugFrames=0,debugLastDt=0;let token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
 const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen und hole die meisten Punkte!",start:"RENNEN STARTEN",back:"← BibelQuiz",question:"Frage",finish:"ZIEL!",points:"Punkte",race:"Rennen",listen:"Vorlesen"},fr:{title:"🏎️ Course Biblique",sub:"Conduis, collecte les questions et gagne le plus de points !",start:"DÉMARRER",back:"← BibelQuiz",question:"Question",finish:"ARRIVÉE !",points:"Points",race:"Course",listen:"Écouter"}};
 async function api(path,opt={}){token=localStorage.getItem("token")||token||"";let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
-function menu(){
- let t=labels[lang],de=lang==="de";
- root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p>
- <div class=garage-summary>${de?"Auto":"Voiture"}: <b>${selectedCarModel.toUpperCase()}</b> · <span class="mini-color color-${selectedCarColor}"></span> · 🔊 ${raceReadAloud?(de?"AN":"OUI"):(de?"AUS":"NON")}</div>
- <div class=levels>${[["enfant",de?"🧒 KINDER":"🧒 ENFANT"],["facile",de?"🌱 EINFACH":"🌱 FACILE"],["moyen",de?"📖 MITTEL":"📖 MOYEN"],["difficile",de?"🔥 SCHWER":"🔥 DIFFICILE"],["alle",de?"🎲 ALLE":"🎲 TOUS"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div>
- <button class="btn start" onclick=start()>${t.start}</button>
- <p><button class=btn onclick="renderV73Garage()">← ${de?"Garage":"Garage"}</button></p></div></div>`;
-}
+function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><div class=levels>${[["enfant","🧒 KINDER / ENFANT"],["facile","🌱 EINFACH / FACILE"],["moyen","📖 MITTEL / MOYEN"],["difficile","🔥 SCHWER / DIFFICILE"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
 function choose(v,b){level=v;document.querySelectorAll(".levels .btn").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")}
-async function start(){
- try{
-  token=localStorage.getItem("token")||"";
-  if(!token){alert(lang==="de"?"Bitte zuerst in BibelQuiz anmelden.":"Connecte-toi d'abord à BibelQuiz.");location.href="/";return}
-  let me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang);
-  questions=await api(`/api/race/questions/${level}`);
-  qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;
-  renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceMusic.start();
- }catch(e){
-  alert((lang==="de"?"Rennen konnte nicht gestartet werden: ":"Impossible de démarrer la course : ")+e.message);
- }
-}
+async function start(){try{let me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
 function renderRace(){raceMusic.installButton();raceMusic.start();root.innerHTML=`<div class=race id=road>${Array.from({length:8},(_,i)=>`<i class=road-line style="top:${i*15-15}%"></i>`).join("")}
 <div class=hud><span class=pill>⭐ <b id=sc>0</b></span><span class="pill speedo">🏎️ <b id=spd>0</b> km/h</span><span class=pill id=boost>⚡</span></div>
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
@@ -98,12 +80,15 @@ function updateProgress(){
 }
 function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score;requestAnimationFrame(loop)}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
-function stopRaceSpeech(){try{speechSynthesis.cancel()}catch(e){}}
-function replayRaceQuestion(){if(currentRaceQuestion)speakRaceQuestion(currentRaceQuestion,true)}
-function speakRaceQuestion(q,force=false){
- if((!raceReadAloud&&!force)||!("speechSynthesis" in window)||!q)return;
- try{speechSynthesis.cancel();const rr=q.reponses?.[lang]||q.reponses?.de||[];const qq=(typeof q.question==="object"?(q.question[lang]||q.question.de):q.question)||"";const u=new SpeechSynthesisUtterance(qq+" "+rr.map((x,i)=>String.fromCharCode(65+i)+". "+x).join(". "));u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.84;speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){}
-}
+function showQuestion(){raceMusic.duck();let q=questions[qi++%questions.length],r=q.reponses[lang],t=labels[lang];let d=document.createElement("div");d.className="question-overlay";d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(q.question[lang]+" "+Object.entries(r).map(([k,v])=>k+": "+v).join(". "))})'>🔊 ${t.listen}</button><div class=answers>${["A","B","C","D"].map(a=>`<button class=answer onclick="answerRace('${a}',this)"><b>${a}</b> ${r[a]}</button>`).join("")}</div></div>`;road.appendChild(d);window.raceQ=q}
+function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
+function finish(){raceMusic.restore();running=false;let arrival=100;score+=arrival;root.querySelector(".race").insertAdjacentHTML("beforeend",`<div class=finish><div class=panel><div class=big>🏁🏆</div><h1>${labels[lang].finish}</h1><h2>⭐ ${score} ${labels[lang].points}</h2><p>🏎️ +${arrival} ${lang==="de"?"Zielbonus":"bonus arrivée"}</p><button class="btn start" onclick="menu()">${lang==="de"?"NOCH EIN RENNEN":"REJOUER"}</button><p><button class=btn onclick="location.href='/'">${labels[lang].back}</button></p></div></div>`)}
+menu();
+
+window.addEventListener("error",e=>{
+ const d=document.getElementById("raceDebug");
+ if(d){d.style.color="#fff";d.style.background="#b00020";d.innerHTML+="<br>ERROR: "+String(e.message).slice(0,90)}
+});
 window.addEventListener("unhandledrejection",e=>{
  const d=document.getElementById("raceDebug");
  if(d){d.style.color="#fff";d.style.background="#b00020";d.innerHTML+="<br>PROMISE: "+String(e.reason).slice(0,90)}
@@ -112,13 +97,15 @@ window.addEventListener("unhandledrejection",e=>{
 /* MULTIPLAYER */
 let raceMode=null;
 
-const garageModels=["sport","coupe","suv","kart"],garageColors=["red","blue","green","yellow","purple","black","white"];
-function garageModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
-function garagePreview(){return `<div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><b>BIBEL</b></div>`}
-let garageMode="solo";
-function legacyRaceHome(){root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>BibelRennen</h1><p>${lang==="de"?"Wähle deinen Spielmodus":"Choisis ton mode de jeu"}</p><button class="btn start" onclick="garageMode='solo';renderGarage()">👤 SOLO</button><button class="btn start" onclick="garageMode='multi';renderGarage()">👥 MULTIPLAYER 2–5</button><p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`}
-function renderGarage(){root.innerHTML=`<div class=menu><div class=panel><h1>🚘 ${lang==="de"?"DEIN AUTO":"TA VOITURE"}</h1><div class=garage-preview>${garagePreview()}</div><h3>${lang==="de"?"Modell":"Modèle"}</h3><div class=garage-grid>${garageModels.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';renderGarage()">${garageModelLabel(x)}</button>`).join("")}</div><h3>${lang==="de"?"Farbe":"Couleur"}</h3><div class=color-grid>${garageColors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';renderGarage()"></button>`).join("")}</div><button class="btn full" onclick="raceReadAloud=!raceReadAloud;renderGarage()">${raceReadAloud?(lang==="de"?"🔊 Vorlesen: AN":"🔊 Lecture : OUI"):(lang==="de"?"🔇 Vorlesen: AUS":"🔇 Lecture : NON")}</button><button class="btn start full" onclick="${garageMode==="solo"?"menu()":"raceMultiHome()"}">${lang==="de"?"WEITER":"CONTINUER"}</button><p><button class=btn onclick=raceHome()>← ${lang==="de"?"Zurück":"Retour"}</button></p></div></div>`}
-
+function raceHome(){
+ clearInterval(racePoll);racePoll=null;
+ root.innerHTML=`<div class=menu><div class=panel>
+ <div class=big>🏎️📖</div><h1>${lang==="de"?"BibelRennen":"Course Biblique"}</h1>
+ <p>${lang==="de"?"Wähle deinen Spielmodus":"Choisis ton mode de jeu"}</p>
+ <button class="btn start" onclick="soloSetup()">👤 ${lang==="de"?"SOLO":"SOLO"}</button>
+ <button class="btn start" style="margin-top:12px" onclick="multiMenu()">👥 ${lang==="de"?"MULTIPLAYER 2–5":"MULTIJOUEUR 2–5"}</button>
+ <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
+}
 function soloSetup(){
  raceMode="solo";
  // Existing race.js menu is now used only as the solo setup screen.
@@ -231,10 +218,8 @@ function showRaceResults(r){running=false;let sorted=[...r.players].sort((a,b)=>
 
 let unifiedTimer=null,unifiedFinishedSent=false,unifiedWaiting=false;
 async function unifiedRaceFromGroup(code){
- raceRoom=code;
- let profile=await api("/api/me");lang=profile.language||"de";window.raceLanguage=lang;raceMusic.init(lang);let room=await api("/api/group/"+code);
+ raceRoom=code;let room=await api("/api/group/"+code);
  if(room.game_type!=="race"){location.href="/";return}
- /* personal read-aloud choice retained */
  let q=await api(`/api/group/${code}/questions`);
  questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;
  renderRace();running=true;last=performance.now();requestAnimationFrame(loop);
@@ -272,35 +257,113 @@ function showUnifiedResults(st){raceMusic.restore();
  root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"ENDERGEBNIS":"CLASSEMENT FINAL"}</h1>${sorted.map((p,i)=>`<p style="font-size:20px"><b>${["🥇","🥈","🥉","4.","5."][i]} ${escRace(p.display_name)}</b> — ⭐ ${p.total_score} <small>(${p.race_score}+${p.finish_bonus}${p.dnf?" · DNF":""})</small></p>`).join("")}<h2>🏆 ${escRace(sorted[0]?.display_name||"")} — ${sorted[0]?.total_score||0} ⭐</h2><button class="btn start" onclick="location.href='/'">← BibelQuiz</button></div></div>`
 }
 
-const v73Models=["sport","coupe","suv","kart"],v73Colors=["red","blue","green","yellow","purple","black","white"];
-let v73Mode="solo";
-function v73ModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
-function v73Preview(){return `<div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><span class=garage-window></span><span class=garage-light-left></span><span class=garage-light-right></span><b>BIBEL</b></div>`}
-function primeSpeech(){if(!("speechSynthesis" in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(" ");u.lang=lang==="fr"?"fr-FR":"de-DE";speechSynthesis.speak(u)}catch(e){}}
-function raceHome(){
- const mode=new URLSearchParams(location.search).get("mode");
- if(mode==="solo"){v73Mode="solo";renderV73Garage();return}
- if(mode==="multi"){v73Mode="multi";renderV73Garage();return}
- root.innerHTML=`<div class=menu><div class=panel><h1>🏎️ BibelRennen</h1><button class="btn start" onclick="v73Mode='solo';renderV73Garage()">👤 SOLO</button><button class="btn start" onclick="v73Mode='multi';renderV73Garage()">👥 MULTIPLAYER</button><p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
+
+/* ===== V7.4 SELF-CONTAINED ARCADE ENGINE ===== */
+let arcadeFrame=0;
+function trackCurveAt(d){
+ const z=(distance+d)/145;
+ return Math.sin(z)*.72+Math.sin(z*.43+1.8)*.34;
 }
-function renderV73Garage(){
+function arcadeProject(gap,laneIndex){
+ const g=Math.max(0,Math.min(240,gap)),depth=g/240;
+ const y=84-depth*61,scale=1-depth*.78;
+ const curve=trackCurveAt(g);
+ const center=50+curve*(1-depth)*19;
+ const spread=(1-depth*.76)*22;
+ return{x:center+(laneIndex-1)*spread,y,scale,visible:gap>-22&&gap<245};
+}
+function arcadeInit(){
+ const road=document.getElementById("road");if(!road)return;
+ road.classList.add("arcade-road");
+ if(!document.getElementById("arcadeWorld")){
+  const world=document.createElement("div");world.id="arcadeWorld";world.className="arcade-world";
+  world.innerHTML=`<div class=arcade-sky><span class=sun>☀️</span><span class="cloud c1">☁️</span><span class="cloud c2">☁️</span></div>
+  <div class=mountains>⛰️　🏔️　⛰️</div><div class="arcade-hills h1"></div><div class="arcade-hills h2"></div>
+  <div class=arcade-track><div class=track-surface></div><div id=curveStripes></div><div id=arcadeScenery></div><div id=arcadeOpponents></div>
+  <div class="arcade-player-wrap model-${selectedCarModel} color-${selectedCarColor}" id=arcadePlayer><div class=arcade-player-name>${lang==="de"?"DU":"TOI"}</div><div class=arcade-player-car><span class=plate>BIBEL</span></div></div></div>`;
+  road.prepend(world);
+ }
+ const old=document.getElementById("car");if(old)old.style.opacity="0";
+ road.querySelectorAll(".road-line").forEach(x=>x.style.opacity="0");
+ if(!window.__arcadeLoopStarted){window.__arcadeLoopStarted=true;requestAnimationFrame(arcadeRender)}
+}
+function arcadeRender(){
+ const world=document.getElementById("arcadeWorld");
+ if(world){
+  arcadeFrame++;
+  const curve=trackCurveAt(10),player=document.getElementById("arcadePlayer");
+  if(player){
+   player.className=`arcade-player-wrap model-${selectedCarModel} color-${selectedCarColor}`;
+   player.style.left=(([27,50,73][lane]||50)-curve*8)+"%";
+   player.style.transform=`translateX(-50%) rotate(${curve*-2.8}deg)`;
+  }
+  const stripes=document.getElementById("curveStripes");
+  if(stripes){
+   let out="";
+   for(let i=0;i<13;i++){const d=i*18+(distance*2.5)%18,p=arcadeProject(d,1);out+=`<i class=curve-stripe style="left:${p.x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})"></i>`}
+   stripes.innerHTML=out;
+  }
+  const scenery=document.getElementById("arcadeScenery");
+  if(scenery){
+   let out="",phase=(distance*2.1)%220;
+   for(let i=0;i<12;i++){const d=(i*23+phase)%240,p=arcadeProject(d,1),side=i%2?-1:1,x=p.x+side*(28*(1-d/300)+10);out+=`<span class=scenery style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${i%3===0?"🌲":i%3===1?"🏠":"🌳"}</span>`}
+   scenery.innerHTML=out;
+  }
+ }
+ requestAnimationFrame(arcadeRender);
+}
+function arcadeRenderOpponents(st){
+ const box=document.getElementById("arcadeOpponents");if(!box)return;
+ const me=st.players.find(p=>Number(p.user_id)===Number(st.me));if(!me)return;
+ box.innerHTML=st.players.filter(p=>Number(p.user_id)!==Number(st.me)).map(p=>{
+  const gap=p.race_distance-me.race_distance,pr=arcadeProject(gap,p.race_lane);
+  if(!pr.visible)return "";
+  return `<div class="arcade-opponent color-${p.car||"red"}" style="left:${pr.x}%;top:${pr.y}%;transform:translate(-50%,-50%) scale(${pr.scale})"><b>${escRace(p.display_name)}</b><span class=opponent-car></span><label>${gap>=0?"+":""}${Math.round(gap)} m</label></div>`;
+ }).join("");
+}
+/* ===== V7.4 FOUR-FLOW ROUTER ===== */
+const v74Models=["sport","coupe","suv","kart"],v74Colors=["red","blue","green","yellow","purple","black","white"];
+let v74Mode="solo";
+function v74ModelLabel(x){return {sport:"SPORT",coupe:"COUPÉ",suv:"SUV",kart:"KART"}[x]||x}
+function v74Garage(){
  const de=lang==="de";
  root.innerHTML=`<div class=menu><div class="panel garage-panel"><h1>🚘 ${de?"DEIN AUTO":"TA VOITURE"}</h1>
- <div class=garage-preview>${v73Preview()}</div>
- <h3>${de?"Modell":"Modèle"}</h3><div class=garage-grid>${v73Models.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';renderV73Garage()">${v73ModelLabel(x)}</button>`).join("")}</div>
- <h3>${de?"Farbe":"Couleur"}</h3><div class=color-grid>${v73Colors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';renderV73Garage()"></button>`).join("")}</div>
+ <div class="garage-preview"><div class="garage-car model-${selectedCarModel} color-${selectedCarColor}"><b>BIBEL</b></div></div>
+ <h3>${de?"Modell":"Modèle"}</h3><div class=garage-grid>${v74Models.map(x=>`<button class="btn ${x===selectedCarModel?"sel":""}" onclick="selectedCarModel='${x}';v74Garage()">${v74ModelLabel(x)}</button>`).join("")}</div>
+ <h3>${de?"Farbe":"Couleur"}</h3><div class=color-grid>${v74Colors.map(x=>`<button class="color-choice color-${x} ${x===selectedCarColor?"selected":""}" onclick="selectedCarColor='${x}';v74Garage()"></button>`).join("")}</div>
  <div class=read-choice><b>🔊 ${de?"Fragen vorlesen":"Lecture automatique"}</b><div class=read-buttons>
- <button class="btn ${!raceReadAloud?"sel":""}" onclick="raceReadAloud=false;renderV73Garage()">${de?"AUS":"NON"}</button>
- <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();renderV73Garage()">${de?"AN":"OUI"}</button></div></div>
- <button class="btn start full" onclick="${v73Mode==="solo"?"menu()":"raceMultiHome()"}">${de?"WEITER":"CONTINUER"}</button>
+ <button class="btn ${!raceReadAloud?"sel":""}" onclick="raceReadAloud=false;v74Garage()">${de?"AUS":"NON"}</button>
+ <button class="btn ${raceReadAloud?"sel":""}" onclick="raceReadAloud=true;primeSpeech();v74Garage()">${de?"AN":"OUI"}</button></div></div>
+ <button class="btn start full" onclick="${v74Mode==="solo"?"v74SoloLevels()":"v74RaceGroupHome()"}">${de?"WEITER":"CONTINUER"}</button>
  <p><button class=btn onclick="location.href='/'">← BibelQuiz</button></p></div></div>`;
 }
-const unifiedCode=new URLSearchParams(location.search).get("group");
-async function initRacePage(){
- token=localStorage.getItem("token")||"";
- if(!token){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/";return}
- try{const me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang)}
- catch(e){alert((lang==="de"?"Sitzung konnte nicht geladen werden: ":"Impossible de charger la session : ")+e.message);location.href="/";return}
- if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"})}else raceHome()
+function primeSpeech(){if(!("speechSynthesis" in window))return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(" ");u.lang=lang==="fr"?"fr-FR":"de-DE";speechSynthesis.speak(u)}catch(e){}}
+function v74SoloLevels(){
+ let t=labels[lang],de=lang==="de";
+ root.innerHTML=`<div class=menu><div class=panel><h1>${t.title}</h1><p>${de?"Schwierigkeitsgrad":"Difficulté"}</p>
+ <div class=levels>${[["enfant",de?"🧒 KINDER":"🧒 ENFANT"],["facile",de?"🌱 EINFACH":"🌱 FACILE"],["moyen",de?"📖 MITTEL":"📖 MOYEN"],["difficile",de?"🔥 SCHWER":"🔥 DIFFICILE"],["alle",de?"🎲 ALLE":"🎲 TOUS"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div>
+ <div class=garage-summary>${de?"Auto":"Voiture"}: ${v74ModelLabel(selectedCarModel)} · ${selectedCarColor} · 🔊 ${raceReadAloud?(de?"AN":"OUI"):(de?"AUS":"NON")}</div>
+ <button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick=v74Garage()>← Garage</button></p></div></div>`;
 }
-initRacePage()
+function v74RaceGroupHome(){
+ // Reuse the proven race multiplayer create/join screen, never the Quiz group flow.
+ raceMultiHome();
+}
+function stopRaceSpeech(){try{speechSynthesis.cancel()}catch(e){}}
+function speakRaceQuestion(q,force=false){
+ if((!raceReadAloud&&!force)||!("speechSynthesis" in window)||!q)return;
+ stopRaceSpeech();const rr=q.reponses?.[lang]||q.reponses?.de||[];
+ const qq=(typeof q.question==="object"?(q.question[lang]||q.question.de):q.question)||"";
+ const u=new SpeechSynthesisUtterance(qq+" "+rr.map((x,i)=>String.fromCharCode(65+i)+". "+x).join(". "));
+ u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.84;speechSynthesis.resume();speechSynthesis.speak(u);
+}
+function replayRaceQuestion(){speakRaceQuestion(currentRaceQuestion,true)}
+const unifiedCode=new URLSearchParams(location.search).get("group");
+async function initV74(){
+ try{const me=await api("/api/me");lang=me.language||"de";window.raceLanguage=lang;raceMusic.init(lang)}
+ catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/";return}
+ if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"}) ;return}
+ const mode=new URLSearchParams(location.search).get("mode");
+ v74Mode=mode==="multi"?"multi":"solo";v74Garage();
+}
+initV74()

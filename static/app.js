@@ -1,10 +1,3 @@
-
-function homeGameGrid(){const de=lang==="de";return `<div class=home-game-grid>
-<button class=home-mode-card onclick="quizSoloHome()"><span>❓</span><b>QUIZ</b><small>SOLO</small></button>
-<button class=home-mode-card onclick="groupHome()"><span>👥</span><b>QUIZ</b><small>${de?"GRUPPENSPIEL":"EN GROUPE"}</small></button>
-<button class=home-mode-card onclick="location.href='/static/race/index.html?mode=solo'"><span>🏎️</span><b>${de?"AUTORENNEN":"COURSE"}</b><small>SOLO</small></button>
-<button class=home-mode-card onclick="location.href='/static/race/index.html?mode=multi'"><span>🏎️👥</span><b>${de?"AUTORENNEN":"COURSE"}</b><small>${de?"GRUPPENSPIEL":"EN GROUPE"}</small></button>
-</div>`}
 const A=document.querySelector("#app");let token=localStorage.token||"",me=null,prog=null,rewardHistory=[],weekly=null,groupCode="",groupPoll=null,weeklyRun="",weeklyQuestions=[],weeklyIdx=0,weeklyGood=0,lang="de",round=[],idx=0,good=0,level="",cat="";
 const names={enfant:["Kinder","Enfant"],facile:["Einfach","Facile"],moyen:["Mittel","Moyen"],difficile:["Schwierig","Difficile"]};
 const cats={creation:["Schöpfung","Création"],personnes:["Personen","Personnages"],jesus:["Jesus","Jésus"],miracles:["Wunder","Miracles"],general:["Bibelwissen","Bible générale"],ancien_testament:["Altes Testament","Ancien Testament"],nouveau_testament:["Neues Testament","Nouveau Testament"],rois:["Könige","Rois"],apotres:["Apostel","Apôtres"],moise_exode:["Mose & Exodus","Moïse & Exode"],prophetes:["Propheten","Prophètes"],paraboles:["Gleichnisse","Paraboles"],rois_royaumes:["Könige & Reiche","Rois & royaumes"],eglise_primitive:["Frühe Kirche","Église primitive"],epitres:["Briefe","Épîtres"],chronologie:["Chronologie","Chronologie"],connaissance:["Bibelwissen","Connaissance biblique"]};
@@ -91,23 +84,18 @@ function dashboard(){
  <div class=top><div class=brand-mark><img src="/static/identity/logo.svg" alt=""><h2 class=brand-title>BibelQuiz</h2></div>
  <button class="btn ghost top-logout" onclick="logout()">🚪 ${lang==="de"?"Abmelden":"Déconnexion"}</button>
  <b>${esc(me.display_name||me.username)} ⭐ ${me.points}</b></div>
- ${homeGameGrid()}
+ <div class=home-game-grid>
+  <button class=home-mode-card onclick="quizSoloHome()"><span>❓</span><b>QUIZ</b><small>SOLO</small></button>
+  <button class=home-mode-card onclick="quizGroupHome()"><span>👥</span><b>QUIZ</b><small>${lang==="de"?"GRUPPENSPIEL":"EN GROUPE"}</small></button>
+  <button class=home-mode-card onclick="location.href='/static/race/index.html?mode=solo'"><span>🏎️</span><b>${lang==="de"?"AUTORENNEN":"COURSE"}</b><small>SOLO</small></button>
+  <button class=home-mode-card onclick="location.href='/static/race/index.html?mode=multi'"><span>🏎️👥</span><b>${lang==="de"?"AUTORENNEN":"COURSE"}</b><small>${lang==="de"?"GRUPPENSPIEL":"EN GROUPE"}</small></button>
+ </div>
  <p class=home-footer><button class="btn ghost" onclick="progressView()">📊 ${lang==="de"?"Fortschritt":"Progression"}</button>
  <button class="btn ghost" onclick="accountView()">👤 ${lang==="de"?"Mein Konto":"Mon compte"}</button></p>
  </div>`;
 }
-function quizSoloHome(){
- brandJourney("dashboard");
- let active="enfant";for(let l of Object.keys(prog))if(prog[l].unlocked)active=l;
- let p=prog[active],pct=Math.round(100*p.done/p.total);
- A.innerHTML=`<div class=wrap>${back("dashboard()")}
- <div class="card hero"><h1>❓ ${lang==="de"?"Quiz Solo":"Quiz Solo"}</h1><p>${lang==="de"?"Dein persönliches BibelQuiz":"Ton BibelQuiz personnel"}</p></div>
- <div class=card><h3>${lang==="de"?"Aktuelles Level":"Niveau actuel"}: ${L(names[active])}</h3><div class=progress><i style="width:${pct}%"></i></div><p>${p.done}/${p.total} • ${pct}%</p><button class="btn green" onclick="levels()">▶ ${lang==="de"?"WEITERSPIELEN":"CONTINUER"}</button></div>
- <h2>${lang==="de"?"Alle Level":"Tous les niveaux"}</h2><div class=levels>${Object.keys(prog).map(l=>`<div class="card level ${prog[l].unlocked?"":"locked"}"><h3>${prog[l].unlocked?"🔓":"🔒"} ${L(names[l])}</h3><p>${prog[l].done}/${prog[l].total}</p>${prog[l].unlocked?`<button class=btn onclick="categories('${l}')">${lang==="de"?"Spielen":"Jouer"}</button>`:""}</div>`).join("")}</div>
- <div class="card" style="margin-top:16px;background:#fff1b8"><h2>⭐ ${lang==="de"?"Quiz der Woche":"Quiz de la semaine"}</h2><p>${lang==="de"?"10 neue Fragen • Wochenrangliste • Belohnungen":"10 nouvelles questions • classement • récompenses"}</p><button class="btn green" onclick="weeklyHome()">⭐ ${lang==="de"?"JETZT SPIELEN":"JOUER"}</button></div>
- <div class="card" style="margin-top:16px"><h3>🎖️ ${lang==="de"?"Meine Meilensteine":"Mes récompenses"}</h3><div class=milestone-track>${[5,10,25,50,100].map(n=>`<div class="milestone ${Object.values(prog).reduce((a,x)=>a+x.done,0)>=n?"done":""}">${Object.values(prog).reduce((a,x)=>a+x.done,0)>=n?"⭐":"○"}<br>${n}</div>`).join("")}</div><div class=badges style="margin-top:12px">${rewardHistory.slice(0,6).map(r=>`<span class=badge>${esc(r.title)}</span>`).join("")||`<span style="color:var(--muted)">${lang==="de"?"Dein erstes Abzeichen wartet auf dich!":"Ton premier badge t’attend !"}</span>`}</div></div>
- </div>`;
-}
+function quizSoloHome(){brandJourney("dashboard");let active="enfant";for(let l of Object.keys(prog))if(prog[l].unlocked)active=l;let p=prog[active],pct=Math.round(100*p.done/p.total);
+A.innerHTML=`<div class=wrap><div class=top><div class=brand-mark><img src="/static/identity/logo.svg" alt=""><h2 class=brand-title>BibelQuiz</h2></div><button class="btn ghost top-logout" onclick="logout()">🚪 ${lang==="de"?"Abmelden":"Déconnexion"}</button><b>${esc(me.display_name||me.username)} ⭐ ${me.points}</b></div><div class="card hero"><h1>${lang==="de"?"Willkommen zurück":"Bienvenue"}, ${esc(me.display_name||me.username)}! 👋</h1><p>${lang==="de"?"Schön, dass du da bist!":"Heureux de te revoir !"}</p></div><div class=card><h3>${lang==="de"?"Aktuelles Level":"Niveau actuel"}: ${L(names[active])}</h3><div class=progress><i style="width:${pct}%"></i></div><p>${p.done}/${p.total} • ${pct}%</p><button class="btn green" onclick="levels()">▶ ${lang==="de"?"WEITERSPIELEN":"CONTINUER"}</button></div><h2>${lang==="de"?"Alle Level":"Tous les niveaux"}</h2><div class=levels>${Object.keys(prog).map(l=>`<div class="card level ${prog[l].unlocked?"":"locked"}"><h3>${prog[l].unlocked?"🔓":"🔒"} ${L(names[l])}</h3><p>${prog[l].done}/${prog[l].total}</p>${prog[l].unlocked?`<button class=btn onclick="categories('${l}')">${lang==="de"?"Spielen":"Jouer"}</button>`:""}</div>`).join("")}</div><div class="card" style="margin-top:16px;background:#dff5e0"><h2>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h2><p>${lang==="de"?"Erstelle eine Lobby oder tritt mit einem 6-stelligen Code bei. Maximal 5 Spieler.":"Crée un salon ou rejoins-le avec un code à 6 chiffres. Maximum 5 joueurs."}</p><button class="btn" onclick="groupHome()">👥 ${lang==="de"?"GRUPPE":"GROUPE"}</button> <button class="btn ghost" onclick="groupProfile()">🏆 ${lang==="de"?"MEIN PROFIL":"MON PROFIL"}</button></div><div class="card" style="margin-top:16px;background:#fff1b8"><h2>⭐ ${lang==="de"?"Quiz der Woche":"Quiz de la semaine"}</h2><p>${lang==="de"?"10 neue Fragen • Wochenrangliste • Belohnungen":"10 nouvelles questions • classement • récompenses"}</p><button class="btn green" onclick="weeklyHome()">⭐ ${lang==="de"?"JETZT SPIELEN":"JOUER"}</button></div><div class="card" style="margin-top:16px"><h3>🎖️ ${lang==="de"?"Meine Meilensteine":"Mes récompenses"}</h3><div class=milestone-track>${[5,10,25,50,100].map(n=>`<div class="milestone ${Object.values(prog).reduce((a,x)=>a+x.done,0)>=n?"done":""}">${Object.values(prog).reduce((a,x)=>a+x.done,0)>=n?"⭐":"○"}<br>${n}</div>`).join("")}</div><div class=badges style="margin-top:12px">${rewardHistory.slice(0,6).map(r=>`<span class=badge>${esc(r.title)}</span>`).join("")||`<span style="color:var(--muted)">${lang==="de"?"Dein erstes Abzeichen wartet auf dich!":"Ton premier badge t’attend !"}</span>`}</div></div><p><button class="btn ghost" onclick="progressView()">📊 ${lang==="de"?"Fortschritt":"Progression"}</button> <button class="btn ghost" onclick="accountView()">👤 ${lang==="de"?"Mein Konto":"Mon compte"}</button> <button class="btn ghost" onclick="logout()">🚪 Logout</button></p></div>`}
 function levels(){brandJourney("levels");A.innerHTML=`<div class=wrap>${back("dashboard()")}<h1>${lang==="de"?"Wähle dein Level":"Choisis ton niveau"}</h1><div class=levels>${Object.keys(prog).map(l=>`<div class="card level ${prog[l].unlocked?"":"locked"}"><h2>${prog[l].unlocked?"🔓":"🔒"} ${L(names[l])}</h2><p>${prog[l].done}/${prog[l].total}</p>${prog[l].unlocked?`<button class=btn onclick="categories('${l}')">▶</button>`:""}</div>`).join("")}</div></div>`}
 function categories(l){brandJourney("categories");level=l;let cs=prog[l].categories;A.innerHTML=`<div class=wrap>${back("levels()")}<h1>${L(names[l])}</h1><div class=cats>${Object.keys(cs).map(c=>{let x=cs[c],pc=Math.round(100*x.done/x.total);return `<div class="card cat"><h3>${L(cats[c]||[c,c])}</h3><div class=progress><i style="width:${pc}%"></i></div><p>${x.done}/${x.total}</p><button class=btn onclick="start('${c}')">▶ ${lang==="de"?"Spielen":"Jouer"}</button></div>`}).join("")}</div></div>`}
 async function start(c){fly("⭐");cat=c;round=await api(`/api/round/${level}/${c}`);idx=0;good=0;question()}
@@ -118,12 +106,12 @@ function progressView(){fly("🏅");A.innerHTML=`<div class=wrap>${back("dashboa
 
 
 function stopGroupPoll(){if(groupPoll){clearInterval(groupPoll);groupPoll=null}}
-window.groupGameType="quiz";window.selectedGroupLevel="enfant";window.groupReadAloud=false;
-function groupHome(){
+window.groupGameType="quiz";window.selectedGroupLevel="enfant";
+function unifiedGroupHome(){
  stopGroupPoll();brandJourney("group");
  window.groupGameType="quiz";
  window.selectedGroupLevel="enfant";
- A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V7.3.1</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
+ A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>👥 ${lang==="de"?"Gruppenspiel":"Jeu en groupe"}</h1><small class=build-tag>V7.4</small><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p></div>
  <div class=levels><div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
  <p><b>${lang==="de"?"Spiel wählen":"Choisir le jeu"}</b></p>
  <div class=group-level-grid><button class="btn group-type selected" id=groupTypeQuiz data-type=quiz onclick="selectGroupType(this)">❓ QUIZ</button><button class="btn group-type" id=groupTypeRace data-type=race onclick="selectGroupType(this)">🏎️ BIBELRENNEN</button></div>
@@ -134,7 +122,7 @@ function groupHome(){
  <button class="btn group-level" data-level=moyen onclick="selectGroupLevel(this)">📖 ${lang==="de"?"MITTEL":"MOYEN"}</button>
  <button class="btn group-level" data-level=difficile onclick="selectGroupLevel(this)">🔥 ${lang==="de"?"SCHWER":"DIFFICILE"}</button>
  <button class="btn group-level" data-level=alle onclick="selectGroupLevel(this)">🎲 ${lang==="de"?"ALLE":"TOUS"}</button></div>
- <div class=read-option><b>🔊 ${lang==="de"?"Fragen vorlesen":"Lecture automatique"}</b><button class="btn" onclick="window.groupReadAloud=!window.groupReadAloud;this.textContent=window.groupReadAloud?(lang==='de'?'🔊 AN':'🔊 OUI'):(lang==='de'?'🔇 AUS':'🔇 NON')">${lang==="de"?"🔇 AUS":"🔇 NON"}</button></div><button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button></div>
+ <button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button></div>
  <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><p>${lang==="de"?"Nur den 6-stelligen Code eingeben.":"Entre seulement le code à 6 chiffres."}</p><input id=roomCode inputmode=numeric maxlength=6 placeholder="123456"><button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p></div></div></div>`
 }
 function selectGroupType(btn){
@@ -149,7 +137,7 @@ async function groupCreate(){
  const gameType=window.groupGameType==="race"?"race":"quiz";
  const difficulty=["enfant","facile","moyen","difficile","alle"].includes(window.selectedGroupLevel)?window.selectedGroupLevel:"enfant";
  try{
-  let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:gameType,difficulty,read_aloud:Boolean(window.groupReadAloud)})});
+  let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:gameType,difficulty})});
   groupCode=r.code;groupLobby();
  }catch(e){alert(e.message)}
 }
@@ -327,3 +315,15 @@ if("serviceWorker" in navigator)window.addEventListener("load",async()=>{
  }catch(e){console.error("Service worker:",e)}
 });
 setTimeout(()=>{if(isIOS())showInstallBanner()},1600);
+
+function quizGroupHome(){
+ window.groupGameType="quiz";
+ window.selectedGroupLevel="enfant";
+ unifiedGroupHome();
+ // Hide BibelRennen selector in Quiz group flow and lock type to quiz.
+ setTimeout(()=>{
+  document.querySelectorAll("[data-game]").forEach(x=>{
+   if(x.dataset.game==="race")x.style.display="none";
+  });
+ },0);
+}

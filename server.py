@@ -31,11 +31,9 @@ class Auth(BaseModel):
 class RoomReady(BaseModel):
     ready:bool
     car:str|None=None
-    car_model:str|None=None
 class GroupCreate(BaseModel):
     game_type:str="quiz"
     difficulty:str="enfant"
-    read_aloud:bool=False
 class RoomJoin(BaseModel):
     code:str
 class UnifiedRaceSync(BaseModel):
@@ -419,7 +417,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"7.3.1","build":"clean-home-solo-auth-fix"}
+ return {"version":"7.4","build":"four-independent-flows"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
@@ -431,7 +429,7 @@ def group_create(a:GroupCreate,authorization:str|None=Header(None)):
  for _ in range(30):
   code=str(random.randint(100000,999999))
   if not database.room(code):
-   database.create_room(u,code,difficulty,game_type,a.read_aloud)
+   database.create_room(u,code,difficulty,game_type)
    return database.room(code)
  raise HTTPException(503,"ROOM_CODE_UNAVAILABLE")
 
