@@ -32,14 +32,39 @@ function walk(x,y){p.x=Math.max(3,Math.min(97,p.x+x));p.y=Math.max(7,Math.min(94
 function grab(i){let o=it[i];if(Math.hypot(o.x-p.x,o.y-p.y)>13){toast("Komm etwas näher zum Gegenstand 😊");return}held=i;render()}
 function action(){if(held===null){let i=it.findIndex(o=>!o.done&&Math.hypot(o.x-p.x,o.y-p.y)<13);if(i>=0)grab(i);return}let o=it[held],h=H[D[o.id]];if(h&&Math.hypot(p.x-h[0],p.y-h[1])<14){o.done=true;held=null;reveal()}else toast("Fast! Suche den richtigen Platz 😊")}
 function reveal(){let x=ord[done++];G.innerHTML=`<div class=modal><section><div class=big>✨📜</div><p>${C[x]}</p><button onclick="${done===10?"puzzle()":"render()"}">WEITER</button></section></div>`}
-function board(){return `<div class="puzzle-board puzzle-${theme}">${[...Array(10)].map((_,i)=>`<div class="puzzle-slot ${i<next?"filled":""}" data-slot="${i}"><span>${i<next?"✓":""}</span></div>`).join("")}</div>`}
-let cardDrag=null;
+let selectedCard=null,cardDrag=null;
+function board(){
+ return `<div class="puzzle-board puzzle-${theme}">${[...Array(10)].map((_,i)=>`<button class="puzzle-slot ${i<next?"filled":i===next?"active":"locked"}" data-slot="${i}" onclick="${i===next?"placeSelected()":""}"><span>${i<next?"✓":i===next?"👉": "🔒"}</span>${i===next?`<small>HIER ABLEGEN</small>`:""}</button>`).join("")}</div>`;
+}
 function puzzle(){
  if(next===10){G.innerHTML=`<main><h1>🏆 Richtig!</h1>${board()}<div class=final-celebration>✨🎉⭐🎉✨</div><button onclick="location.reload()">NEUES SPIEL</button></main>`;celebrate();return}
+ selectedCard=null;
  let choices=sh([...Array(10).keys()]);
- G.innerHTML=`<main><h1>🧩 Puzzle · ${next}/10</h1>${board()}<h2>Welches Gebot kommt als Nächstes?</h2><p class=hint>👆 Karte antippen = vorlesen · Karte ziehen = einsetzen</p><div class=drag-cards>${choices.map(i=>`<div class=drag-card data-i="${i}" onpointerdown="cardDown(event,${i})" onclick="speakCard(C[${i}])"><span class=speaker>🔊</span>${C[i]}</div>`).join("")}</div></main>`}
+ G.innerHTML=`<main><h1>🧩 Puzzle · ${next}/10</h1>${board()}<h2>Welche Karte kommt jetzt?</h2><p class=hint>👆 Karte antippen und dann auf <b>HIER ABLEGEN</b> tippen<br>oder die Karte direkt dorthin ziehen.</p><div class=drag-cards>${choices.map(i=>`<div class=drag-card data-i="${i}" onpointerdown="cardDown(event,${i})" onclick="selectAndSpeak(${i},this)"><span class=speaker>🔊</span>${C[i]}</div>`).join("")}</div></main>`;
+}
+function selectAndSpeak(i,el){
+ if(cardDrag?.moved)return;
+ selectedCard=i;document.querySelectorAll(".drag-card").forEach(x=>x.classList.remove("selected"));el.classList.add("selected");speakCard(C[i]);toast("Karte ausgewählt. Jetzt 👉 HIER ABLEGEN antippen.",true);
+}
+function placeSelected(){
+ if(selectedCard===null){toast("Wähle zuerst eine Karte 😊");return}
+ dropCard(selectedCard);
+}
 function cardDown(e,i){cardDrag={i,startX:e.clientX,startY:e.clientY,el:e.currentTarget,moved:false};e.currentTarget.setPointerCapture?.(e.pointerId)}
-window.addEventListener("pointermove",e=>{if(!cardDrag)return;let dx=e.clientX-cardDrag.startX,dy=e.clientY-cardDrag.startY;if(Math.hypot(dx,dy)>8)cardDrag.moved=true;if(cardDrag.moved){cardDrag.el.classList.add("dragging");cardDrag.el.style.transform=`translate(${dx}px,${dy}px) rotate(2deg)`}});
-window.addEventListener("pointerup",e=>{if(!cardDrag)return;let d=cardDrag;cardDrag=null;if(!d.moved){d.el.style.transform="";return}let slot=document.querySelector(`.puzzle-slot[data-slot="${next}"]`),r=slot?.getBoundingClientRect();if(r&&e.clientX>=r.left-30&&e.clientX<=r.right+30&&e.clientY>=r.top-30&&e.clientY<=r.bottom+30)dropCard(d.i);else{d.el.classList.add("wrong");d.el.style.transform="";setTimeout(()=>d.el?.classList.remove("wrong"),450);toast("Ziehe die Karte auf das nächste freie Puzzleteil 😊")}});
-function dropCard(i){if(i!==next){document.querySelector(`.drag-card[data-i="${i}"]`)?.classList.add("wrong");toast("Fast! Versuch eine andere Karte 😊");return}next++;celebrate();toast("✨ Richtig! Puzzleteil eingesetzt.",true);setTimeout(puzzle,500)}
+window.addEventListener("pointermove",e=>{if(!cardDrag)return;let dx=e.clientX-cardDrag.startX,dy=e.clientY-cardDrag.startY;if(Math.hypot(dx,dy)>10)cardDrag.moved=true;if(cardDrag.moved){cardDrag.el.classList.add("dragging");cardDrag.el.style.transform=`translate(${dx}px,${dy}px) scale(1.04)`}});
+window.addEventListener("pointerup",e=>{
+ if(!cardDrag)return;let d=cardDrag;cardDrag=null;
+ if(!d.moved){d.el.style.transform="";return}
+ const slot=document.querySelector(".puzzle-slot.active"),r=slot?.getBoundingClientRect();
+ // Generous mobile drop zone: 70px tolerance around the active slot.
+ if(r&&e.clientX>=r.left-70&&e.clientX<=r.right+70&&e.clientY>=r.top-70&&e.clientY<=r.bottom+70)dropCard(d.i);
+ else{d.el.style.transform="";d.el.classList.remove("dragging");toast("Ziehe die Karte zum leuchtenden Feld 👉")}
+});
+function dropCard(i){
+ if(i!==next){
+  let el=document.querySelector(`.drag-card[data-i="${i}"]`);el?.classList.add("wrong");setTimeout(()=>el?.classList.remove("wrong"),450);
+  toast("😊 Fast! Das ist noch nicht die nächste Karte.");return
+ }
+ next++;selectedCard=null;celebrate();toast("✨ RICHTIG! Puzzleteil eingesetzt.",true);setTimeout(puzzle,600);
+}
 boot();
