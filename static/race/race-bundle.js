@@ -8,7 +8,7 @@ const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen un
 async function api(path,opt={}){token=localStorage.getItem("token")||token||"";let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
 function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><button class="btn start" onclick="v74Garage()">${lang==="de"?"WEITER":"CONTINUER"}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
 function choose(v,b){level=v;document.querySelectorAll(".levels .btn").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")}
-async function start(){try{let me=await api("/api/me");lang=normalizeRaceLanguage(me.language);window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;roadX=0;steerInput=0;offRoad=false;roadObstacles=[];nextObstacleAt=90;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
+async function start(){try{let me=await api("/api/me");lang=localStorage.getItem("bibelquiz_language")==="fr"?"fr":"de";window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;roadX=0;steerInput=0;offRoad=false;roadObstacles=[];nextObstacleAt=90;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
 function renderRace(){raceMusic.installButton();raceMusic.start();root.innerHTML=`<div class=race id=road>${Array.from({length:8},(_,i)=>`<i class=road-line style="top:${i*15-15}%"></i>`).join("")}
 <div class=hud><span class=pill>⭐ <b id=sc>0</b></span><span class="pill speedo">🏎️ <b id=spd>0</b> km/h</span><span class=pill id=boost>⚡</span></div>
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
@@ -413,10 +413,9 @@ function replayRaceQuestion(){speakRaceQuestion(currentRaceQuestion,true)}
 const unifiedCode=new URLSearchParams(location.search).get("group");
 function normalizeRaceLanguage(v){const x=String(v||"").trim().toLowerCase();return (x==="fr"||x.startsWith("fr-")||x.startsWith("fr_")||x.startsWith("fran")||x==="french")?"fr":"de"}
 async function initV74(){
- try{const me=await api("/api/me");lang=String(me.language||"de").toLowerCase().startsWith("fr")?"fr":"de";window.raceLanguage=lang;raceMusic.init(lang)}
- catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/";return}
+ lang=localStorage.getItem("bibelquiz_language")==="fr"?"fr":"de";window.raceLanguage=lang;raceMusic.init(lang);
+ try{await api("/api/me")}catch(e){alert(lang==="fr"?"Connecte-toi d’abord à BibelQuiz":"Bitte zuerst in BibelQuiz anmelden");location.href="/";return}
  if(unifiedCode){unifiedRaceFromGroup(unifiedCode).catch(e=>{alert(e.message);location.href="/"}) ;return}
- const mode=new URLSearchParams(location.search).get("mode");
- v74Mode=mode==="multi"?"multi":"solo";v74Garage();
+ const mode=new URLSearchParams(location.search).get("mode");v74Mode=mode==="multi"?"multi":"solo";v74Garage();
 }
 initV74()

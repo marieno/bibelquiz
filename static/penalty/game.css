@@ -13,3 +13,4 @@
 .hint{text-align:center;background:#fff9;padding:10px;border-radius:14px;line-height:1.45}
 @keyframes activePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
 @media(max-width:600px){.puzzle-board{grid-template-columns:repeat(3,1fr)!important}.puzzle-slot{min-height:72px!important}.puzzle-slot.active{min-height:88px!important}}
+.voice-test{display:block;margin:8px auto 12px;padding:11px 16px;border:2px solid #1d6da3;background:#fff;color:#12466d;border-radius:14px;font-weight:900}.voice-test:active{transform:scale(.97)}

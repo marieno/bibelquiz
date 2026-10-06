@@ -1,8 +1,31 @@
 
-function speakCard(text){
- if(!("speechSynthesis" in window))return;
- try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.84;speechSynthesis.resume();speechSynthesis.speak(u)}catch(e){}
+let gameVoice=null;
+function pickGameVoice(){
+ if(!("speechSynthesis" in window))return null;
+ const wanted=lang==="fr"?"fr":"de",voices=speechSynthesis.getVoices()||[];
+ return voices.find(v=>String(v.lang||"").toLowerCase().startsWith(wanted))||null;
 }
+function speakCard(text){
+ if(!("speechSynthesis" in window)){toast(lang==="fr"?"La synthèse vocale n’est pas disponible.":"Sprachausgabe ist nicht verfügbar.");return false}
+ try{
+  speechSynthesis.cancel();speechSynthesis.resume();
+  const u=new SpeechSynthesisUtterance(String(text||""));
+  u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.82;u.pitch=1;u.volume=1;
+  gameVoice=pickGameVoice();if(gameVoice)u.voice=gameVoice;
+  speechSynthesis.speak(u);
+  // Some Android engines remain paused after cancel; resume once more.
+  setTimeout(()=>{try{speechSynthesis.resume()}catch(e){}},60);
+  return true;
+ }catch(e){toast(lang==="fr"?"Lecture impossible.":"Vorlesen nicht möglich.");return false}
+}
+function testGameVoice(){
+ const text=lang==="fr"?"La lecture fonctionne.":"Die Sprachausgabe funktioniert.";
+ speakCard(text);
+}
+if("speechSynthesis" in window){
+ speechSynthesis.onvoiceschanged=()=>{gameVoice=pickGameVoice()};
+}
+
 function toast(msg,good=false){
  let t=document.getElementById("gameToast");if(!t){t=document.createElement("div");t.id="gameToast";t.className="game-toast";document.body.appendChild(t)}
  t.textContent=msg;t.className="game-toast show "+(good?"good":"try");clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.className="game-toast",1700)
@@ -17,7 +40,7 @@ let p={x:50,y:80},it=[],done=0,ord=[],next=0,theme="lion",held=null;const O=["�
 const HOME_LABELS={de:{Küche:"Küche",Bad:"Bad",Schrank:"Schrank",Spielzeug:"Spielzeugkiste",Regal:"Regal",Flur:"Flur",Garderobe:"Garderobe",Bett:"Bett",Schreibtisch:"Schreibtisch",Abstellraum:"Abstellraum",Wäsche:"Wäschekorb"},fr:{Küche:"Cuisine",Bad:"Salle de bain",Schrank:"Armoire",Spielzeug:"Boîte à jouets",Regal:"Étagère",Flur:"Entrée",Garderobe:"Penderie",Bett:"Lit",Schreibtisch:"Bureau",Abstellraum:"Débarras",Wäsche:"Panier à linge"}};
 const H={Küche:[72,25],Bad:[62,75],Schrank:[28,74],Spielzeug:[20,30],Regal:[36,25],Flur:[86,76],Garderobe:[86,62],Bett:[18,74],Schreibtisch:[39,74],Abstellraum:[88,86],Wäsche:[67,86]};
 function boot(){let spots=sh([[14, 28], [29, 31], [42, 37], [61, 29], [82, 31], [15, 63], [30, 59], [43, 84], [58, 61], [81, 69], [17, 88], [40, 62], [64, 89], [84, 87], [66, 38]]);it=sh([...Array(O.length).keys()]).slice(0,10).map((id,i)=>({id,x:spots[i][0],y:spots[i][1],done:false}));ord=sh([...Array(10).keys()]);done=next=0;theme=sh(["lion","elephant","ark","butterfly","dolphin"])[0];p={x:50,y:80};held=null;render()}
-function render(){G.innerHTML=`<main><header><button onclick="location.href='/'">← BibelQuiz</button><h1>🏠 ${t.title}</h1><b>${done}/10</b></header><div class=apt><div class="room r1">${t.living}</div><div class="room r2">${t.kitchen}</div><div class="room r3">${t.bedroom}</div><div class="room r4">${t.bath}</div>${Object.entries(H).map(([n,v])=>`<small class=home style="left:${v[0]}%;top:${v[1]}%">${(HOME_LABELS[lang]||HOME_LABELS.de)[n]||n}</small>`).join("")}${it.map((o,i)=>o.done?"":`<button class=item style="left:${o.x}%;top:${o.y}%" onclick="grab(${i})">${O[o.id].split(" ")[0]}</button>`).join("")}<div class=person id=person style="left:${p.x}%;top:${p.y}%" onpointerdown="startPersonDrag(event)">🧒</div></div><div class=pad><button onclick="walk(0,-6)">▲</button><button onclick="walk(-6,0)">◀</button><button onclick=action()>✋</button><button onclick="walk(6,0)">▶</button><button onclick="walk(0,6)">▼</button></div><p id=msg></p></main>`}
+function render(){G.innerHTML=`<main><header><button onclick="location.href='/'">← BibelQuiz</button><h1>🏠 ${t.title}</h1><b>${done}/10</b></header><button class=voice-test onclick="testGameVoice()">🔊 ${lang==="fr"?"TESTER LA VOIX":"STIMME TESTEN"}</button><div class=apt><div class="room r1">${t.living}</div><div class="room r2">${t.kitchen}</div><div class="room r3">${t.bedroom}</div><div class="room r4">${t.bath}</div>${Object.entries(H).map(([n,v])=>`<small class=home style="left:${v[0]}%;top:${v[1]}%">${(HOME_LABELS[lang]||HOME_LABELS.de)[n]||n}</small>`).join("")}${it.map((o,i)=>o.done?"":`<button class=item style="left:${o.x}%;top:${o.y}%" onclick="grab(${i})">${O[o.id].split(" ")[0]}</button>`).join("")}<div class=person id=person style="left:${p.x}%;top:${p.y}%" onpointerdown="startPersonDrag(event)">🧒</div></div><div class=pad><button onclick="walk(0,-6)">▲</button><button onclick="walk(-6,0)">◀</button><button onclick=action()>✋</button><button onclick="walk(6,0)">▶</button><button onclick="walk(0,6)">▼</button></div><p id=msg></p></main>`}
 
 let personDrag=false;
 function startPersonDrag(e){personDrag=true;e.preventDefault();document.getElementById("person")?.setPointerCapture?.(e.pointerId)}
@@ -72,17 +95,5 @@ function dropCard(i){
  }
  next++;selectedCard=null;celebrate();toast(t.right,true);setTimeout(puzzle,600);
 }
-function normalizeGameLanguage(v){
- const x=String(v||"").trim().toLowerCase();
- return (x==="fr"||x.startsWith("fr-")||x.startsWith("fr_")||x.startsWith("fran")||x==="french")?"fr":"de";
-}
-async function bootWithProfile(){
- try{
-  const res=await fetch("/api/me",{headers:{Authorization:"Bearer "+(localStorage.token||"")},cache:"no-store"});
-  if(!res.ok)throw new Error("profile");
-  const me=await res.json();lang=normalizeGameLanguage(me.language);
- }catch(e){lang=normalizeGameLanguage(localStorage.lang)}
- C=ALLC[lang]||ALLC.de;t=TX[lang]||TX.de;
- boot();
-}
-bootWithProfile();
+function canonicalGameLanguage(){return localStorage.getItem("bibelquiz_language")==="fr"?"fr":"de"}
+lang=canonicalGameLanguage();C=ALLC[lang]||ALLC.de;t=TX[lang]||TX.de;boot();

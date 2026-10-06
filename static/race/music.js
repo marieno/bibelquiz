@@ -4,8 +4,9 @@ const raceMusic={
  normalVolume:.34,
  questionVolume:.09,
  started:false,
- init(){
-  const current=(typeof lang!=="undefined"?lang:(localStorage.lang||"de")).toLowerCase();
+ init(requestedLang){
+  const current=(requestedLang==="fr"||localStorage.getItem("bibelquiz_language")==="fr")?"fr":"de";
+  if(this.audio){try{this.audio.pause()}catch(e){}this.audio=null;this.started=false}
   const src=current==="fr"
    ?"/static/race/audio/etre-disciple-de-jesus.m4a"
    :"/static/race/audio/10-gebote-v2.m4a";

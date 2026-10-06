@@ -21,3 +21,4 @@
 .home{z-index:12!important;background:#fff!important;border:2px solid #47769a!important;padding:5px 7px!important;font-weight:900!important;white-space:nowrap;box-shadow:0 2px 5px #0002}
 .item{z-index:6!important;font-size:25px!important;width:45px;height:45px;padding:2px!important;border-radius:50%!important;background:#fff9!important}
 .person{z-index:20!important}
+.voice-test{display:block;margin:8px auto 12px;padding:11px 16px;border:2px solid #1d6da3;background:#fff;color:#12466d;border-radius:14px;font-weight:900}.voice-test:active{transform:scale(.97)}

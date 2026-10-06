@@ -77,7 +77,8 @@ async function handleRecoveryLink(){
 }
 async function finishPasswordReset(tok){if(np1.value.length<8){resetMsg.textContent="Mindestens 8 Zeichen.";return}if(np1.value!==np2.value){resetMsg.textContent="Passwörter stimmen nicht überein.";return}try{await api("/api/recovery/password/reset",{method:"POST",body:JSON.stringify({token:tok,new_password:np1.value})});history.replaceState({},'',location.pathname);A.innerHTML=`<div class=wrap><div class="card auth"><h1>✓ Passwort geändert</h1><button class="btn green full" onclick="auth()">ANMELDEN</button></div></div>`}catch(e){recoveryInvalid()}}
 function recoveryInvalid(){A.innerHTML=`<div class=wrap><div class="card auth"><h1>⚠️ Link ungültig / Lien invalide</h1><p>Der Link ist abgelaufen oder wurde bereits verwendet. / Le lien a expiré ou a déjà été utilisé.</p><button class="btn full" onclick="history.replaceState({},'',location.pathname);auth()">ZURÜCK</button></div></div>`}
-async function load(){try{let x=await api("/api/me");me=x.user;prog=x.progress;rewardHistory=x.rewards||[];lang=me.language;dashboard()}catch(e){token="";localStorage.removeItem("token");auth()}}
+function canonicalLanguage(v){const x=String(v||"").trim().toLowerCase();return (x==="fr"||x.startsWith("fr-")||x.startsWith("fr_")||x.startsWith("fran")||x==="french")?"fr":"de"}
+async function load(){try{let x=await api("/api/me");me=x.user;prog=x.progress;rewardHistory=x.rewards||[];lang=canonicalLanguage(me.language);localStorage.setItem("bibelquiz_language",lang);localStorage.setItem("lang",lang);dashboard()}catch(e){token="";localStorage.removeItem("token");auth()}}
 function dashboard(){
  brandJourney("dashboard");
  A.innerHTML=`<div class=wrap>
