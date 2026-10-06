@@ -53,6 +53,30 @@ function setBrake(v){
 function move(d){if(!running)return;lane=Math.max(0,Math.min(2,lane+d));placeCar()}
 function placeCar(){let c=document.querySelector("#car");if(c)c.style.left=[22,44,66][lane]+"%"}
 function spawn(){let el=document.createElement("div");el.className="pickup";el.textContent=Math.random()<.72?"📖":"⭐";let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.kind=el.textContent==="📖"?"q":"star";el.style.left=[24,47,70][l]+"%";el.style.top="-60px";road.appendChild(el);pickups.push({el,y:-60,lane:l,kind:el.dataset.kind})}
+
+
+function normalizePickupDistances(){
+ if(!pickups)return;
+ pickups.forEach((p,i)=>{if(p.distance==null)p.distance=distance+70+i*35;if(p.lane==null)p.lane=1});
+}
+function bookHitTest(){normalizePickupDistances();
+ if(!running||!pickups||!pickups.length)return false;
+ const carLane=lane;
+ for(let i=0;i<pickups.length;i++){
+  const p=pickups[i];
+  if(p.taken)continue;
+  // Pickup positions are expressed in race distance. Trigger in a forgiving 16 m window.
+  const pd=Number(p.distance ?? p.d ?? p.x ?? 0);
+  const pl=Number(p.lane ?? 1);
+  if(Math.abs(pd-distance)<=16 && Math.abs(pl-carLane)<=0.55){
+   p.taken=true;
+   running=false;gas=false;braking=false;speed=Math.max(0,speed*.35);
+   showQuestion();
+   return true;
+  }
+ }
+ return false;
+}
 function loop(now){
  debugFrames++;
  let rawDt=(now-last)/1000,dt=Math.min(.05,Math.max(0,rawDt));last=now;debugLastDt=dt;
@@ -66,7 +90,8 @@ function loop(now){
  if(brakeHeld)speed-=125*dt;
  speed=Math.max(0,Math.min(max,speed));
  if(isTurbo)speed=Math.max(speed,145);
- distance+=speed*dt*.095;if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
+ distance+=speed*dt*.095;
+ bookHitTest();if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
  if(distance>=nextPickup){spawn();nextPickup+=75+Math.random()*70}
  let scroll=(35+speed*2.0)*dt;
  for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&p.lane===lane){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}
@@ -80,7 +105,7 @@ function updateProgress(){
 }
 function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score;requestAnimationFrame(loop)}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
-function showQuestion(){raceMusic.duck();let q=questions[qi++%questions.length],r=q.reponses[lang],t=labels[lang];let d=document.createElement("div");d.className="question-overlay";d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(q.question[lang]+" "+Object.entries(r).map(([k,v])=>k+": "+v).join(". "))})'>🔊 ${t.listen}</button><div class=answers>${["A","B","C","D"].map(a=>`<button class=answer onclick="answerRace('${a}',this)"><b>${a}</b> ${r[a]}</button>`).join("")}</div></div>`;road.appendChild(d);window.raceQ=q}
+function showQuestion(){running=false;gas=false;braking=false;raceMusic.duck();let q=questions[qi++%questions.length],r=q.reponses[lang],t=labels[lang];let d=document.createElement("div");d.className="question-overlay";d.innerHTML=`<div class=question><h2>📖 ${t.question}</h2><p style="font-size:21px;font-weight:900">${q.question[lang]}</p><button class=speaker onclick='speak(${JSON.stringify(q.question[lang]+" "+Object.entries(r).map(([k,v])=>k+": "+v).join(". "))})'>🔊 ${t.listen}</button><div class=answers>${["A","B","C","D"].map(a=>`<button class=answer onclick="answerRace('${a}',this)"><b>${a}</b> ${r[a]}</button>`).join("")}</div></div>`;road.appendChild(d);window.raceQ=q}
 function answerRace(a,b){let ok=a===raceQ.correcte;document.querySelectorAll(".answer").forEach(x=>x.disabled=true);b.classList.add(ok?"good":"bad");if(ok){score+=100;turbo=performance.now()+3000;document.getElementById("boost").textContent="⚡ TURBO";setTimeout(()=>{document.getElementById("boost")?.replaceChildren("⚡")},3000)}document.getElementById("sc").textContent=score;setTimeout(()=>{document.querySelector(".question-overlay")?.remove();running=true;last=performance.now();requestAnimationFrame(loop)},700)}
 function finish(){raceMusic.restore();running=false;let arrival=100;score+=arrival;root.querySelector(".race").insertAdjacentHTML("beforeend",`<div class=finish><div class=panel><div class=big>🏁🏆</div><h1>${labels[lang].finish}</h1><h2>⭐ ${score} ${labels[lang].points}</h2><p>🏎️ +${arrival} ${lang==="de"?"Zielbonus":"bonus arrivée"}</p><button class="btn start" onclick="menu()">${lang==="de"?"NOCH EIN RENNEN":"REJOUER"}</button><p><button class=btn onclick="location.href='/'">${labels[lang].back}</button></p></div></div>`)}
 menu();

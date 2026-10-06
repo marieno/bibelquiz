@@ -134,7 +134,7 @@ function selectGroupLevel(btn){
  document.querySelectorAll(".group-level").forEach(x=>x.classList.toggle("selected",x===btn));
 }
 async function groupCreate(){
- const gameType=window.groupGameType==="race"?"race":"quiz";
+ const gameType="quiz";
  const difficulty=["enfant","facile","moyen","difficile","alle"].includes(window.selectedGroupLevel)?window.selectedGroupLevel:"enfant";
  try{
   let r=await api("/api/group/create",{method:"POST",body:JSON.stringify({game_type:gameType,difficulty})});
@@ -206,18 +206,12 @@ async function groupProfile(){
 }
 
 async function groupReady(v){await api(`/api/group/${groupCode}/ready`,{method:"POST",body:JSON.stringify({ready:v})});groupLobby()}
-async function groupLeave(){stopGroupPoll();if(groupCode){try{await api(`/api/group/${groupCode}/leave`,{method:"POST",body:"{}"})}catch(e){}}groupCode="";groupHome()}
-
-async function weeklyHome(){
- brandJourney("weekly");weekly=await api("/api/weekly");
- if(!weekly.active){A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class=card><h2>⭐ Quiz der Woche</h2><p>Noch kein Quiz / Pas encore de quiz.</p></div></div>`;return}
- let title=weekly.title[lang],first=weekly.first_result;
- A.innerHTML=`<div class=wrap>${back("dashboard()")}<div class="card hero"><h1>⭐ ${esc(title)}</h1><p>${weekly.week} • ${weekly.question_count} ${lang==="de"?"Fragen":"questions"}</p></div>
- <div class=card><h2>${first?(lang==="de"?"Dein gewerteter Versuch":"Ta tentative classée"):(lang==="de"?"Bereit?":"Prêt ?")}</h2>
- ${first?`<p>🏆 ${first.score} • ${first.correct_count}/10</p><p>${lang==="de"?"Du kannst erneut üben; nur der erste Versuch zählt.":"Tu peux rejouer pour t’entraîner ; seule la première tentative compte."}</p>`:""}
- <button class="btn green" onclick="weeklyStart()">▶ ${first?(lang==="de"?"NOCHMAL ÜBEN":"REJOUER"):(lang==="de"?"STARTEN":"COMMENCER")}</button></div>
- <div class=card style="margin-top:14px"><h2>🏆 ${lang==="de"?"Wochenrangliste":"Classement de la semaine"}</h2>${weekly.leaderboard.length?weekly.leaderboard.map((r,i)=>`<p><b>${i+1}. ${esc(r.username)}</b> — ${r.score} ⭐ — ${r.correct_count}/10</p>`).join(""):`<p>${lang==="de"?"Noch keine Ergebnisse.":"Pas encore de résultats."}</p>`}</div>
- <p><button class="btn ghost" onclick="weeklyArchive()">📚 Archiv / Archives</button></p></div>`
+async function groupLeave(){
+ stopGroupPoll();
+ const code=groupCode;
+ groupCode="";
+ try{if(code)await api(`/api/group/${code}/leave`,{method:"POST",body:"{}"})}catch(e){}
+ dashboard();
 }
 async function weeklyStart(){
  let x=await api("/api/weekly/start",{method:"POST",body:"{}"});weeklyRun=x.run;weeklyQuestions=x.questions;weeklyIdx=0;weeklyGood=0;weeklyQuestion()
@@ -319,11 +313,17 @@ setTimeout(()=>{if(isIOS())showInstallBanner()},1600);
 function quizGroupHome(){
  window.groupGameType="quiz";
  window.selectedGroupLevel="enfant";
- unifiedGroupHome();
- // Hide BibelRennen selector in Quiz group flow and lock type to quiz.
- setTimeout(()=>{
-  document.querySelectorAll("[data-game]").forEach(x=>{
-   if(x.dataset.game==="race")x.style.display="none";
-  });
- },0);
+ A.innerHTML=`<div class=wrap>${back("dashboard()")}
+ <div class="card hero"><h1>👥 ${lang==="de"?"Quiz Gruppenspiel":"Quiz en groupe"}</h1><p>${lang==="de"?"2–5 Spieler · 10 Fragen":"2–5 joueurs · 10 questions"}</p></div>
+ <div class=group-two-col>
+  <div class=card><h2>👑 ${lang==="de"?"Gruppe erstellen":"Créer un groupe"}</h2>
+   <h3>${lang==="de"?"Schwierigkeitsgrad":"Difficulté"}</h3>
+   <div class=group-levels>${[["enfant","🧒 "+(lang==="de"?"KINDER":"ENFANT")],["facile","🌱 "+(lang==="de"?"EINFACH":"FACILE")],["moyen","📖 "+(lang==="de"?"MITTEL":"MOYEN")],["difficile","🔥 "+(lang==="de"?"SCHWER":"DIFFICILE")],["alle","🎲 "+(lang==="de"?"ALLE":"TOUS")]].map(([v,n])=>`<button data-level="${v}" class="btn group-level ${v==="enfant"?"selected":""}" onclick="selectGroupLevel(this)">${n}</button>`).join("")}</div>
+   <button class="btn green full" onclick="groupCreate()">➕ ${lang==="de"?"GRUPPE ERSTELLEN":"CRÉER LE GROUPE"}</button>
+  </div>
+  <div class=card><h2>🔢 ${lang==="de"?"Beitreten":"Rejoindre"}</h2><p>${lang==="de"?"6-stelligen Code eingeben.":"Entre le code à 6 chiffres."}</p>
+   <input id=roomCode inputmode=numeric maxlength=6 placeholder=123456>
+   <button class="btn full" onclick="groupJoin()">${lang==="de"?"BEITRETEN":"REJOINDRE"}</button><p id=gmsg></p>
+  </div>
+ </div></div>`;
 }
