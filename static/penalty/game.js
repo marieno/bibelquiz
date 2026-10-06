@@ -10,9 +10,9 @@ function toast(msg,good=false){
 function celebrate(){
  const box=document.createElement("div");box.className="celebrate";box.innerHTML="✨ ⭐ 🎉 ⭐ ✨";document.body.appendChild(box);setTimeout(()=>box.remove(),900)
 }
-const G=document.getElementById("game"),rawLang=localStorage.lang||"de",lang=String(rawLang).toLowerCase().startsWith("fr")?"fr":"de",sh=a=>[...a].sort(()=>Math.random()-.5);
-const ALLC={de:["Eine höchste Liebe zum Herrn", "Eine höchste Liebe zu allen Brüdern", "Trennung von der Familie", "Trennung vom eigenen Ich", "Sein Kreuz tragen", "Auf alles verzichten", "Im Wort bleiben", "Frucht bringen", "Trennung von jeder Sünde"],fr:["Un amour suprême pour le Seigneur", "Un amour suprême pour tous les frères", "Une séparation d’avec la famille", "Une séparation d’avec le moi", "Porter sa croix", "Renoncer à tout", "Demeurer dans la parole", "Porter du fruit", "La séparation d’avec tout péché"]},C=ALLC[lang]||ALLC.de;
-const TX={de:{title:"11-Meter – Jünger Jesu",instruction:"Ziehe den Ball in deine Schussrichtung.",miss:"Daneben!",saved:"Gehalten!",goal:"TOR!",next:"WEITER",puzzle:"Welche Karte kommt jetzt?",tap:"Karte antippen und dann auf HIER ABLEGEN tippen oder direkt dorthin ziehen.",drop:"HIER ABLEGEN",select:"Karte ausgewählt. Jetzt HIER ABLEGEN antippen.",choose:"Wähle zuerst eine Karte 😊",wrong:"😊 Fast! Das ist noch nicht die nächste Karte.",right:"✨ RICHTIG! Puzzleteil eingesetzt.",newgame:"NEUES SPIEL",win:"Alle 9 Bedingungen richtig!"},fr:{title:"Penalty – Disciple de Jésus",instruction:"Fais glisser le ballon dans la direction de ton tir.",miss:"À côté !",saved:"Arrêté !",goal:"BUT !",next:"CONTINUER",puzzle:"Quelle carte vient maintenant ?",tap:"Touche une carte puis touche DÉPOSER ICI, ou fais-la glisser directement.",drop:"DÉPOSER ICI",select:"Carte sélectionnée. Touche maintenant DÉPOSER ICI.",choose:"Choisis d’abord une carte 😊",wrong:"😊 Presque ! Ce n’est pas encore la prochaine carte.",right:"✨ CORRECT ! Pièce du puzzle placée.",newgame:"NOUVELLE PARTIE",win:"Les 9 conditions sont dans le bon ordre !"}},t=TX[lang]||TX.de;
+const G=document.getElementById("game");let lang="de",C,t;const sh=a=>[...a].sort(()=>Math.random()-.5);
+const ALLC={de:["Eine höchste Liebe zum Herrn", "Eine höchste Liebe zu allen Brüdern", "Trennung von der Familie", "Trennung vom eigenen Ich", "Sein Kreuz tragen", "Auf alles verzichten", "Im Wort bleiben", "Frucht bringen", "Trennung von jeder Sünde"],fr:["Un amour suprême pour le Seigneur", "Un amour suprême pour tous les frères", "Une séparation d’avec la famille", "Une séparation d’avec le moi", "Porter sa croix", "Renoncer à tout", "Demeurer dans la parole", "Porter du fruit", "La séparation d’avec tout péché"]};
+const TX={de:{title:"11-Meter – Jünger Jesu",instruction:"Ziehe den Ball in deine Schussrichtung.",miss:"Daneben!",saved:"Gehalten!",goal:"TOR!",next:"WEITER",puzzle:"Welche Karte kommt jetzt?",tap:"Karte antippen und dann auf HIER ABLEGEN tippen oder direkt dorthin ziehen.",drop:"HIER ABLEGEN",select:"Karte ausgewählt. Jetzt HIER ABLEGEN antippen.",choose:"Wähle zuerst eine Karte 😊",wrong:"😊 Fast! Das ist noch nicht die nächste Karte.",right:"✨ RICHTIG! Puzzleteil eingesetzt.",newgame:"NEUES SPIEL",win:"Alle 9 Bedingungen richtig!"},fr:{title:"Penalty – Disciple de Jésus",instruction:"Fais glisser le ballon dans la direction de ton tir.",miss:"À côté !",saved:"Arrêté !",goal:"BUT !",next:"CONTINUER",puzzle:"Quelle carte vient maintenant ?",tap:"Touche une carte puis touche DÉPOSER ICI, ou fais-la glisser directement.",drop:"DÉPOSER ICI",select:"Carte sélectionnée. Touche maintenant DÉPOSER ICI.",choose:"Choisis d’abord une carte 😊",wrong:"😊 Presque ! Ce n’est pas encore la prochaine carte.",right:"✨ CORRECT ! Pièce du puzzle placée.",newgame:"NOUVELLE PARTIE",win:"Les 9 conditions sont dans le bon ordre !"}};
 let goals=0,next=0,theme="lion",drag=null,lock=false;
 function render(){lock=false;G.innerHTML=`<main><header><button onclick="location.href='/'">← BibelQuiz</button><h1>⚽ ${t.title}</h1><b>${goals}/9</b></header><p>${t.instruction}</p><div class=field id=f><div class=goal><span class=keeper id=k>🧤</span></div><div class=ball id=b>⚽</div></div></main>`;b.onpointerdown=e=>drag={x:e.clientX,y:e.clientY};window.onpointerup=e=>{if(!drag||lock)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag=null;if(Math.hypot(dx,dy)>25)shoot(dx,dy)}}
 function shoot(dx,dy){lock=true;let f=document.getElementById("f").getBoundingClientRect(),tx=Math.max(8,Math.min(92,50+dx/f.width*100)),power=Math.min(1,Math.hypot(dx,dy)/180),ty=18+(1-power)*25,kx=15+Math.random()*70,b=document.getElementById("b"),k=document.getElementById("k");k.style.left=kx+"%";k.classList.add("dive");b.style.left=tx+"%";b.style.top=ty+"%";b.style.transform="translate(-50%,-50%) scale(.55)";setTimeout(()=>{if(tx<11||tx>89){toast(t.miss);render()}else if(Math.abs(tx-kx)<14){toast("🧤 "+t.saved);render()}else goal()},800)}
@@ -53,4 +53,17 @@ function dropCard(i){
  }
  next++;selectedCard=null;celebrate();toast(t.right,true);setTimeout(puzzle,600);
 }
-render();
+function normalizeGameLanguage(v){
+ const x=String(v||"").trim().toLowerCase();
+ return (x==="fr"||x.startsWith("fr-")||x.startsWith("fr_")||x.startsWith("fran")||x==="french")?"fr":"de";
+}
+async function bootWithProfile(){
+ try{
+  const res=await fetch("/api/me",{headers:{Authorization:"Bearer "+(localStorage.token||"")},cache:"no-store"});
+  if(!res.ok)throw new Error("profile");
+  const me=await res.json();lang=normalizeGameLanguage(me.language);
+ }catch(e){lang=normalizeGameLanguage(localStorage.lang)}
+ C=ALLC[lang]||ALLC.de;t=TX[lang]||TX.de;
+ render();
+}
+bootWithProfile();

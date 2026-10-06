@@ -6,9 +6,9 @@ let raceReadAloud=false,selectedCarModel="sport",selectedCarColor="red",currentR
 let roadX=0,steerInput=0,offRoad=false,roadObstacles=[],nextObstacleAt=90,impactFlash=0;let debugFrames=0,debugLastDt=0;let token=localStorage.token||"";let lang="de",level="enfant",questions=[],qi=0,score=0,distance=0,lane=1,running=false,turbo=0,last=0,pickups=[],nextPickup=700;
 const labels={de:{title:"🏎️ BibelRennen",sub:"Fahre, sammle Bibel-Fragen und hole die meisten Punkte!",start:"RENNEN STARTEN",back:"← BibelQuiz",question:"Frage",finish:"ZIEL!",points:"Punkte",race:"Rennen",listen:"Vorlesen"},fr:{title:"🏎️ Course Biblique",sub:"Conduis, collecte les questions et gagne le plus de points !",start:"DÉMARRER",back:"← BibelQuiz",question:"Question",finish:"ARRIVÉE !",points:"Points",race:"Course",listen:"Écouter"}};
 async function api(path,opt={}){token=localStorage.getItem("token")||token||"";let r=await fetch(path,{...opt,headers:{"Content-Type":"application/json",Authorization:"Bearer "+token,...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.json()}
-function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><div class=levels>${[["enfant","🧒 KINDER / ENFANT"],["facile","🌱 EINFACH / FACILE"],["moyen","📖 MITTEL / MOYEN"],["difficile","🔥 SCHWER / DIFFICILE"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div><button class="btn start" onclick=start()>${t.start}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
+function menu(){let t=labels[lang];root.innerHTML=`<div class=menu><div class=panel><div class=big>🏎️📖</div><h1>${t.title}</h1><p>${t.sub}</p><button class="btn start" onclick="v74Garage()">${lang==="de"?"WEITER":"CONTINUER"}</button><p><button class=btn onclick="location.href='/'">${t.back}</button></p></div></div>`}
 function choose(v,b){level=v;document.querySelectorAll(".levels .btn").forEach(x=>x.classList.remove("sel"));b.classList.add("sel")}
-async function start(){try{let me=await api("/api/me");lang=String(me.language||"de").toLowerCase().startsWith("fr")?"fr":"de";window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;roadX=0;steerInput=0;offRoad=false;roadObstacles=[];nextObstacleAt=90;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
+async function start(){try{let me=await api("/api/me");lang=normalizeRaceLanguage(me.language);window.raceLanguage=lang;raceMusic.init(lang);questions=await api(`/api/race/questions/${level}`);qi=0;score=0;distance=0;lane=1;roadX=0;steerInput=0;offRoad=false;roadObstacles=[];nextObstacleAt=90;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop)}catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/"}}
 function renderRace(){raceMusic.installButton();raceMusic.start();root.innerHTML=`<div class=race id=road>${Array.from({length:8},(_,i)=>`<i class=road-line style="top:${i*15-15}%"></i>`).join("")}
 <div class=hud><span class=pill>⭐ <b id=sc>0</b></span><span class="pill speedo">🏎️ <b id=spd>0</b> km/h</span><span class=pill id=boost>⚡</span></div>
 <div class=race-map><div style="display:flex;justify-content:space-between"><span>START</span><span><b id=metersLeft>1000</b> m → 🏁 ZIEL</span></div><div class=map-track><i class=map-fill id=mapFill></i><span class=map-car id=mapCar>🏎️</span></div><div class=progress-percent><b id=pctText>0%</b> ${lang==="de"?"der Strecke":"du parcours"}</div></div>
@@ -134,17 +134,12 @@ function soloSetup(){
 let raceStarting=false;
 let raceRoom="",racePoll=null,raceSyncTimer=null,raceMe=null,racePlayers=[];
 function multiMenu(){
- raceMode="multi";clearInterval(racePoll);racePoll=null;
- root.innerHTML=`<div class=menu><div class=panel><div class=big>👥🏎️</div>
- <h1>${lang==="de"?"Multiplayer":"Multijoueur"}</h1><p>2–5 ${lang==="de"?"Spieler":"joueurs"}</p>
- <h3>👑 ${lang==="de"?"Raum erstellen":"Créer une salle"}</h3>
- <p>${lang==="de"?"Der Ersteller wird Host und wählt das Level.":"Le créateur devient Host et choisit le niveau."}</p>
- <div class=levels>${[["enfant","🧒 Kinder"],["facile","🌱 Einfach"],["moyen","📖 Mittel"],["difficile","🔥 Schwer"],["alle","🎲 Alle"]].map(([v,n])=>`<button class="btn ${v===level?"sel":""}" onclick="choose('${v}',this)">${n}</button>`).join("")}</div>
- <button class="btn start" onclick="raceCreate()">➕ ${lang==="de"?"RAUM ERSTELLEN":"CRÉER LA SALLE"}</button>
- <hr><h3>🔢 ${lang==="de"?"Raum beitreten":"Rejoindre une salle"}</h3>
- <input id=raceCode inputmode=numeric maxlength=6 placeholder="123456" style="font-size:25px;width:100%;padding:12px;border-radius:14px;border:2px solid #ccd">
- <button class="btn start" style="margin-top:10px" onclick="raceJoin()">🔗 ${lang==="de"?"BEITRETEN":"REJOINDRE"}</button>
- <p><button class=btn onclick="raceHome()">← ${lang==="de"?"Spielmodus":"Mode de jeu"}</button></p></div></div>`;
+ const de=lang==="de";
+ root.innerHTML=`<div class=menu><div class=panel><h1>🏎️ ${de?"AUTORENNEN GRUPPENSPIEL":"COURSE EN GROUPE"}</h1>
+ <p>${de?"Erstelle eine Renn-Gruppe oder tritt mit einem Code bei.":"Crée un groupe de course ou rejoins-le avec un code."}</p>
+ <button class="btn start full" onclick="raceCreate()">👑 ${de?"GRUPPE ERSTELLEN":"CRÉER UN GROUPE"}</button>
+ <div class=join-box><input id=raceCode maxlength=6 inputmode=numeric placeholder="${de?"6-stelliger Code":"Code à 6 chiffres"}"><button class=btn onclick="raceJoin()">👥 ${de?"BEITRETEN":"REJOINDRE"}</button></div>
+ <p><button class=btn onclick="v74Garage()">← ${de?"Garage":"Garage"}</button></p></div></div>`;
 }
 async function raceCreate(){let x=await api("/api/race-multi/create",{method:"POST",body:JSON.stringify({difficulty:level})});raceRoom=x.code;await raceSetReady(true,selectedCarColor)}
 async function raceJoin(){try{let x=await api("/api/race-multi/join",{method:"POST",body:JSON.stringify({code:raceCode.value.trim()})});raceRoom=x.code;await raceSetReady(false,selectedCarColor)}catch(e){alert(e.message)}}
@@ -416,6 +411,7 @@ function speakRaceQuestion(q,force=false){
 }
 function replayRaceQuestion(){speakRaceQuestion(currentRaceQuestion,true)}
 const unifiedCode=new URLSearchParams(location.search).get("group");
+function normalizeRaceLanguage(v){const x=String(v||"").trim().toLowerCase();return (x==="fr"||x.startsWith("fr-")||x.startsWith("fr_")||x.startsWith("fran")||x==="french")?"fr":"de"}
 async function initV74(){
  try{const me=await api("/api/me");lang=String(me.language||"de").toLowerCase().startsWith("fr")?"fr":"de";window.raceLanguage=lang;raceMusic.init(lang)}
  catch(e){alert("Bitte zuerst in BibelQuiz anmelden / Connecte-toi d'abord à BibelQuiz");location.href="/";return}
