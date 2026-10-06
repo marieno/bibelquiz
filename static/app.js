@@ -89,7 +89,7 @@ function dashboard(){
   <button class=home-mode-card onclick="quizGroupHome()"><span>👥</span><b>QUIZ</b><small>${lang==="de"?"GRUPPENSPIEL":"EN GROUPE"}</small></button>
   <button class=home-mode-card onclick="location.href='/static/race/index.html?mode=solo'"><span>🏎️</span><b>${lang==="de"?"AUTORENNEN":"COURSE"}</b><small>SOLO</small></button>
   <button class=home-mode-card onclick="location.href='/static/race/index.html?mode=multi'"><span>🏎️👥</span><b>${lang==="de"?"AUTORENNEN":"COURSE"}</b><small>${lang==="de"?"GRUPPENSPIEL":"EN GROUPE"}</small></button>
- </div>
+ <button class=home-mode-card onclick="location.href='/static/tidy/index.html'"><span>🏠</span><b>${lang==="de"?"RAUM AUFRÄUMEN":"RANGER"}</b><small>${lang==="de"?"10 GEBOTE":"10 COMMANDEMENTS"}</small></button><button class=home-mode-card onclick="location.href='/static/penalty/index.html'"><span>⚽</span><b>${lang==="de"?"11-METER":"PENALTY"}</b><small>${lang==="de"?"JÜNGER JESU":"DISCIPLE DE JÉSUS"}</small></button></div>
  <p class=home-footer><button class="btn ghost" onclick="progressView()">📊 ${lang==="de"?"Fortschritt":"Progression"}</button>
  <button class="btn ghost" onclick="accountView()">👤 ${lang==="de"?"Mein Konto":"Mon compte"}</button></p>
  </div>`;
