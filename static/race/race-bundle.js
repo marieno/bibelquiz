@@ -57,8 +57,13 @@ function placeCar(){let c=document.querySelector("#car");if(c)c.style.left=[22,4
 function spawn(){let el=document.createElement("div");el.className="pickup";el.textContent=Math.random()<.72?"📖":"⭐";let l=Math.floor(Math.random()*3);el.dataset.lane=l;el.dataset.kind=el.textContent==="📖"?"q":"star";el.style.left=[24,47,70][l]+"%";el.style.top="-60px";road.appendChild(el);pickups.push({el,y:-60,lane:l,kind:el.dataset.kind})}
 
 
-function updateRoadPhysics(ms){const s=Math.min(.05,Math.max(0,ms/1000)),curve=typeof trackCurveAt==="function"?trackCurveAt(8):0;roadX+=steerInput*(.55+speed/190)*s;roadX+=curve*(speed/170)*.20*s;roadX=Math.max(-1.48,Math.min(1.48,roadX));offRoad=Math.abs(roadX)>.82;if(offRoad){speed=Math.max(0,speed-(38+speed*.12)*s);turbo=Math.max(0,turbo-22*s)}else if(Math.abs(roadX)>.70)speed=Math.max(0,speed-8*s);lane=roadX<-.28?0:roadX>.28?2:1;if(impactFlash>0)impactFlash=Math.max(0,impactFlash-ms)}
-function spawnRoadObstacle(){if(distance<nextObstacleAt)return;const types=["rock","puddle","barrier"],type=types[Math.floor(Math.random()*types.length)];roadObstacles.push({type,distance:distance+145,x:Math.random()*1.36-.68,hit:false});nextObstacleAt=distance+110+Math.random()*110}
+function updateRoadPhysics(ms){const s=Math.min(.05,Math.max(0,ms/1000)),curve=typeof trackCurveAt==="function"?trackCurveAt(8):0;roadX+=steerInput*(.55+speed/190)*s;roadX+=curve*(speed/170)*.20*s;roadX=Math.max(-1.62,Math.min(1.62,roadX));offRoad=Math.abs(roadX)>1.08;if(offRoad){speed=Math.max(0,speed-(38+speed*.12)*s);turbo=Math.max(0,turbo-22*s)}else if(Math.abs(roadX)>.94)speed=Math.max(0,speed-8*s);lane=roadX<-.28?0:roadX>.28?2:1;if(impactFlash>0)impactFlash=Math.max(0,impactFlash-ms)}
+function spawnRoadObstacle(){
+ if(distance<nextObstacleAt)return;
+ const corridors=[-.72,-.36,0,.36,.72],types=["rock","puddle","barrier"],count=Math.random()<.55?1:2,used=new Set();
+ for(let i=0;i<count;i++){let idx;do{idx=Math.floor(Math.random()*corridors.length)}while(used.has(idx));used.add(idx);roadObstacles.push({type:types[Math.floor(Math.random()*types.length)],distance:distance+145+i*5,x:corridors[idx],hit:false})}
+ nextObstacleAt=distance+125+Math.random()*115;
+}
 function obstacleCollision(){for(const o of roadObstacles){if(o.hit)continue;const gap=o.distance-distance;if(Math.abs(gap)<9&&Math.abs(o.x-roadX)<.24){o.hit=true;impactFlash=420;if(o.type==="puddle"){speed*=.62;roadX+=(Math.random()>.5?1:-1)*.18}else if(o.type==="rock")speed*=.34;else{speed*=.45;roadX*=.82}}}roadObstacles=roadObstacles.filter(o=>o.distance>distance-35)}
 function renderRoadObstacles(){const box=document.getElementById("arcadeObstacles");if(!box)return;box.innerHTML=roadObstacles.filter(o=>!o.hit).map(o=>{const gap=o.distance-distance;if(gap<0||gap>240)return "";const depth=gap/240,y=84-depth*61,scale=1-depth*.78,curve=trackCurveAt(gap),center=50+curve*(1-depth)*19,x=center+o.x*(1-depth*.76)*30,icon=o.type==="rock"?"🪨":o.type==="puddle"?"💧":"🚧";return `<span class="road-obstacle obstacle-${o.type}" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%) scale(${scale})">${icon}</span>`}).join("")}
 function renderOffroadState(){const road=document.getElementById("road");if(!road)return;road.classList.toggle("is-offroad",offRoad);road.classList.toggle("impact",impactFlash>0);let w=document.getElementById("offroadWarning");if(!w){w=document.createElement("div");w.id="offroadWarning";w.className="offroad-warning";road.appendChild(w)}w.textContent=offRoad?(lang==="de"?"⚠️ OFFROAD – ZURÜCK AUF DIE STRASSE":"⚠️ HORS-PISTE – REVIENS SUR LA ROUTE"):""}
@@ -78,7 +83,7 @@ function loop(now){
  distance+=speed*dt*.095;if(distance>=TRACK){distance=TRACK;updateProgress();if(typeof unifiedCode!=="undefined"&&unifiedCode){running=false;return}else{finish();return}}
  if(distance>=nextPickup){spawn();nextPickup+=75+Math.random()*70}
  let scroll=(35+speed*2.0)*dt;
- for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&Math.abs(((p.lane??1)-1)*.65-roadX)<.42){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}
+ for(let p of [...pickups]){p.y+=scroll;p.el.style.top=p.y+"px";let h=innerHeight;if(p.y>h*.72&&p.y<h*.9&&Math.abs(((p.lane??1)-1)*.58-roadX)<.40){collect(p);return}if(p.y>h){p.el.remove();pickups.splice(pickups.indexOf(p),1)}}
  updateProgress();requestAnimationFrame(loop)}
 function updateProgress(){
  let pct=Math.min(100,distance/TRACK*100),remain=Math.max(0,TRACK-distance);
@@ -310,7 +315,7 @@ function arcadeRender(){
   if(player){
    player.className="arcade-player-wrap";
    const body=document.getElementById("arcadePlayerBody");if(body&&body.dataset.spec!==selectedCarModel+"|"+selectedCarColor){body.dataset.spec=selectedCarModel+"|"+selectedCarColor;body.innerHTML=carMarkup(selectedCarModel,selectedCarColor,false)};
-   player.style.left=(50+roadX*28-curve*8)+"%";
+   player.style.left=(50+roadX*32-curve*8)+"%";
    player.style.transform=`translateX(-50%) rotate(${curve*-2.8}deg)`;
   }
   const stripes=document.getElementById("curveStripes");
@@ -322,7 +327,7 @@ function arcadeRender(){
   const scenery=document.getElementById("arcadeScenery");
   if(scenery){
    let out="",phase=(distance*2.1)%220;
-   for(let i=0;i<12;i++){const d=(i*23+phase)%240,p=arcadeProject(d,1),side=i%2?-1:1,x=p.x+side*(28*(1-d/300)+10);out+=`<span class=scenery style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${i%3===0?"🌲":i%3===1?"🏠":"🌳"}</span>`}
+   for(let i=0;i<12;i++){const d=(i*23+phase)%240,p=arcadeProject(d,1),side=i%2?-1:1,roadEdge=35*(1-d/300)+10,x=p.x+side*(roadEdge+16+(i%3)*5);out+=`<span class="scenery roadside" style="left:${x}%;top:${p.y}%;transform:translate(-50%,-50%) scale(${p.scale})">${i%3===0?"🌲":i%3===1?"🏠":"🌳"}</span>`}
    scenery.innerHTML=out;
   }
  }
