@@ -22,3 +22,8 @@
 .item{z-index:6!important;font-size:25px!important;width:45px;height:45px;padding:2px!important;border-radius:50%!important;background:#fff9!important}
 .person{z-index:20!important}
 .voice-test{display:block;margin:8px auto 12px;padding:11px 16px;border:2px solid #1d6da3;background:#fff;color:#12466d;border-radius:14px;font-weight:900}.voice-test:active{transform:scale(.97)}.bq-music{position:fixed;right:10px;bottom:10px;z-index:9999}.bq-music button{width:48px;height:48px;border-radius:50%;background:#fff}
+/* V15.3 true 10-commandments mystery */
+.mystery-wrap{text-align:center}.mystery-cover-grid{position:absolute;inset:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:3px;pointer-events:none}
+.mystery-cover{background:#1d506e;display:grid;place-items:center;color:#d8eaf3;font-size:28px;border:2px solid #8ebbd0;opacity:1;transition:.5s}.mystery-cover.open{opacity:0}
+.mystery-drop{position:absolute!important;z-index:30!important;left:8px!important;top:8px!important;width:115px!important;height:100px!important;background:#ffe46d!important;border:5px solid #4fbd67!important;opacity:1!important}
+.guess-btn{position:relative;z-index:40;background:#ffd54f!important;font-size:20px!important;margin:12px auto!important}
