@@ -26,3 +26,10 @@
 .power-wrap{margin:10px 0;background:#fff;padding:10px;border-radius:14px}.power-meter{height:14px;background:#dbe5e9;border-radius:10px;overflow:hidden;margin-top:5px}.power-meter i{display:block;width:0;height:100%;background:linear-gradient(90deg,#59c85b,#ffe14c,#ef5350);transition:.05s}.arena-info{display:flex;justify-content:space-between;font-weight:900;background:#fff8;padding:8px 12px;border-radius:12px}
 @keyframes netShake{0%,100%{transform:perspective(300px) rotateX(-7deg) scale(1)}40%{transform:perspective(300px) rotateX(-12deg) scale(1.08)}} 
 @media(max-width:650px){.mode-grid{grid-template-columns:1fr}.mode-grid button{min-height:90px}.field{height:68vh!important}.player{font-size:60px}.goal{left:9%!important;right:9%!important}.crowd{font-size:20px}}
+
+/* V14.1 — visibly distinct difficulty levels */
+.stadium-training{box-shadow:0 0 0 5px #75d8ff}.stadium-pro{box-shadow:0 0 0 5px #ffd65b}.stadium-champion{box-shadow:0 0 0 6px #e85252;background:#101e2b}
+.training-guide{position:absolute;left:43%;top:57%;bottom:18%;width:14%;border:4px dashed #ffe55c;border-radius:30px;color:#fff;text-align:center;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:8px;font-size:13px;pointer-events:none;animation:guidePulse 1s infinite alternate}.training-guide span{font-size:30px}
+.defender{position:absolute;font-size:66px;transform:translate(-50%,-50%);z-index:7;filter:drop-shadow(0 5px 4px #0004);transition:left .05s linear;pointer-events:none}.stadium-champion .crowd{animation:crowdFlash .6s infinite alternate}.stadium-champion .field{filter:saturate(1.15)}
+.mode-grid button[data-mode=training]{border:5px solid #75d8ff}.mode-grid button[data-mode=pro]{border:5px solid #ffd65b}.mode-grid button[data-mode=champion]{border:5px solid #e85252}
+@keyframes guidePulse{from{opacity:.55}to{opacity:1}}@keyframes crowdFlash{from{transform:scale(1)}to{transform:scale(1.04)}}

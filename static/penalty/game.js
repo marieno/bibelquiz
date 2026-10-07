@@ -37,31 +37,45 @@ const G=document.getElementById("game");let lang="de",C,t;const sh=a=>[...a].sor
 const ALLC={de:["Eine höchste Liebe zum Herrn", "Eine höchste Liebe zu allen Brüdern", "Trennung von der Familie", "Trennung vom eigenen Ich", "Sein Kreuz tragen", "Auf alles verzichten", "Im Wort bleiben", "Frucht bringen", "Trennung von jeder Sünde"],fr:["Un amour suprême pour le Seigneur", "Un amour suprême pour tous les frères", "Une séparation d’avec la famille", "Une séparation d’avec le moi", "Porter sa croix", "Renoncer à tout", "Demeurer dans la parole", "Porter du fruit", "La séparation d’avec tout péché"]};
 const TX={de:{title:"11-Meter – Jünger Jesu",instruction:"Dribble mit dem Spieler. In der Schusszone: vom Ball zum Ziel im Tor wischen.",training:"TRAINING",pro:"PROFI",champion:"CHAMPION",chooseMode:"WÄHLE DEIN LEVEL",shootZone:"SCHUSSZONE",power:"SCHUSSKRAFT",dribble:"DRIBBLE",miss:"Daneben!",saved:"Gehalten!",goal:"TOR!",next:"WEITER",puzzle:"Welche Karte kommt jetzt?",tap:"Karte antippen und dann auf HIER ABLEGEN tippen oder direkt dorthin ziehen.",drop:"HIER ABLEGEN",select:"Karte ausgewählt. Jetzt HIER ABLEGEN antippen.",choose:"Wähle zuerst eine Karte 😊",wrong:"😊 Fast! Das ist noch nicht die nächste Karte.",right:"✨ RICHTIG! Puzzleteil eingesetzt.",newgame:"NEUES SPIEL",win:"Alle 9 Bedingungen richtig!"},fr:{title:"Penalty – Disciple de Jésus",instruction:"Dribble avec le joueur. Dans la zone de tir : glisse du ballon vers la cible dans le but.",training:"ENTRAÎNEMENT",pro:"PRO",champion:"CHAMPION",chooseMode:"CHOISIS TON NIVEAU",shootZone:"ZONE DE TIR",power:"PUISSANCE",dribble:"DRIBBLE",miss:"À côté !",saved:"Arrêté !",goal:"BUT !",next:"CONTINUER",puzzle:"Quelle carte vient maintenant ?",tap:"Touche une carte puis touche DÉPOSER ICI, ou fais-la glisser directement.",drop:"DÉPOSER ICI",select:"Carte sélectionnée. Touche maintenant DÉPOSER ICI.",choose:"Choisis d’abord une carte 😊",wrong:"😊 Presque ! Ce n’est pas encore la prochaine carte.",right:"✨ CORRECT ! Pièce du puzzle placée.",newgame:"NOUVELLE PARTIE",win:"Les 9 conditions sont dans le bon ordre !"}};
 let goals=0,next=0,theme="lion",drag=null,lock=false,mode=null,playerX=50,playerY=76,shotStart=null,keeperX=50,keeperY=18,dribbleDrag=null;
-const MODE={training:{keeperSpeed:.75,saveRadius:10,assist:7,cones:2},pro:{keeperSpeed:.58,saveRadius:14,assist:3,cones:3},champion:{keeperSpeed:.42,saveRadius:17,assist:0,cones:4}};
+const MODE={
+ training:{keeperSpeed:.88,saveRadius:8,assist:14,cones:2,defenders:0,zoneTop:39,zoneHeight:25,aim:true},
+ pro:{keeperSpeed:.60,saveRadius:14,assist:2,cones:4,defenders:1,zoneTop:44,zoneHeight:16,aim:false},
+ champion:{keeperSpeed:.43,saveRadius:18,assist:0,cones:5,defenders:2,zoneTop:48,zoneHeight:11,aim:false}
+};
 function chooseMode(){
- G.innerHTML=`<main><header><button onclick="location.href='/'">← BibelQuiz</button><h1>⚽ ${t.title}</h1></header><h2>${t.chooseMode}</h2><div class=mode-grid><button data-mode=training>⚽ ${t.training}<small>🧤 langsam · 🎯 Hilfe</small></button><button data-mode=pro>⚽⚽ ${t.pro}<small>🧤 schneller · 🚩 Slalom</small></button><button data-mode=champion>⚽⚽⚽ ${t.champion}<small>🧤 reaktiv · 🚩 enger Slalom</small></button></div></main>`;
+ G.innerHTML=`<main><header><button onclick="location.href='/'">← BibelQuiz</button><h1>⚽ ${t.title}</h1></header><h2>${t.chooseMode}</h2><div class=mode-grid><button data-mode=training>⚽ ${t.training}<small>${lang==="fr"?"🎯 Ligne de tir + aide · aucun défenseur · gardien lent":"🎯 Schusshilfe · kein Verteidiger · langsamer Torwart"}</small></button><button data-mode=pro>⚽⚽ ${t.pro}<small>${lang==="fr"?"🧍 1 défenseur mobile · zone réduite · gardien rapide":"🧍 1 beweglicher Verteidiger · kleinere Zone · schneller Torwart"}</small></button><button data-mode=champion>⚽⚽⚽ ${t.champion}<small>${lang==="fr"?"🧍🧍 2 défenseurs · petite zone · aucune aide · gardien réactif":"🧍🧍 2 Verteidiger · kleine Zone · keine Hilfe · reaktiver Torwart"}</small></button></div></main>`;
  document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;render()})
 }
 function fieldMarkup(){
- let cfg=MODE[mode],cones=[...Array(cfg.cones)].map((_,i)=>{let x=18+(i%2)*64,y=58-i*8;return `<span class=cone style="left:${x}%;top:${y}%">🔺</span>`}).join("");
- return `<div class=stadium><div class=crowd>🙌 👏 🙌 👏 🙌 👏 🙌 👏</div><div class=field id=f><div class=penalty-box></div><div class=shoot-zone>${t.shootZone}</div><div class=goal-shadow></div><div class=goal><div class=net></div><span class=keeper-body id=k>🧤<span>🧍</span></span></div>${cones}<div class=player id=pl>🧑‍🦱<span class=feet>👟</span></div><div class=ball id=b>⚽</div><div class=aim id=aim>🎯</div></div></div>`;
+ let cfg=MODE[mode],cones=[...Array(cfg.cones)].map((_,i)=>{let x=mode==="champion"?(12+Math.random()*76):(18+(i%2)*64),y=61-i*6;return `<span class=cone style="left:${x}%;top:${y}%">🔺</span>`}).join("");
+ let defenders=[...Array(cfg.defenders)].map((_,i)=>`<span class="defender defender-${i}" id="def${i}" style="left:${i?67:33}%;top:${mode==="champion"?49:52}%">🧍‍♂️</span>`).join("");
+ let guide=cfg.aim?`<div class=training-guide><span>⬆️</span><b>${lang==="fr"?"DRIBBLE ICI":"HIER DRIBBELN"}</b><span>🎯</span></div>`:"";
+ return `<div class="stadium stadium-${mode}"><div class=crowd>${mode==="champion"?"🔥 🙌 📣 🙌 🔥 🙌 📣 🙌 🔥":"🙌 👏 🙌 👏 🙌 👏 🙌 👏"}</div><div class=field id=f><div class=penalty-box></div><div class=shoot-zone style="top:${cfg.zoneTop}%;height:${cfg.zoneHeight}%">${t.shootZone}</div>${guide}<div class=goal-shadow></div><div class=goal><div class=net></div><span class=keeper-body id=k>🧤<span>🧍</span></span></div>${cones}${defenders}<div class=player id=pl>🧑‍🦱<span class=feet>👟</span></div><div class=ball id=b>⚽</div><div class=aim id=aim>🎯</div></div></div>`;
 }
 function render(){
  lock=false;playerX=50;playerY=76;keeperX=50;keeperY=18;
  G.innerHTML=`<main><header><button onclick="location.href='/'">← BibelQuiz</button><h1>⚽ ${t.title}</h1><b>${goals}/9</b></header><div class=arena-info><span>🎮 ${t.dribble}</span><span>${mode==="training"?"⚽":mode==="pro"?"⚽⚽":"⚽⚽⚽"}</span></div><p>${t.instruction}</p>${fieldMarkup()}<div class=power-wrap><b>${t.power}</b><div class=power-meter><i id=powerFill></i></div></div></main>`;
- syncPlayer();bindArena();
+ syncPlayer();bindArena();startDefenders();
 }
 function syncPlayer(){
  let pl=document.getElementById("pl"),b=document.getElementById("b");if(!pl||!b)return;
  pl.style.left=playerX+"%";pl.style.top=playerY+"%";
  b.style.left=(playerX+3)+"%";b.style.top=(playerY+7)+"%";
 }
+let defenderTick=null,defPhase=0;
+function startDefenders(){
+ clearInterval(defenderTick);if(!MODE[mode].defenders)return;
+ defenderTick=setInterval(()=>{defPhase+=.12;for(let i=0;i<MODE[mode].defenders;i++){let el=document.getElementById("def"+i);if(!el)continue;let center=i?66:34,amp=mode==="champion"?19:13;el.style.left=(center+Math.sin(defPhase+i*2)*amp)+"%"}},55)
+}
+function checkDefenderCollision(){
+ for(let i=0;i<MODE[mode].defenders;i++){let el=document.getElementById("def"+i);if(!el)continue;let dx=Math.abs(playerX-parseFloat(el.style.left||50)),dy=Math.abs(playerY-parseFloat(el.style.top||50));if(dx<9&&dy<10)return true}return false
+}
 function bindArena(){
  let f=document.getElementById("f"),pl=document.getElementById("pl"),b=document.getElementById("b"),aim=document.getElementById("aim");
  pl.onpointerdown=e=>{if(lock)return;dribbleDrag={id:e.pointerId};pl.setPointerCapture?.(e.pointerId);e.preventDefault()};
- pl.onpointermove=e=>{if(!dribbleDrag||lock)return;let r=f.getBoundingClientRect();playerX=Math.max(10,Math.min(90,(e.clientX-r.left)/r.width*100));playerY=Math.max(47,Math.min(79,(e.clientY-r.top)/r.height*100));syncPlayer()};
+ pl.onpointermove=e=>{if(!dribbleDrag||lock)return;let r=f.getBoundingClientRect();playerX=Math.max(10,Math.min(90,(e.clientX-r.left)/r.width*100));playerY=Math.max(42,Math.min(79,(e.clientY-r.top)/r.height*100));syncPlayer();if(checkDefenderCollision()){toast(lang==="fr"?"🛑 Ballon perdu ! Recommence.":"🛑 Ball verloren! Neuer Versuch.");playerX=50;playerY=76;syncPlayer()}};
  pl.onpointerup=()=>{dribbleDrag=null};
- b.onpointerdown=e=>{if(lock)return;if(playerY>61){toast(lang==="fr"?"Dribble d’abord jusqu’à la zone de tir ⚽":"Dribble zuerst bis in die Schusszone ⚽");return}shotStart={x:e.clientX,y:e.clientY};b.setPointerCapture?.(e.pointerId);aim.style.display="block";e.preventDefault()};
+ b.onpointerdown=e=>{if(lock)return;let cfg=MODE[mode];if(playerY>cfg.zoneTop+cfg.zoneHeight){toast(lang==="fr"?"Dribble d’abord jusqu’à la zone de tir ⚽":"Dribble zuerst bis in die Schusszone ⚽");return}shotStart={x:e.clientX,y:e.clientY};b.setPointerCapture?.(e.pointerId);aim.style.display=MODE[mode].aim?"block":"none";e.preventDefault()};
  b.onpointermove=e=>{if(!shotStart||lock)return;let r=f.getBoundingClientRect(),x=Math.max(14,Math.min(86,(e.clientX-r.left)/r.width*100)),y=Math.max(7,Math.min(35,(e.clientY-r.top)/r.height*100));aim.style.left=x+"%";aim.style.top=y+"%";let pow=Math.min(100,Math.hypot(e.clientX-shotStart.x,e.clientY-shotStart.y)/2);document.getElementById("powerFill").style.width=pow+"%"};
  b.onpointerup=e=>{if(!shotStart||lock)return;let st=shotStart;shotStart=null;aim.style.display="none";let r=f.getBoundingClientRect(),tx=(e.clientX-r.left)/r.width*100,ty=(e.clientY-r.top)/r.height*100,power=Math.min(1,Math.hypot(e.clientX-st.x,e.clientY-st.y)/190);shootTo(tx,ty,power)};
 }
@@ -74,8 +88,10 @@ function shootTo(tx,ty,power){
  // Keeper predicts imperfectly; reaction depends on difficulty.
  let error=(Math.random()-.5)*(mode==="training"?34:mode==="pro"?22:13);
  keeperX=Math.max(18,Math.min(82,tx+error));
- let diveRight=keeperX>50;k.style.left=keeperX+"%";k.classList.add(diveRight?"dive-right":"dive-left");
- b.classList.add("shot");b.style.left=tx+"%";b.style.top=targetY+"%";b.style.transform=`translate(-50%,-50%) scale(${.42+.18*(1-power)})`;
+ let diveRight=keeperX>50;
+ b.classList.add("shot");b.style.left=tx+"%";b.style.top=targetY+"%";
+ let reaction=mode==="champion"?210:mode==="pro"?110:20;
+ setTimeout(()=>{k.style.left=keeperX+"%";k.classList.add(diveRight?"dive-right":"dive-left")},reaction);b.style.transform=`translate(-50%,-50%) scale(${.42+.18*(1-power)})`;
  setTimeout(()=>{
    let inGoal=tx>=13&&tx<=87&&targetY>=7&&targetY<=39;
    let keeperReach=Math.abs(tx-keeperX)<cfg.saveRadius && targetY>13;
