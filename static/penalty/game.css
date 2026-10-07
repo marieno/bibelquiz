@@ -35,3 +35,4 @@
 @keyframes guidePulse{from{opacity:.55}to{opacity:1}}@keyframes crowdFlash{from{transform:scale(1)}to{transform:scale(1.04)}}
 
 .mystery-wrap{text-align:center}.mystery-mask{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,transparent 0 var(--reveal),#163b5b var(--reveal) 100%);transition:.55s}.puzzle-slot{z-index:3!important}.guess-btn{margin:12px auto;background:#ffd64f;font-size:18px}.mystery-wrap .puzzle-board:after{z-index:0!important}
+.tile-mask{position:absolute;inset:-4px;background:#27617f;z-index:8;border-radius:8px}.puzzle-slot.active .tile-mask{background:#f5dc67}.puzzle-slot.active span,.puzzle-slot.active small,.puzzle-slot.locked span{position:relative;z-index:10}.puzzle-slot.revealed{background:transparent!important}.mystery-mask{display:none!important}.bq-music{position:fixed;right:10px;bottom:10px;z-index:9999}.bq-music button{width:48px;height:48px;border-radius:50%;background:#fff}

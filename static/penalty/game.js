@@ -106,10 +106,7 @@ function goal(){
 function startPuzzle(){theme=sh(["lion","elephant","ark","butterfly","dolphin"])[0];next=0;puzzle()}
 let selectedCard=null,cardDrag=null;
 const MYSTERY={lion:"🦁",elephant:"🐘",ark:"🛶",butterfly:"🦋",dolphin:"🐬"};let lastGuessAt=-1;
-function board(){
- let reveal=Math.round(next/9*100);
- return `<div class="mystery-wrap"><div class="puzzle-board puzzle-${theme}" style="--reveal:${reveal}%">${[...Array(9)].map((_,i)=>`<button class="puzzle-slot ${i<next?"filled":i===next?"active":"locked"}" data-slot="${i}" onclick="${i===next?"placeSelected()":""}"><span>${i<next?"✓":i===next?"👉":"🔒"}</span>${i===next?`<small>${t.drop}</small>`:""}</button>`).join("")}<div class=mystery-mask></div></div>${next>=3&&next<9?`<button class=guess-btn onclick="guessMystery()">${t.guess} 🔍</button>`:""}</div>`;
-}
+function board(){return `<div class="mystery-wrap"><div class="puzzle-board puzzle-${theme}">${[...Array(9)].map((_,i)=>`<button class="puzzle-slot ${i<next?"revealed":i===next?"active":"locked"}" data-slot="${i}" onclick="${i===next?"placeSelected()":""}">${i>=next?`<i class=tile-mask></i>`:""}<span>${i<next?"":i===next?"👉":"🔒"}</span>${i===next?`<small>${t.drop}</small>`:""}</button>`).join("")}</div>${next>=3&&next<9?`<button class=guess-btn onclick="guessMystery()">${t.guess} 🔍</button>`:""}</div>`}
 function guessMystery(){
  if(lastGuessAt===next){toast(lang==="fr"?"Découvre encore une pièce avant de réessayer.":"Decke erst noch ein Teil auf.");return}
  lastGuessAt=next;let names={lion:lang==="fr"?"Lion":"Löwe",elephant:lang==="fr"?"Éléphant":"Elefant",ark:lang==="fr"?"Arche":"Arche",butterfly:lang==="fr"?"Papillon":"Schmetterling",dolphin:lang==="fr"?"Dauphin":"Delfin"},opts=sh([theme,...sh(Object.keys(MYSTERY).filter(x=>x!==theme)).slice(0,3)]);
