@@ -33,3 +33,5 @@
 .defender{position:absolute;font-size:66px;transform:translate(-50%,-50%);z-index:7;filter:drop-shadow(0 5px 4px #0004);transition:left .05s linear;pointer-events:none}.stadium-champion .crowd{animation:crowdFlash .6s infinite alternate}.stadium-champion .field{filter:saturate(1.15)}
 .mode-grid button[data-mode=training]{border:5px solid #75d8ff}.mode-grid button[data-mode=pro]{border:5px solid #ffd65b}.mode-grid button[data-mode=champion]{border:5px solid #e85252}
 @keyframes guidePulse{from{opacity:.55}to{opacity:1}}@keyframes crowdFlash{from{transform:scale(1)}to{transform:scale(1.04)}}
+
+.mystery-wrap{text-align:center}.mystery-mask{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,transparent 0 var(--reveal),#163b5b var(--reveal) 100%);transition:.55s}.puzzle-slot{z-index:3!important}.guess-btn{margin:12px auto;background:#ffd64f;font-size:18px}.mystery-wrap .puzzle-board:after{z-index:0!important}
