@@ -7,6 +7,14 @@
 @keyframes floatDown{from{top:-150px}to{top:105%}}
 .equip-person{position:relative;width:230px;height:350px;margin:auto}.equip-person .body{font-size:210px;position:absolute;inset:45px 0 0;text-align:center}.worn{position:absolute;z-index:3;font-size:52px}.worn.head{top:18px;left:89px}.worn.left{top:145px;left:25px}.worn.right{top:145px;right:22px}.worn.waist{top:190px;left:92px}.worn.chest{top:112px;left:90px}.worn.feet{bottom:5px;left:83px}
 .memory-scene{font-size:34px;min-height:100px;display:grid;place-items:center}
+
+.story-stage{position:relative;min-height:300px;border-radius:26px;overflow:hidden;background:linear-gradient(#91ddff 0 62%,#8fd17c 62%);margin:12px 0}
+.story-sky{position:absolute;inset:0;font-size:54px;padding:18px}
+.story-actor{position:absolute;font-size:72px;animation:storyWalk 5s ease-in-out infinite alternate}
+.story-actor.a{left:12%;bottom:38px}.story-actor.b{right:15%;bottom:38px;animation-delay:.7s}.story-object{position:absolute;left:44%;bottom:45px;font-size:70px;animation:storyPulse 2s ease-in-out infinite}
+@keyframes storyWalk{from{transform:translateX(-12px)}to{transform:translateX(20px)}}@keyframes storyPulse{50%{transform:scale(1.14)}}
+.story-caption{background:#fff;border-radius:18px;padding:15px;font-size:19px;font-weight:800;margin:10px 0}.story-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.story-dots{text-align:center;font-weight:900}.story-answer{min-height:90px}.theme-quiz-title{text-align:center}
 </style></head><body><div id="game"><main><div class="card"><h2>🔵 HTML V11.0.6 chargé</h2><p>disciples</p></div></main></div><script>
 (function(){
   var root=document.getElementById("game");
@@ -35,7 +43,9 @@ function balloons(){
  let st=document.getElementById("bs");
  items.forEach((o,i)=>{let b=document.createElement("button");b.className="balloon";b.textContent=o.x;b.style.left=(5+(i*17)%75)+"%";b.style.animationDelay=(i*.45)+"s";b.onclick=()=>{if(o.ok){good();hit++;b.remove();if(hit===goodNames.length)setTimeout(()=>finish(lang==="fr"?"12 disciples":"12 J\u00fcnger","\ud83c\udf88"),350)}else{bad();b.animate?.([{transform:"translateX(-8px)"},{transform:"translateX(8px)"},{transform:"translateX(0)"}],{duration:250})}};b.addEventListener("animationend",()=>{if(!b.isConnected)return;b.style.animation="none";void b.offsetHeight;b.style.left=(5+Math.floor(Math.random()*75))+"%";b.style.animation="floatDown 8s linear forwards"});st.appendChild(b)});
 }
-learn();
+const CALLS=lang==="fr"?[["🎣", "Pierre et André", "Jésus les appelle alors qu’ils pêchent. Ils laissent leurs filets et le suivent."], ["🎣", "Jacques et Jean", "Jésus les appelle près de leur barque avec leur père. Ils le suivent."], ["🧾", "Matthieu", "Jésus voit Matthieu au bureau des taxes et lui dit de le suivre."]]:[["🎣", "Petrus und Andreas", "Jesus ruft sie beim Fischen. Sie lassen ihre Netze zurück und folgen ihm."], ["🎣", "Jakobus und Johannes", "Jesus ruft sie bei ihrem Boot mit ihrem Vater. Sie folgen ihm."], ["🧾", "Matthäus", "Jesus sieht Matthäus an der Zollstelle und sagt ihm, ihm zu folgen."]];
+function callingStories(next){let k=0;function show(){if(k===CALLS.length)return next();let z=CALLS[k];G.innerHTML=`<main><h2>🎬 ${z[1]}</h2><div class=story-stage><div class=story-sky>☀️</div><div class="story-actor a">🧔</div><div class=story-object>${z[0]}</div><div class="story-actor b">👨</div></div><div class=story-caption>${z[2]}</div><div class=story-controls><button id=cl>🔊</button><button id=cn>→</button></div></main>`;say(z[2]);cl.onclick=()=>say(z[2]);cn.onclick=()=>{k++;show()}}show()}
+callingStories(()=>learn());
     }catch(e){
       show("⚠️ ERREUR AU DÉMARRAGE", (e&&e.name?e.name+": ":"")+(e&&e.message?e.message:String(e))+(e&&e.stack?"\n"+e.stack:""));
     }

@@ -26,4 +26,22 @@ function challenge(){
  }
  recognition();
 }
-learn();
+
+const STORY_DATA=[["🐑", "La brebis perdue", "Das verlorene Schaf", ["Un berger avait cent brebis.", "Une brebis s’est perdue.", "Le berger l’a cherchée jusqu’à la retrouver.", "Il s’est réjoui de l’avoir retrouvée."], ["Ein Hirte hatte hundert Schafe.", "Ein Schaf ging verloren.", "Der Hirte suchte, bis er es fand.", "Er freute sich über das gefundene Schaf."], "Le berger cherche la brebis perdue.", "Der Hirte sucht das verlorene Schaf."], ["🌱", "Le semeur", "Der Sämann", ["Un semeur sortit pour semer.", "Les graines tombèrent sur différents sols.", "Certaines ne poussèrent pas bien.", "La bonne terre donna beaucoup de fruit."], ["Ein Sämann ging säen.", "Die Samen fielen auf verschiedene Böden.", "Einige wuchsen nicht gut.", "Die gute Erde brachte viel Frucht."], "La semence tombe sur plusieurs types de sol.", "Der Samen fällt auf verschiedene Böden."], ["❤️", "Le bon Samaritain", "Der barmherzige Samariter", ["Un homme fut attaqué sur la route.", "Des personnes passèrent sans l’aider.", "Un Samaritain s’arrêta.", "Il soigna l’homme et prit soin de lui."], ["Ein Mann wurde auf dem Weg überfallen.", "Menschen gingen vorbei, ohne zu helfen.", "Ein Samariter blieb stehen.", "Er versorgte den Mann und kümmerte sich um ihn."], "Le Samaritain aide l’homme blessé.", "Der Samariter hilft dem verletzten Mann."], ["🏠", "La maison sur le roc", "Das Haus auf dem Felsen", ["Deux hommes construisirent des maisons.", "L’un construisit sur le roc.", "La tempête arriva.", "La maison sur le roc resta debout."], ["Zwei Männer bauten Häuser.", "Einer baute auf Felsen.", "Ein Sturm kam.", "Das Haus auf dem Felsen blieb stehen."], "La maison bâtie sur le roc résiste à la tempête.", "Das Haus auf dem Felsen hält dem Sturm stand."]];
+function storyAdventure(next){
+ let si=0,frame=0;
+ function show(){
+  if(si>=STORY_DATA.length)return next();
+  let z=STORY_DATA[si],frames=lang==="fr"?z[3]:z[4],title=lang==="fr"?z[1]:z[2];
+  G.innerHTML=`<main><h2>🎬 ${title}</h2><div class=story-stage><div class=story-sky>☀️ ☁️</div><div class="story-actor a">🧑</div><div class=story-object>${z[0]}</div><div class="story-actor b">👦</div></div><div class=story-caption>${frames[frame]}</div><div class=story-dots>${frame+1}/${frames.length}</div><div class=story-controls><button id=listen>🔊</button><button id=storyNext>${frame===frames.length-1?(lang==="fr"?"QUESTION →":"FRAGE →"):"→"}</button></div></main>`;
+  say(frames[frame]);listen.onclick=()=>say(frames[frame]);storyNext.onclick=()=>{if(frame<frames.length-1){frame++;show()}else comprehension()}
+ }
+ function comprehension(){
+  let z=STORY_DATA[si],correct=lang==="fr"?z[5]:z[6],others=sh(STORY_DATA.filter((_,i)=>i!==si)).slice(0,2).map(x=>lang==="fr"?x[5]:x[6]),opts=sh([correct,...others]);
+  G.innerHTML=`<main><h2>${lang==="fr"?"Que s’est-il passé dans cette histoire ?":"Was ist in dieser Geschichte passiert?"}</h2><div class=grid>${opts.map((x,i)=>`<button class=choice data-story="${i}">${x}</button>`).join("")}</div></main>`;
+  document.querySelectorAll("[data-story]").forEach((b,i)=>b.onclick=()=>{if(opts[i]!==correct){toast(lang==="fr"?"Essaie encore.":"Versuch es noch einmal.");return}si++;frame=0;show()})
+ }show()
+}
+
+function storyThemeQuiz(done){let q=0;function ask(){if(q===5)return done();let z=STORY_DATA[Math.floor(Math.random()*STORY_DATA.length)],correct=lang==="fr"?z[5]:z[6],wrong=sh(STORY_DATA.filter(x=>x!==z)).slice(0,3).map(x=>lang==="fr"?x[5]:x[6]),opts=sh([correct,...wrong]);G.innerHTML=`<main><h2 class=theme-quiz-title>❓ QUIZ ${q+1}/5</h2><p>${lang==="fr"?"Que s’est-il passé dans cette histoire ?":"Was ist in dieser Geschichte passiert?"}</p><h3>${lang==="fr"?z[1]:z[2]}</h3><div class=grid>${opts.map((x,i)=>`<button class=choice data-tq="${i}">${x}</button>`).join("")}</div></main>`;document.querySelectorAll("[data-tq]").forEach((b,i)=>b.onclick=()=>{if(opts[i]!==correct){toast(lang==="fr"?"Essaie encore.":"Versuch es noch einmal.");return}q++;ask()})}ask()}
+storyAdventure(()=>learn());

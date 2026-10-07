@@ -26,4 +26,22 @@ function challenge(){
  }
  recognition();
 }
-learn();
+
+const STORY_DATA=[["🌊", "Jésus calme la tempête", "Jesus stillt den Sturm", ["Jésus et ses disciples étaient dans une barque.", "Une grande tempête se leva.", "Les disciples eurent peur.", "Jésus parla au vent et à la mer, et le calme revint."], ["Jesus und seine Jünger waren in einem Boot.", "Ein großer Sturm kam auf.", "Die Jünger bekamen Angst.", "Jesus sprach zu Wind und Meer, und es wurde still."], "Jésus calme le vent et la mer.", "Jesus beruhigt Wind und Meer."], ["🍞", "Multiplication des pains", "Speisung der Vielen", ["Une grande foule suivait Jésus.", "Il y avait très peu de pains et de poissons.", "Jésus rendit grâce et la nourriture fut distribuée.", "La foule mangea à sa faim."], ["Eine große Menge folgte Jesus.", "Es gab nur wenige Brote und Fische.", "Jesus dankte und das Essen wurde verteilt.", "Die Menschen wurden satt."], "Jésus nourrit une grande foule avec peu de nourriture.", "Jesus sättigt viele Menschen mit wenig Nahrung."], ["👁️", "Guérison d’un aveugle", "Heilung eines Blinden", ["Un homme aveugle rencontra Jésus.", "Il demanda de l’aide.", "Jésus le guérit.", "L’homme put voir."], ["Ein blinder Mann begegnete Jesus.", "Er bat um Hilfe.", "Jesus heilte ihn.", "Der Mann konnte sehen."], "Jésus rend la vue à un aveugle.", "Jesus gibt einem Blinden das Augenlicht."], ["🚶", "Jésus marche sur l’eau", "Jesus geht auf dem Wasser", ["Les disciples étaient sur le lac.", "Ils virent Jésus venir vers eux.", "Jésus marchait sur l’eau.", "Il leur dit de ne pas avoir peur."], ["Die Jünger waren auf dem See.", "Sie sahen Jesus auf sich zukommen.", "Jesus ging auf dem Wasser.", "Er sagte ihnen, sie sollten keine Angst haben."], "Jésus marche sur l’eau vers ses disciples.", "Jesus geht auf dem Wasser zu seinen Jüngern."]];
+function storyAdventure(next){
+ let si=0,frame=0;
+ function show(){
+  if(si>=STORY_DATA.length)return next();
+  let z=STORY_DATA[si],frames=lang==="fr"?z[3]:z[4],title=lang==="fr"?z[1]:z[2];
+  G.innerHTML=`<main><h2>🎬 ${title}</h2><div class=story-stage><div class=story-sky>☀️ ☁️</div><div class="story-actor a">🧑</div><div class=story-object>${z[0]}</div><div class="story-actor b">👦</div></div><div class=story-caption>${frames[frame]}</div><div class=story-dots>${frame+1}/${frames.length}</div><div class=story-controls><button id=listen>🔊</button><button id=storyNext>${frame===frames.length-1?(lang==="fr"?"QUESTION →":"FRAGE →"):"→"}</button></div></main>`;
+  say(frames[frame]);listen.onclick=()=>say(frames[frame]);storyNext.onclick=()=>{if(frame<frames.length-1){frame++;show()}else comprehension()}
+ }
+ function comprehension(){
+  let z=STORY_DATA[si],correct=lang==="fr"?z[5]:z[6],others=sh(STORY_DATA.filter((_,i)=>i!==si)).slice(0,2).map(x=>lang==="fr"?x[5]:x[6]),opts=sh([correct,...others]);
+  G.innerHTML=`<main><h2>${lang==="fr"?"Que s’est-il passé dans cette histoire ?":"Was ist in dieser Geschichte passiert?"}</h2><div class=grid>${opts.map((x,i)=>`<button class=choice data-story="${i}">${x}</button>`).join("")}</div></main>`;
+  document.querySelectorAll("[data-story]").forEach((b,i)=>b.onclick=()=>{if(opts[i]!==correct){toast(lang==="fr"?"Essaie encore.":"Versuch es noch einmal.");return}si++;frame=0;show()})
+ }show()
+}
+
+function storyThemeQuiz(done){let q=0;function ask(){if(q===5)return done();let z=STORY_DATA[Math.floor(Math.random()*STORY_DATA.length)],correct=lang==="fr"?z[5]:z[6],wrong=sh(STORY_DATA.filter(x=>x!==z)).slice(0,3).map(x=>lang==="fr"?x[5]:x[6]),opts=sh([correct,...wrong]);G.innerHTML=`<main><h2 class=theme-quiz-title>❓ QUIZ ${q+1}/5</h2><p>${lang==="fr"?"Que s’est-il passé dans cette histoire ?":"Was ist in dieser Geschichte passiert?"}</p><h3>${lang==="fr"?z[1]:z[2]}</h3><div class=grid>${opts.map((x,i)=>`<button class=choice data-tq="${i}">${x}</button>`).join("")}</div></main>`;document.querySelectorAll("[data-tq]").forEach((b,i)=>b.onclick=()=>{if(opts[i]!==correct){toast(lang==="fr"?"Essaie encore.":"Versuch es noch einmal.");return}q++;ask()})}ask()}
+storyAdventure(()=>learn());
