@@ -36,3 +36,10 @@
 
 .mystery-wrap{text-align:center}.mystery-mask{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,transparent 0 var(--reveal),#163b5b var(--reveal) 100%);transition:.55s}.puzzle-slot{z-index:3!important}.guess-btn{margin:12px auto;background:#ffd64f;font-size:18px}.mystery-wrap .puzzle-board:after{z-index:0!important}
 .tile-mask{position:absolute;inset:-4px;background:#27617f;z-index:8;border-radius:8px}.puzzle-slot.active .tile-mask{background:#f5dc67}.puzzle-slot.active span,.puzzle-slot.active small,.puzzle-slot.locked span{position:relative;z-index:10}.puzzle-slot.revealed{background:transparent!important}.mystery-mask{display:none!important}.bq-music{position:fixed;right:10px;bottom:10px;z-index:9999}.bq-music button{width:48px;height:48px;border-radius:50%;background:#fff}
+/* V15.2 true mystery puzzle */
+.mystery-cover-grid{position:absolute;inset:0;z-index:20;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:3px;pointer-events:none}
+.mystery-cover{background:#1d506e;display:grid;place-items:center;font-size:30px;color:#d8eaf3;border:2px solid #8ebbd0;opacity:1;transition:.55s}
+.mystery-cover.open{opacity:0}
+.puzzle-drop{position:absolute!important;z-index:30!important;left:8px!important;top:8px!important;width:105px!important;height:105px!important;background:#ffe46d!important;border:5px solid #4fbd67!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
+.puzzle-drop span{font-size:34px}.puzzle-drop small{font-weight:900}.guess-btn{position:relative;z-index:40;background:#ffd54f!important;font-size:20px!important;margin:12px auto!important}
+.puzzle-slot,.tile-mask,.mystery-mask{display:none!important}

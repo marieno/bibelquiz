@@ -5,7 +5,7 @@ function pickGameVoice(){
  const wanted=lang==="fr"?"fr":"de",voices=speechSynthesis.getVoices()||[];
  return voices.find(v=>String(v.lang||"").toLowerCase().startsWith(wanted))||null;
 }
-function speakCard(text){
+function speakCard(text){if(window.BQAudio)return BQAudio.speak(text);
  if(!("speechSynthesis" in window)){toast(lang==="fr"?"La synthèse vocale n’est pas disponible.":"Sprachausgabe ist nicht verfügbar.");return false}
  try{
   speechSynthesis.cancel();speechSynthesis.resume();
@@ -106,7 +106,10 @@ function goal(){
 function startPuzzle(){theme=sh(["lion","elephant","ark","butterfly","dolphin"])[0];next=0;puzzle()}
 let selectedCard=null,cardDrag=null;
 const MYSTERY={lion:"🦁",elephant:"🐘",ark:"🛶",butterfly:"🦋",dolphin:"🐬"};let lastGuessAt=-1;
-function board(){return `<div class="mystery-wrap"><div class="puzzle-board puzzle-${theme}">${[...Array(9)].map((_,i)=>`<button class="puzzle-slot ${i<next?"revealed":i===next?"active":"locked"}" data-slot="${i}" onclick="${i===next?"placeSelected()":""}">${i>=next?`<i class=tile-mask></i>`:""}<span>${i<next?"":i===next?"👉":"🔒"}</span>${i===next?`<small>${t.drop}</small>`:""}</button>`).join("")}</div>${next>=3&&next<9?`<button class=guess-btn onclick="guessMystery()">${t.guess} 🔍</button>`:""}</div>`}
+function board(){
+ let covers=[...Array(9)].map((_,i)=>`<div class="mystery-cover ${i<next?"open":""}" style="--i:${i}">${i<next?"":"🔒"}</div>`).join("");
+ return `<div class="mystery-wrap"><div class="puzzle-board puzzle-${theme}"><div class=mystery-cover-grid>${covers}</div><button class="puzzle-drop ${next<9?"active":""}" onclick="placeSelected()"><span>👉</span><small>${t.drop}</small></button></div>${next>=3&&next<9?`<button class=guess-btn onclick="guessMystery()">🔍 ${t.guess}</button>`:""}</div>`;
+}
 function guessMystery(){
  if(lastGuessAt===next){toast(lang==="fr"?"Découvre encore une pièce avant de réessayer.":"Decke erst noch ein Teil auf.");return}
  lastGuessAt=next;let names={lion:lang==="fr"?"Lion":"Löwe",elephant:lang==="fr"?"Éléphant":"Elefant",ark:lang==="fr"?"Arche":"Arche",butterfly:lang==="fr"?"Papillon":"Schmetterling",dolphin:lang==="fr"?"Dauphin":"Delfin"},opts=sh([theme,...sh(Object.keys(MYSTERY).filter(x=>x!==theme)).slice(0,3)]);

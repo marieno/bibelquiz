@@ -5,7 +5,7 @@ function pickGameVoice(){
  const wanted=lang==="fr"?"fr":"de",voices=speechSynthesis.getVoices()||[];
  return voices.find(v=>String(v.lang||"").toLowerCase().startsWith(wanted))||null;
 }
-function speakCard(text){
+function speakCard(text){if(window.BQAudio)return BQAudio.speak(text);
  if(!("speechSynthesis" in window)){toast(lang==="fr"?"La synthèse vocale n’est pas disponible.":"Sprachausgabe ist nicht verfügbar.");return false}
  try{
   speechSynthesis.cancel();speechSynthesis.resume();
