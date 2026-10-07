@@ -101,7 +101,7 @@ function shootTo(tx,ty,power){
  },760*cfg.keeperSpeed+220)
 }
 function goal(){
- let x=goals++;celebrate();setTimeout(()=>{G.innerHTML=`<div class=modal><section><div class=big>⚽🥅✨</div><h1>${t.goal}</h1><h2><b>${x+1}.</b> ${C[x]}</h2><button id=conditionSpeak>🔊</button><button id=conditionNext>${t.next}</button></section></div>`;speakCard((x+1)+". "+C[x]);conditionSpeak.onclick=()=>speakCard(C[x]);conditionNext.onclick=()=>goals===9?startPuzzle():render()},420)
+ let x=goals++;celebrate();setTimeout(()=>{G.innerHTML=`<div class=modal><section><div class=big>⚽🥅✨</div><h1>${t.goal}</h1><h2><b>${x+1}/9</b></h2><p class=condition-text><b>${x+1}.</b> ${C[x]}</p><button id=conditionSpeak>🔊</button><button id=conditionNext>${t.next}</button></section></div>`;speakCard((x+1)+". "+C[x]);conditionSpeak.onclick=()=>speakCard(C[x]);conditionNext.onclick=()=>goals===9?startPuzzle():render()},420)
 }
 function startPuzzle(){theme=sh(["lion","elephant","ark","butterfly","dolphin"])[0];next=0;puzzle()}
 let selectedCard=null,cardDrag=null;
