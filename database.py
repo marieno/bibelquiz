@@ -19,7 +19,7 @@ def init():
   c.execute(text("CREATE TABLE IF NOT EXISTS weekly_attempts(user_id BIGINT NOT NULL,week_key TEXT NOT NULL,score INTEGER NOT NULL,correct_count INTEGER NOT NULL,duration_ms INTEGER NOT NULL,completed_at TEXT NOT NULL,ranked INTEGER NOT NULL DEFAULT 1)"))
 def account_migrate():
  with engine.begin() as c:
-  for stmt in ["ALTER TABLE users ADD COLUMN display_name TEXT","ALTER TABLE users ADD COLUMN email TEXT","ALTER TABLE users ADD COLUMN audio_enabled INTEGER DEFAULT 0","ALTER TABLE users ADD COLUMN audio_slow INTEGER DEFAULT 0"]:
+  for stmt in ["ALTER TABLE users ADD COLUMN display_name TEXT","ALTER TABLE users ADD COLUMN email TEXT","ALTER TABLE users ADD COLUMN audio_enabled INTEGER DEFAULT 0","ALTER TABLE users ADD COLUMN audio_slow INTEGER DEFAULT 0","ALTER TABLE users ADD COLUMN lives INTEGER NOT NULL DEFAULT 3","ALTER TABLE users ADD COLUMN reserve_lives INTEGER NOT NULL DEFAULT 0"]:
    try:c.execute(text(stmt))
    except Exception:pass
   c.execute(text("UPDATE users SET display_name=username WHERE display_name IS NULL OR display_name=''"))
@@ -286,8 +286,31 @@ def session_user(raw):
  with engine.connect() as c:r=c.execute(text("SELECT user_id FROM sessions WHERE token_hash=:t AND expires_at>:n"),{"t":hh,"n":datetime.now(timezone.utc).isoformat()}).first()
  return r[0] if r else None
 def user(uid):
- with engine.connect() as c:r=c.execute(text("SELECT id,username,display_name,email,language,points,COALESCE(audio_enabled,0) audio_enabled,COALESCE(audio_slow,0) audio_slow FROM users WHERE id=:u"),{"u":uid}).mappings().first()
+ with engine.connect() as c:r=c.execute(text("SELECT id,username,display_name,email,language,points,COALESCE(audio_enabled,0) audio_enabled,COALESCE(audio_slow,0) audio_slow,COALESCE(lives,3) lives,COALESCE(reserve_lives,0) reserve_lives FROM users WHERE id=:u"),{"u":uid}).mappings().first()
  return dict(r) if r else None
+def life_state(uid):
+ with engine.connect() as c:
+  r=c.execute(text("SELECT COALESCE(lives,3),COALESCE(reserve_lives,0) FROM users WHERE id=:u"),{"u":uid}).first()
+ return {"lives":int(r[0]),"reserve_lives":int(r[1])}
+
+def spend_life(uid):
+ with engine.begin() as c:
+  r=c.execute(text("SELECT COALESCE(lives,3),COALESCE(reserve_lives,0) FROM users WHERE id=:u"),{"u":uid}).first()
+  lives,reserve=int(r[0]),int(r[1])
+  if reserve>0: reserve-=1
+  elif lives>0: lives-=1
+  c.execute(text("UPDATE users SET lives=:l,reserve_lives=:r WHERE id=:u"),{"l":lives,"r":reserve,"u":uid})
+ return {"lives":lives,"reserve_lives":reserve}
+
+def gain_lives(uid,count):
+ count=max(0,min(3,int(count)))
+ with engine.begin() as c:
+  r=c.execute(text("SELECT COALESCE(lives,3),COALESCE(reserve_lives,0) FROM users WHERE id=:u"),{"u":uid}).first()
+  lives,reserve=int(r[0]),int(r[1])
+  room=max(0,3-lives); active=min(room,count); lives+=active; reserve+=count-active
+  c.execute(text("UPDATE users SET lives=:l,reserve_lives=:r WHERE id=:u"),{"l":lives,"r":reserve,"u":uid})
+ return {"lives":lives,"reserve_lives":reserve}
+
 def mastered(uid):
  with engine.connect() as c:rs=c.execute(text("SELECT question_id FROM question_progress WHERE user_id=:u AND mastered=1"),{"u":uid}).all()
  return {r[0] for r in rs}

@@ -1,0 +1,1 @@
+(function(){window.addEventListener("DOMContentLoaded",()=>{if(!window.BQLives)return;let d=document.createElement("div");d.className="bq-global-lives";d.setAttribute("data-bq-lives","");d.innerHTML=BQLives.html();document.body.appendChild(d);BQLives.load()})})();

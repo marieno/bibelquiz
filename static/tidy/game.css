@@ -27,3 +27,4 @@
 .mystery-cover{background:#1d506e;display:grid;place-items:center;color:#d8eaf3;font-size:28px;border:2px solid #8ebbd0;opacity:1;transition:.5s}.mystery-cover.open{opacity:0}
 .mystery-drop{position:absolute!important;z-index:30!important;left:8px!important;top:8px!important;width:115px!important;height:100px!important;background:#ffe46d!important;border:5px solid #4fbd67!important;opacity:1!important}
 .guess-btn{position:relative;z-index:40;background:#ffd54f!important;font-size:20px!important;margin:12px auto!important}
+.bq-global-lives{position:fixed;left:10px;bottom:10px;z-index:9998;background:#fff;padding:8px 10px;border-radius:14px;font-weight:900}.bq-reserve{color:#9a7300}

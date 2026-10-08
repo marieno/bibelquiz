@@ -68,6 +68,9 @@ class PasswordReset(BaseModel):
     token:str
     new_password:str
 
+class LifeGain(BaseModel):
+ count:int
+
 class Answer(BaseModel):
     question_id:int
     choice:str
@@ -183,6 +186,18 @@ def answer(a:Answer,authorization:str|None=Header(None)):
     rewards=evaluate_rewards(u,p)
     return {"correct":correct,"correct_choice":q["correcte"],"reference":q["reference"],
             "newly_mastered":newly,"user":database.user(u),"progress":p,"rewards":rewards}
+
+@app.get("/api/lives")
+def lives_get(authorization:str|None=Header(None)):
+ return database.life_state(uid(authorization))
+
+@app.post("/api/lives/spend")
+def lives_spend(authorization:str|None=Header(None)):
+ return database.spend_life(uid(authorization))
+
+@app.post("/api/lives/gain")
+def lives_gain(a:LifeGain,authorization:str|None=Header(None)):
+ return database.gain_lives(uid(authorization),a.count)
 
 @app.get("/health")
 def health(): return {"status":"ok"}
@@ -418,7 +433,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"16.0","build":"bible-history"}
+ return {"version":"17.0","build":"persistent-lives"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):

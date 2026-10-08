@@ -43,3 +43,4 @@
 .puzzle-drop{position:absolute!important;z-index:30!important;left:8px!important;top:8px!important;width:105px!important;height:105px!important;background:#ffe46d!important;border:5px solid #4fbd67!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center}
 .puzzle-drop span{font-size:34px}.puzzle-drop small{font-weight:900}.guess-btn{position:relative;z-index:40;background:#ffd54f!important;font-size:20px!important;margin:12px auto!important}
 .puzzle-slot,.tile-mask,.mystery-mask{display:none!important}
+.bq-global-lives{position:fixed;left:10px;bottom:10px;z-index:9998;background:#fff;padding:8px 10px;border-radius:14px;font-weight:900}.bq-reserve{color:#9a7300}

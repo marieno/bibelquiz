@@ -6,4 +6,4 @@
 @keyframes storyWalk{from{transform:translateX(-12px)}to{transform:translateX(20px)}}@keyframes storyPulse{50%{transform:scale(1.14)}}
 .story-caption{background:#fff;border-radius:18px;padding:15px;font-size:19px;font-weight:800;margin:10px 0}.story-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .story-dots{text-align:center;font-weight:900}.story-answer{min-height:90px}.theme-quiz-title{text-align:center}
-.bq-music{position:fixed;right:10px;bottom:10px;z-index:9999}.bq-music button{width:48px;height:48px;border-radius:50%;background:#fff}
+.bq-music{position:fixed;right:10px;bottom:10px;z-index:9999}.bq-music button{width:48px;height:48px;border-radius:50%;background:#fff}.bq-global-lives{position:fixed;left:10px;bottom:10px;z-index:9998;background:#fff;padding:8px 10px;border-radius:14px;font-weight:900}.bq-reserve{color:#9a7300}
