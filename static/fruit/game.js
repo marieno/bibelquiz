@@ -8,25 +8,19 @@ function draw(){
  bindFruitDrag()
 }
 function bindFruitDrag(){
- let tree=document.getElementById("fruitTree"),ghost=document.getElementById("dragGhost"),drag=null,suppressClick=false;
- tree.onclick=()=>{if(sel!==null)dropIndex(sel)};
- function start(i,x,y,id,type){drag={i,id,type,startX:x,startY:y,moved:false};ghost.textContent=pool[i].x;ghost.style.display="block";moveGhostXY(x,y);document.body.classList.add("fruit-dragging")}
- function move(x,y){if(!drag)return;if(Math.hypot(x-drag.startX,y-drag.startY)>6)drag.moved=true;moveGhostXY(x,y);tree.classList.toggle("drag-over",insideTreeXY(x,y,tree))}
- function end(x,y){if(!drag)return;let idx=drag.i,wasMoved=drag.moved,over=insideTreeXY(x,y,tree);ghost.style.display="none";tree.classList.remove("drag-over");document.body.classList.remove("fruit-dragging");drag=null;suppressClick=wasMoved;if(over)dropIndex(idx);else if(!wasMoved){sel=idx;markSelected(idx)}setTimeout(()=>suppressClick=false,250)}
- function markSelected(i){document.querySelectorAll("[data-fruit]").forEach(x=>x.classList.toggle("selected",+x.dataset.fruit===i))}
+ const tree=document.getElementById("fruitTree"),ghost=document.getElementById("dragGhost");
+ let active=null;
+ function select(i){sel=i;document.querySelectorAll("[data-fruit]").forEach(x=>x.classList.toggle("selected",+x.dataset.fruit===i))}
+ tree.addEventListener("click",()=>{if(sel!==null)dropIndex(sel)});
  document.querySelectorAll("[data-fruit]").forEach(btn=>{
-   let i=+btn.dataset.fruit;
-   btn.addEventListener("click",e=>{if(suppressClick)return;e.preventDefault();sel=i;markSelected(i)});
-   btn.addEventListener("pointerdown",e=>{if(e.pointerType==="touch")return;start(i,e.clientX,e.clientY,e.pointerId,"pointer");e.preventDefault()});
-   btn.addEventListener("touchstart",e=>{let t=e.changedTouches[0];start(i,t.clientX,t.clientY,t.identifier,"touch");e.preventDefault()},{passive:false});
+   const i=Number(btn.dataset.fruit);
+   btn.addEventListener("click",()=>select(i));
+   btn.addEventListener("pointerdown",e=>{active={i,x:e.clientX,y:e.clientY,moved:false};ghost.textContent=pool[i].x;ghost.style.display="block";ghost.style.left=e.clientX+"px";ghost.style.top=e.clientY+"px";select(i)});
  });
- document.addEventListener("pointermove",e=>{if(drag&&drag.type==="pointer"){move(e.clientX,e.clientY);e.preventDefault()}},{passive:false});
- document.addEventListener("pointerup",e=>{if(drag&&drag.type==="pointer")end(e.clientX,e.clientY)},{once:false});
- document.addEventListener("touchmove",e=>{if(!drag||drag.type!=="touch")return;let t=[...e.changedTouches].find(x=>x.identifier===drag.id)||e.changedTouches[0];move(t.clientX,t.clientY);e.preventDefault()},{passive:false});
- document.addEventListener("touchend",e=>{if(!drag||drag.type!=="touch")return;let t=[...e.changedTouches].find(x=>x.identifier===drag.id)||e.changedTouches[0];end(t.clientX,t.clientY);e.preventDefault()},{passive:false});
+ document.addEventListener("pointermove",e=>{if(!active)return;if(Math.hypot(e.clientX-active.x,e.clientY-active.y)>8)active.moved=true;ghost.style.left=e.clientX+"px";ghost.style.top=e.clientY+"px";tree.classList.toggle("drag-over",pointInTree(e.clientX,e.clientY,tree))});
+ document.addEventListener("pointerup",e=>{if(!active)return;let i=active.i,over=pointInTree(e.clientX,e.clientY,tree);active=null;ghost.style.display="none";tree.classList.remove("drag-over");if(over)dropIndex(i)});
 }
-function moveGhostXY(x,y){let g=document.getElementById("dragGhost");if(!g)return;g.style.left=x+"px";g.style.top=y+"px"}
-function insideTreeXY(x,y,tree){let r=tree.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom}
+function pointInTree(x,y,tree){const r=tree.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom}
 async function dropIndex(idx){
  if(idx<0||idx>=pool.length)return;
  let o=pool[idx];
