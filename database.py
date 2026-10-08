@@ -297,8 +297,9 @@ def spend_life(uid):
  with engine.begin() as c:
   r=c.execute(text("SELECT COALESCE(lives,3),COALESCE(reserve_lives,0) FROM users WHERE id=:u"),{"u":uid}).first()
   lives,reserve=int(r[0]),int(r[1])
-  if reserve>0: reserve-=1
-  elif lives>0: lives-=1
+  if lives>0: lives-=1
+  if lives==0 and reserve>0:
+   refill=min(3,reserve);lives=refill;reserve-=refill
   c.execute(text("UPDATE users SET lives=:l,reserve_lives=:r WHERE id=:u"),{"l":lives,"r":reserve,"u":uid})
  return {"lives":lives,"reserve_lives":reserve}
 

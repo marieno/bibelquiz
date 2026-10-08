@@ -8,19 +8,25 @@ function draw(){
  bindFruitDrag()
 }
 function bindFruitDrag(){
- let tree=document.getElementById("fruitTree"),ghost=document.getElementById("dragGhost"),drag=null;
+ let tree=document.getElementById("fruitTree"),ghost=document.getElementById("dragGhost"),drag=null,suppressClick=false;
  tree.onclick=()=>{if(sel!==null)dropIndex(sel)};
+ function start(i,x,y,id,type){drag={i,id,type,startX:x,startY:y,moved:false};ghost.textContent=pool[i].x;ghost.style.display="block";moveGhostXY(x,y);document.body.classList.add("fruit-dragging")}
+ function move(x,y){if(!drag)return;if(Math.hypot(x-drag.startX,y-drag.startY)>6)drag.moved=true;moveGhostXY(x,y);tree.classList.toggle("drag-over",insideTreeXY(x,y,tree))}
+ function end(x,y){if(!drag)return;let idx=drag.i,wasMoved=drag.moved,over=insideTreeXY(x,y,tree);ghost.style.display="none";tree.classList.remove("drag-over");document.body.classList.remove("fruit-dragging");drag=null;suppressClick=wasMoved;if(over)dropIndex(idx);else if(!wasMoved){sel=idx;markSelected(idx)}setTimeout(()=>suppressClick=false,250)}
+ function markSelected(i){document.querySelectorAll("[data-fruit]").forEach(x=>x.classList.toggle("selected",+x.dataset.fruit===i))}
  document.querySelectorAll("[data-fruit]").forEach(btn=>{
    let i=+btn.dataset.fruit;
-   btn.onclick=e=>{if(drag)return;sel=i;document.querySelectorAll("[data-fruit]").forEach(x=>x.classList.toggle("selected",+x.dataset.fruit===i))};
-   btn.onpointerdown=e=>{drag={i,id:e.pointerId,moved:false};btn.setPointerCapture?.(e.pointerId);ghost.textContent=pool[i].x;ghost.style.display="block";moveGhost(e);e.preventDefault()};
-   btn.onpointermove=e=>{if(!drag||drag.id!==e.pointerId)return;drag.moved=true;moveGhost(e);tree.classList.toggle("drag-over",insideTree(e,tree))};
-   btn.onpointerup=e=>{if(!drag||drag.id!==e.pointerId)return;let idx=drag.i,over=insideTree(e,tree);ghost.style.display="none";tree.classList.remove("drag-over");drag=null;if(over)dropIndex(idx);else{sel=idx;draw()}};
-   btn.onpointercancel=()=>{ghost.style.display="none";tree.classList.remove("drag-over");drag=null}
- })
+   btn.addEventListener("click",e=>{if(suppressClick)return;e.preventDefault();sel=i;markSelected(i)});
+   btn.addEventListener("pointerdown",e=>{if(e.pointerType==="touch")return;start(i,e.clientX,e.clientY,e.pointerId,"pointer");e.preventDefault()});
+   btn.addEventListener("touchstart",e=>{let t=e.changedTouches[0];start(i,t.clientX,t.clientY,t.identifier,"touch");e.preventDefault()},{passive:false});
+ });
+ document.addEventListener("pointermove",e=>{if(drag&&drag.type==="pointer"){move(e.clientX,e.clientY);e.preventDefault()}},{passive:false});
+ document.addEventListener("pointerup",e=>{if(drag&&drag.type==="pointer")end(e.clientX,e.clientY)},{once:false});
+ document.addEventListener("touchmove",e=>{if(!drag||drag.type!=="touch")return;let t=[...e.changedTouches].find(x=>x.identifier===drag.id)||e.changedTouches[0];move(t.clientX,t.clientY);e.preventDefault()},{passive:false});
+ document.addEventListener("touchend",e=>{if(!drag||drag.type!=="touch")return;let t=[...e.changedTouches].find(x=>x.identifier===drag.id)||e.changedTouches[0];end(t.clientX,t.clientY);e.preventDefault()},{passive:false});
 }
-function moveGhost(e){let g=document.getElementById("dragGhost");g.style.left=e.clientX+"px";g.style.top=e.clientY+"px"}
-function insideTree(e,tree){let r=tree.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom}
+function moveGhostXY(x,y){let g=document.getElementById("dragGhost");if(!g)return;g.style.left=x+"px";g.style.top=y+"px"}
+function insideTreeXY(x,y,tree){let r=tree.getBoundingClientRect();return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom}
 async function dropIndex(idx){
  if(idx<0||idx>=pool.length)return;
  let o=pool[idx];
