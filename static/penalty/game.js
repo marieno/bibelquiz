@@ -95,8 +95,8 @@ function shootTo(tx,ty,power){
  setTimeout(()=>{
    let inGoal=tx>=13&&tx<=87&&targetY>=7&&targetY<=39;
    let keeperReach=Math.abs(tx-keeperX)<cfg.saveRadius && targetY>13;
-   if(!inGoal){toast("💨 "+t.miss);setTimeout(render,700);return}
-   if(keeperReach){k.classList.add("caught");b.classList.add("saved-ball");toast("🧤 "+t.saved);setTimeout(render,900);return}
+   if(!inGoal){BQLives.lose(()=>render());toast("💨 "+t.miss);setTimeout(()=>{if(!BQLives.zero())render()},700);return}
+   if(keeperReach){k.classList.add("caught");b.classList.add("saved-ball");BQLives.lose(()=>render());toast("🧤 "+t.saved);setTimeout(()=>{if(!BQLives.zero())render()},900);return}
    net.classList.add("net-hit");goal();
  },760*cfg.keeperSpeed+220)
 }
