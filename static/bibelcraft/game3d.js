@@ -190,3 +190,44 @@ refresh=function(){storyRefresh();renderStory()};
 const storyInteract=interact;
 interact=function(){storyInteract();renderStory()};
 talkButton.onclick=()=>interact();
+
+
+// V20.5 — Interactive biblical conversations, independent of cooperative mission state.
+// Fictional NPC conversations are explicitly marked as game scenarios, not Bible quotations.
+const bibleDialogues={
+ fr:{
+  guide:{name:'Le guide du village',intro:'Situation imaginée pour le jeu : un enfant veut aider à construire une maison. Que lui proposes-tu ?',options:[['Je partage mes matériaux.','Bonne décision ! Aider son prochain est une manière de montrer son amour.'],['Je lui explique comment construire.','Bonne idée ! Partager ce que tu sais peut aussi aider.'],['Je garde tout pour moi.','Tu peux choisir autrement : Jésus nous enseigne à aimer notre prochain.']]},
+  villager:{name:'Une habitante du village',intro:'Situation imaginée pour le jeu : une voisine a besoin de nourriture. Que peux-tu faire ?',options:[['Je partage ma récolte.','Merci ! La générosité aide le village à grandir.'],['Je propose de cultiver ensemble.','Bonne idée ! L’entraide rend le travail plus joyeux.'],['Je passe sans lui parler.','Réfléchis à la façon dont tu aimerais être aidé.']]},
+  far:'Approche-toi du guide violet ou de l’habitante.',close:'Fermer',again:'Une autre conversation',reference:'À découvrir : Jean 13:34–35',button:'📖 Dialoguer',heading:'Choisis une réponse',fiction:'Scénario imaginé pour apprendre à aimer son prochain.'
+ },
+ de:{
+  guide:{name:'Der Dorfbegleiter',intro:'Ausgedachte Spielsituation: Ein Kind möchte ein Haus bauen. Wie hilfst du?',options:[['Ich teile meine Materialien.','Gut! Nächstenliebe zeigt sich durch Taten.'],['Ich erkläre, wie man baut.','Gut! Wissen weiterzugeben hilft anderen.'],['Ich behalte alles für mich.','Überlege noch einmal: Jesus lehrt uns, einander zu lieben.']]},
+  villager:{name:'Eine Dorfbewohnerin',intro:'Ausgedachte Spielsituation: Eine Nachbarin braucht Essen. Was kannst du tun?',options:[['Ich teile meine Ernte.','Danke! Großzügigkeit hilft der Gemeinschaft.'],['Wir pflanzen gemeinsam Gemüse an.','Gut! Gemeinsam macht die Arbeit Freude.'],['Ich gehe einfach weiter.','Überlege, wie du selbst behandelt werden möchtest.']]},
+  far:'Geh näher zum violetten Begleiter oder zur Dorfbewohnerin.',close:'Schließen',again:'Noch ein Gespräch',reference:'Zum Nachlesen: Johannes 13,34–35',button:'📖 Gespräch',heading:'Wähle eine Antwort',fiction:'Erfundene Spielsituation über Nächstenliebe.'
+ }
+};
+const dialogueButton=document.createElement('button');dialogueButton.type='button';dialogueButton.id='bibelcraft-dialogue-v205';document.querySelector('aside .bar').append(dialogueButton);
+function showBiblicalConversation(kind){
+ const t=bibleDialogues[lang],entry=t[kind];
+ dialog.hidden=false;dialog.replaceChildren();
+ const h=document.createElement('h3');h.textContent=entry.name;
+ const intro=document.createElement('p');intro.textContent=entry.intro;
+ const note=document.createElement('small');note.textContent=t.fiction;
+ dialog.append(h,intro,note);
+ for(const [answer,feedback] of entry.options){
+  const b=document.createElement('button');b.type='button';b.textContent=answer;b.style.cssText='display:block;width:100%;margin:8px 0;padding:10px;white-space:normal';
+  b.onclick=()=>{dialog.replaceChildren(h);const result=document.createElement('p');result.textContent=feedback;const ref=document.createElement('p');ref.textContent=t.reference;const again=document.createElement('button');again.type='button';again.textContent=t.again;again.onclick=()=>showBiblicalConversation(kind);const close=document.createElement('button');close.type='button';close.textContent=t.close;close.onclick=closeDialog;dialog.append(result,ref,again,close)};
+  dialog.append(b);
+ }
+ const close=document.createElement('button');close.type='button';close.textContent=t.close;close.onclick=closeDialog;dialog.append(close);
+}
+function startBiblicalConversation(){
+ if(!dialog.hidden)return;
+ const candidates=inhabitants.filter(n=>n.kind==='guide'||n.kind==='villager').map(n=>({kind:n.kind,d:Math.hypot(n.root.position.x-pos.x,n.root.position.z-pos.z)})).sort((a,b)=>a.d-b.d);
+ if(!candidates.length||candidates[0].d>3.2){$('message').textContent=bibleDialogues[lang].far;return}
+ showBiblicalConversation(candidates[0].kind);
+}
+dialogueButton.onclick=startBiblicalConversation;
+function refreshBiblicalDialogueLabel(){dialogueButton.textContent=bibleDialogues[lang].button}
+$('lang').addEventListener('change',refreshBiblicalDialogueLabel);
+refreshBiblicalDialogueLabel();
