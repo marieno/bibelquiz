@@ -170,9 +170,11 @@ async function groupLobby(){
 function raceCarDot(c){return {red:"🔴",blue:"🔵",green:"🟢",yellow:"🟡",purple:"🟣"}[c]||"🔴"}
 async function groupCar(car,ready){await api(`/api/group/${groupCode}/ready`,{method:"POST",body:JSON.stringify({ready:Boolean(ready),car})});groupLobby()}
 async function groupStart(){stopGroupPoll();let r=await api(`/api/group/${groupCode}/start`,{method:"POST",body:"{}"});if(r.room?.game_type==="race"||r.game_type==="race"){location.href="/static/race/index.html?group="+encodeURIComponent(groupCode)}else groupGame()}
+let groupGameGeneration=0;
 async function groupGame(){
- stopGroupPoll();let x;
+ stopGroupPoll();const generation=++groupGameGeneration;let x;
  try{x=await api(`/api/group/${groupCode}/game`)}catch(e){groupHome();return}
+ if(generation!==groupGameGeneration)return;
  if(x.phase==="lobby"){groupLobby();return}window.groupQuestionIndex=x.index
  if(x.phase==="finished"){groupPodium(x);return}
  let q=x.question,r=q.reponses[lang],host=Boolean(x.is_host);
@@ -193,10 +195,10 @@ async function groupAnswer(choice){try{await api(`/api/group/${groupCode}/answer
 async function groupNext(){await api(`/api/group/${groupCode}/next`,{method:"POST",body:"{}"});groupGame()}
 async function groupPodium(x){
  stopGroupPoll();confetti();fly("🏆");
- let badge=await api("/api/multiplayer/claim-badges",{method:"POST",body:"{}"});me=badge.user||me;
+ let badge;try{badge=await api("/api/multiplayer/claim-badges",{method:"POST",body:"{}"});me=badge.user||me}catch(e){console.warn("Badges unavailable",e);badge={stats:x.stats||{games:0,wins:0,podiums:0},rewards:[]}}
  let s=x.scores,st=badge.stats;
  A.innerHTML=`<div class=wrap><div class="card auth"><div class=stars><img class=result-crown src="/static/identity/crown.svg" alt="Crown"><br>⭐⭐⭐</div><h1 style="text-align:center">${lang==="de"?"Endergebnis":"Résultat final"}</h1><p style="text-align:center"><b>${groupLevelLabel(x.difficulty||x.room?.difficulty||"alle")}</b> • 10 ${lang==="de"?"Fragen":"questions"}</p>${s.map((p,i)=>`<p style="font-size:${i===0?24:18}px;text-align:center">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1+"."} <b>${esc(p.username)}</b> — ${p.score} ⭐ <small>(${p.correct_count}/10)</small></p>`).join("")}<hr><p style="text-align:center">🎮 ${st.games} &nbsp; 🥇 ${st.wins} &nbsp; 🎖️ ${st.podiums}</p><button class="btn full" onclick="groupProfile()">🏆 ${lang==="de"?"MEIN MULTIPLAYER-PROFIL":"MON PROFIL MULTIJOUEUR"}</button><button class="btn green full" onclick="quizGroupHome()">👥 ${lang==="de"?"NEUE GRUPPE":"NOUVEAU GROUPE"}</button><button class="btn ghost full" onclick="dashboard()">🏠 Dashboard</button></div></div>`;
- if(badge.rewards&&badge.rewards.length)setTimeout(()=>showRewards(badge.rewards),450)
+ // Rewards are claimed but do not cover the final ranking.
 }
 async function groupProfile(){
  try{

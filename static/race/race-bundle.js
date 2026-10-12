@@ -92,7 +92,7 @@ function updateProgress(){
  if(signEl){if(pct>=25){signEl.style.display="block";let mark=remain>750?750:remain>500?500:remain>250?250:remain>100?100:Math.ceil(remain/10)*10;signEl.textContent=`${mark} m → 🏁 ZIEL`}else signEl.style.display="none"}
  if(gateEl){if(pct>=75){gateEl.style.display="block";let local=(pct-75)/25,y=-115+local*(innerHeight*.58);gateEl.style.top=Math.min(innerHeight*.46,y)+"px";gateEl.style.transform=`scale(${0.55+local*.65})`;gateEl.style.opacity=String(Math.min(1,.35+local))}else gateEl.style.display="none"}
 }
-function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score;requestAnimationFrame(loop)}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
+function collect(p){raceMusic.restore();p.el.remove();pickups.splice(pickups.indexOf(p),1);if(p.kind==="star"){score+=20;document.getElementById("sc").textContent=score}else{running=false;gas=false;braking=false;speed*=.45;showQuestion()}}
 function speak(text){if(!speechSynthesis)return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang==="fr"?"fr-FR":"de-DE";u.rate=.88;speechSynthesis.speak(u)}
 function showQuestion(){
  running=false;gas=false;braking=false;raceMusic.duck();
@@ -200,12 +200,12 @@ async function raceMultiPlay(){
  questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceSyncTimer=setInterval(syncRace,800)}
 async function syncRace(){if(!raceRoom)return;try{let r=await api(`/api/race-multi/${raceRoom}/sync`,{method:"POST",body:JSON.stringify({distance,speed,score,lane,finished:distance>=TRACK})});racePlayers=r.players;renderOpponents(r);if(r.players.every(p=>p.finished)){clearInterval(raceSyncTimer);showRaceResults(r)}}catch(e){}}
 function renderOpponents(r){
- document.querySelectorAll(".opponent,.live-board,.offscreen-racer").forEach(x=>x.remove());
+ document.querySelectorAll(".opponent,.offscreen-racer").forEach(x=>x.remove());
  let me=r.players.find(x=>x.user_id===r.me),roadEl=document.getElementById("road");
  if(!me||!roadEl)return;
  // Live ranking here is track position only, not final winner.
  let byTrack=[...r.players].sort((a,b)=>b.distance-a.distance);
- let board=document.createElement("div");board.className="live-board";
+ let board=roadEl.querySelector(".live-board");if(!board){board=document.createElement("div");board.className="live-board";roadEl.appendChild(board)}
  board.innerHTML=`<b>🏁 LIVE</b>${byTrack.map((p,i)=>`<div><span>${i+1}. ${escRace(p.display_name)} ${p.user_id===r.me?"(MOI)":""}</span><span>${Math.floor(p.distance/10)}% · ⭐${p.score}</span></div>`).join("")}`;
  roadEl.appendChild(board);
 
@@ -231,9 +231,9 @@ function escRace(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<"
 function showRaceResults(r){running=false;let sorted=[...r.players].sort((a,b)=>(b.total_score||b.score)-(a.total_score||a.score));root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"Endstand":"Classement final"}</h1>${sorted.map((p,i)=>`<h2>${["🥇","🥈","🥉","4.","5."][i]} ${p.display_name} — ${p.total_score||p.score} ⭐</h2>`).join("")}<button class="btn start" onclick="multiMenu()">🏎️ ${lang==="de"?"NEUES RENNEN":"NOUVELLE COURSE"}</button></div></div>`}
 
 
-let unifiedTimer=null,unifiedFinishedSent=false,unifiedWaiting=false;
+let unifiedTimer=null,unifiedFinishedSent=false,unifiedWaiting=false,unifiedSyncBusy=false,unifiedResultsShown=false;
 async function unifiedRaceFromGroup(code){
- raceRoom=code;let room=await api("/api/group/"+code);
+ raceRoom=code;unifiedWaiting=false;unifiedResultsShown=false;unifiedSyncBusy=false;clearInterval(unifiedTimer);let room=await api("/api/group/"+code);
  if(room.game_type!=="race"){location.href="/";return}
  let q=await api(`/api/group/${code}/questions`);
  questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;
@@ -241,20 +241,22 @@ async function unifiedRaceFromGroup(code){
  unifiedTimer=setInterval(unifiedSync,700);
 }
 async function unifiedSync(){
+ if(unifiedSyncBusy||unifiedResultsShown||!raceRoom)return;
+ unifiedSyncBusy=true;
  try{
   let st=await api(`/api/group/${raceRoom}/race-sync`,{method:"POST",body:JSON.stringify({distance,speed,score,lane,finished:distance>=TRACK})});
   renderUnifiedRacers(st);
-  if(st.race_over){clearInterval(unifiedTimer);showUnifiedResults(st);return}
+  if(st.race_over){unifiedResultsShown=true;clearInterval(unifiedTimer);showUnifiedResults(st);return}
   if(distance>=TRACK&&!unifiedWaiting){unifiedWaiting=true;running=false;showWaiting(st)}
   else if(unifiedWaiting)showWaiting(st);
- }catch(e){}
+ }catch(e){console.warn("Race sync failed",e)}finally{unifiedSyncBusy=false}
 }
 function renderUnifiedRacers(st){arcadeRenderOpponents(st);
  let me=st.players.find(p=>Number(p.user_id)===Number(st.me)),roadEl=document.getElementById("road");if(!me||!roadEl)return;
- document.querySelectorAll(".opponent,.live-board,.offscreen-racer").forEach(x=>x.remove());
- let board=document.createElement("div");board.className="live-board";
+ document.querySelectorAll(".opponent,.offscreen-racer").forEach(x=>x.remove());
+ let board=roadEl.querySelector(".live-board");if(!board){board=document.createElement("div");board.className="live-board";roadEl.appendChild(board)}
  let order=[...st.players].sort((a,b)=>b.race_distance-a.race_distance);
- board.innerHTML=`<b>🏁 LIVE</b>${order.map((p,i)=>`<div><span>${i+1}. ${escRace(p.display_name)}${Number(p.user_id)===Number(st.me)?" (DU)":""}</span><span>${Math.floor(p.race_distance/10)}% · ⭐${p.race_score}</span></div>`).join("")}`;roadEl.appendChild(board);
+ board.innerHTML=`<b>🏁 LIVE</b>${order.map((p,i)=>`<div><span>${i+1}. ${escRace(p.display_name)}${Number(p.user_id)===Number(st.me)?" (DU)":""}</span><span>${Math.floor(p.race_distance/10)}% · ⭐${p.race_score}</span></div>`).join("")}`;
  for(let p of st.players.filter(x=>Number(x.user_id)!==Number(st.me))){
   let gap=p.race_distance-me.race_distance;
   if(Math.abs(gap)<=150){let e=document.createElement("div");e.className="opponent";e.style.left=[22,44,66][p.race_lane]+"%";e.style.top=Math.max(21,Math.min(72,47-gap*.17))+"%";e.innerHTML=`<span class=racer-name>${escRace(p.display_name)}</span><span class="racer-car car-${p.car}">🏎️</span><span class=racer-gap>${gap>=0?"+":""}${Math.round(gap)} m</span>`;roadEl.appendChild(e)}
@@ -262,11 +264,11 @@ function renderUnifiedRacers(st){arcadeRenderOpponents(st);
  }
 }
 function showWaiting(st){raceMusic.duck();
- let existing=document.getElementById("multiFinish");if(existing)existing.remove();
+ let existing=document.getElementById("multiFinish");
  let me=st.players.find(p=>Number(p.user_id)===Number(st.me)),left=st.players.filter(p=>!p.race_finished);
- document.body.insertAdjacentHTML("beforeend",`<div class=question-overlay id=multiFinish><div class=question><h1>🏁 ZIEL!</h1><h2>⭐ ${me?.race_score||score}</h2><h2>⏱️ ${st.remaining_seconds??20}s</h2><p>${left.length?(lang==="de"?"Warten auf: ":"En attente de : ")+left.map(x=>escRace(x.display_name)+" "+Math.floor(x.race_distance/10)+"%").join(", "):""}</p></div></div>`)
+ if(!existing)document.body.insertAdjacentHTML("beforeend",`<div class=question-overlay id=multiFinish><div class=question><h1>🏁 ZIEL!</h1><h2>⭐ ${me?.race_score||score}</h2><h2>⏱️ ${st.remaining_seconds??20}s</h2><p>${left.length?(lang==="de"?"Warten auf: ":"En attente de : ")+left.map(x=>escRace(x.display_name)+" "+Math.floor(x.race_distance/10)+"%").join(", "):""}</p></div></div>`);else{let q=existing.querySelector("h2:nth-of-type(2)");if(q)q.textContent="⏱️ "+(st.remaining_seconds??20)+"s"}
 }
-function showUnifiedResults(st){raceMusic.restore();
+function showUnifiedResults(st){unifiedResultsShown=true;clearInterval(unifiedTimer);raceMusic.restore();
  running=false;document.getElementById("multiFinish")?.remove();
  let sorted=[...st.players].sort((a,b)=>b.total_score-a.total_score);
  root.innerHTML=`<div class=menu><div class=panel><div class=big>🏆</div><h1>${lang==="de"?"ENDERGEBNIS":"CLASSEMENT FINAL"}</h1>${sorted.map((p,i)=>`<p style="font-size:20px"><b>${["🥇","🥈","🥉","4.","5."][i]} ${escRace(p.display_name)}</b> — ⭐ ${p.total_score} <small>(${p.race_score}+${p.finish_bonus}${p.dnf?" · DNF":""})</small></p>`).join("")}<h2>🏆 ${escRace(sorted[0]?.display_name||"")} — ${sorted[0]?.total_score||0} ⭐</h2><button class="btn start" onclick="location.href='/'">← BibelQuiz</button></div></div>`

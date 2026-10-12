@@ -1,4 +1,4 @@
-const CACHE="bibelquiz-v18-9-sans-vies";
+const CACHE="bibelquiz-v19-0-multiplayer-stability";
 const SHELL=["/","/static/style.css","/static/app.js","/static/manifest.json","/static/icons/icon-192.png","/static/icons/icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)));});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
