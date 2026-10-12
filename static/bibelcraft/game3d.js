@@ -79,4 +79,28 @@ const oldInteract=interact;interact=function(){const nearest=inhabitants.map((n,
 talkButton.onclick=()=>interact();
 renderNoah();
 
+
+// V19.7 — David le berger. Activité libre, sans vies ni pénalités.
+// Les moutons restent dans le monde; leur déplacement est lent et borné.
+const davidKey='bibelcraft-david-v1';
+const davidWords={
+ fr:{title:'🐑 David, le jeune berger',intro:'Dans 1 Samuel 16–17, David est berger avant de devenir roi. Cette aventure est inspirée de son travail de berger.',start:'Approche-toi des deux moutons et retrouve-les. Appuie sur « Parler » pour les rassembler.',progress:'Moutons retrouvés',done:'Bravo ! Tu as retrouvé les deux moutons. David prenait soin du troupeau confié à sa garde.',verse:'À découvrir en famille : 1 Samuel 17:34–37.',restart:'Recommencer David',found:'Un mouton retrouvé !',already:'Ce mouton a déjà été retrouvé.'},
+ de:{title:'🐑 David, der junge Hirte',intro:'In 1. Samuel 16–17 ist David Hirte, bevor er König wird. Dieses Abenteuer ist von seiner Arbeit als Hirte inspiriert.',start:'Finde beide Schafe. Geh nahe heran und drücke auf „Sprechen“, um sie zu sammeln.',progress:'Gefundene Schafe',done:'Super! Du hast beide Schafe gefunden. David kümmerte sich um seine Herde.',verse:'Lest gemeinsam: 1. Samuel 17,34–37.',restart:'David-Mission neu starten',found:'Ein Schaf gefunden!',already:'Dieses Schaf wurde schon gefunden.'}
+};
+let david={found:[]};
+try{const d=JSON.parse(localStorage.getItem(davidKey)||'{}');if(Array.isArray(d.found))david.found=[...new Set(d.found.filter(i=>i===0||i===1))]}catch(e){}
+function saveDavid(){try{localStorage.setItem(davidKey,JSON.stringify(david))}catch(e){}}
+const davidPanel=document.createElement('section');davidPanel.id='david-mission';davidPanel.style.cssText='border:2px solid #a2c98a;border-radius:14px;padding:12px;margin-top:12px;background:#eaf8dd';document.querySelector('aside').append(davidPanel);
+function renderDavid(){const t=davidWords[lang];davidPanel.replaceChildren();const h=document.createElement('h3');h.textContent=t.title;const intro=document.createElement('p');intro.textContent=t.intro;const instruction=document.createElement('p');instruction.textContent=david.found.length===2?t.done:t.start;const count=document.createElement('p');count.textContent=`${t.progress} : ${david.found.length}/2`;davidPanel.append(h,intro,instruction,count);if(david.found.length===2){const verse=document.createElement('p');verse.textContent=t.verse;davidPanel.append(verse)}const restart=document.createElement('button');restart.type='button';restart.textContent=t.restart;restart.onclick=()=>{david={found:[]};saveDavid();renderDavid()};davidPanel.append(restart)}
+// Conserve la logique de Noé : une interaction peut compter pour les deux aventures.
+const interactNoah=interact;
+interact=function(){const closest=inhabitants.map((n,i)=>({n,i,d:Math.hypot(n.root.position.x-pos.x,n.root.position.z-pos.z)})).sort((a,b)=>a.d-b.d)[0];if(closest&&closest.d<=3.2&&closest.n.kind==='sheep'&&closest.i<2){if(!david.found.includes(closest.i)){david.found.push(closest.i);saveDavid();$('message').textContent=davidWords[lang].found}else{$('message').textContent=davidWords[lang].already}renderDavid()}interactNoah()};
+talkButton.onclick=()=>interact();
+// Animation douce des moutons, sans boucle réseau ni recalcul de la scène.
+const sheepHomes=inhabitants.slice(0,2).map(n=>({x:n.originX,z:n.originZ}));
+function moveSheep(t){inhabitants.slice(0,2).forEach((n,i)=>{const home=sheepHomes[i];const a=t*.00024+i*2.7;n.root.position.x=home.x+Math.sin(a)*1.15;n.root.position.z=home.z+Math.cos(a*.8)*1.05;n.root.rotation.y=a+.6});requestAnimationFrame(moveSheep)}
+requestAnimationFrame(moveSheep);
+const refreshNoah=refresh;refresh=function(){refreshNoah();renderDavid()};
+renderDavid();
+
 notice.textContent=lang==='fr'?'Explore ton monde !':'Erkunde deine Welt!';setTimeout(()=>{notice.textContent=''},4000);refresh();requestAnimationFrame(frame);
