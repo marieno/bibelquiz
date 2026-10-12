@@ -10,6 +10,7 @@ const ground=new THREE.Mesh(new THREE.BoxGeometry(32,.35,32),new THREE.MeshLambe
 const grid=new THREE.GridHelper(32,32,0x5b9e52,0x5b9e52);grid.position.y=.005;scene.add(grid);
 const cube=new THREE.BoxGeometry(1,1,1), materials=Object.fromEntries(Object.entries(types).map(([k,v])=>[k,new THREE.MeshLambertMaterial({color:v[1],transparent:k==='glass',opacity:k==='glass'?.62:1})]));
 const group=new THREE.Group();scene.add(group);const player=new THREE.Group();scene.add(player);const body=new THREE.Mesh(new THREE.BoxGeometry(.6,.9,.4),new THREE.MeshLambertMaterial({color:0x376ed5}));body.position.y=.95;player.add(body);const head=new THREE.Mesh(new THREE.BoxGeometry(.52,.52,.52),new THREE.MeshLambertMaterial({color:0xf4c79a}));head.position.y=1.65;player.add(head);
+const savedAvatarColor=localStorage.getItem('bibelcraft-avatar-color');if(/^#[0-9a-fA-F]{6}$/.test(savedAvatarColor||''))body.material.color.set(savedAvatarColor);document.addEventListener('bibelcraft-avatar-color',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.detail))body.material.color.set(e.detail)});
 const pos=new THREE.Vector3(0,0,5);let selectedTarget=null;
 function valid(x,y,z){return Number.isInteger(x)&&Number.isInteger(y)&&Number.isInteger(z)&&Math.abs(x)<=15&&Math.abs(z)<=15&&y>=0&&y<=9}
 function id(x,y,z){return `${x},${y},${z}`}
