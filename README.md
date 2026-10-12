@@ -410,3 +410,5 @@ Consolidates all validated manual fixes plus live race synchronization:
 - Multiplayer opponents projected by real distance and lane: distant cars are smaller near the horizon, approaching cars grow naturally.
 - Existing group, questions, live sync, 20-second DNF, common ranking and DE/FR music preserved.
 - JavaScript syntax validated before packaging.
+
+V18.6 : guides de dessin fixes (Facile : pointillés complets, Moyen : contour principal, Libre : page blanche et modèle latéral).
