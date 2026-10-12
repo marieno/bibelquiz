@@ -412,3 +412,7 @@ Consolidates all validated manual fixes plus live race synchronization:
 - JavaScript syntax validated before packaging.
 
 V18.6 : guides de dessin fixes (Facile : pointillés complets, Moyen : contour principal, Libre : page blanche et modèle latéral).
+
+
+## V18.7
+Correction Armor/Fruit: état des cartes, gestion des vies optionnelle, gestion des événements pointer sans accumulation, cache JS renouvelé.
