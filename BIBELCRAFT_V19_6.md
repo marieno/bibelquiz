@@ -1,0 +1,1 @@
+BibelCraft V19.6 — mission inspirée de Noé. Construire avec 12 blocs de bois, approcher les deux moutons, retrouver le guide. Mission facultative, sauvegarde locale, FR/DE. Le récit est adapté et ne prétend pas reproduire exactement les événements bibliques. Mode 3D nécessite Internet (Three.js CDN). Test navigateur/multijoueur non effectué.

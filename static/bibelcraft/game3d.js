@@ -59,4 +59,24 @@ $('lang').addEventListener('change',()=>{talkButton.textContent=learning[lang].i
 // Lightweight idle animation without timers or network requests.
 function animateInhabitants(t){for(const [i,n] of inhabitants.entries()){n.root.position.y=Math.sin(t*.0015+i)*.045;n.root.rotation.y=Math.sin(t*.0004+i)*.25}requestAnimationFrame(animateInhabitants)}requestAnimationFrame(animateInhabitants);
 
+
+
+// V19.6: Noé — mission narrative facultative, distincte du récit biblique.
+const noahText={
+ fr:{heading:'🚢 L’arche de Noé',intro:'Dans la Bible, Dieu demande à Noé de construire une arche (Genèse 6–9). Ici, tu réalises une construction inspirée de cette histoire.',step1:'Étape 1 : place au moins 12 blocs de bois pour préparer ton arche.',step2:'Étape 2 : approche-toi des deux moutons et parle-leur pour les accueillir.',step3:'Étape 3 : retrouve le guide violet pour terminer l’aventure.',finish:'Bravo ! Tu as terminé l’aventure inspirée de Noé. La Bible nous parle de confiance et d’obéissance à Dieu.',verse:'À lire en famille : Genèse 6:22.',label:'🚢 Mission Noé',progress:'Progression',reset:'Recommencer la mission',sheep:'Mouton accueilli !',guide:'Mission terminée !'},
+ de:{heading:'🚢 Noahs Arche',intro:'In der Bibel erhält Noah von Gott den Auftrag, eine Arche zu bauen (1. Mose 6–9). Hier baust du etwas, das von der Geschichte inspiriert ist.',step1:'Schritt 1: Setze mindestens 12 Holzblöcke für deine Arche.',step2:'Schritt 2: Gehe zu beiden Schafen und sprich mit ihnen.',step3:'Schritt 3: Gehe zum violetten Begleiter, um das Abenteuer abzuschließen.',finish:'Super! Du hast Noahs Abenteuer geschafft. Die Bibel erzählt von Vertrauen und Gehorsam gegenüber Gott.',verse:'Lest gemeinsam: 1. Mose 6,22.',label:'🚢 Noah-Mission',progress:'Fortschritt',reset:'Mission neu starten',sheep:'Schaf begrüßt!',guide:'Mission abgeschlossen!'}
+};
+const noahKey='bibelcraft-noah-v1';
+let noah={met:[],done:false};
+try{const loaded=JSON.parse(localStorage.getItem(noahKey)||'{}');if(Array.isArray(loaded.met))noah.met=loaded.met.filter(x=>Number.isInteger(x)&&x>=0&&x<2);noah.done=loaded.done===true}catch(e){}
+function saveNoah(){try{localStorage.setItem(noahKey,JSON.stringify(noah))}catch(e){}}
+const noahPanel=document.createElement('section');noahPanel.id='noah-mission';noahPanel.style.cssText='border:2px solid #e2c87b;border-radius:14px;padding:12px;margin-top:12px;background:#fff5d7';document.querySelector('aside').append(noahPanel);
+function woodCount(){return [...blocks.values()].filter(b=>b.type==='wood').length}
+function noahStep(){if(noah.done)return 4;if(woodCount()<12)return 1;if(noah.met.length<2)return 2;return 3}
+function renderNoah(){const t=noahText[lang],step=noahStep();noahPanel.replaceChildren();const h=document.createElement('h3');h.textContent=t.heading;noahPanel.append(h);const p=document.createElement('p');p.textContent=t.intro;noahPanel.append(p);const instruction=document.createElement('p');instruction.textContent=step===1?t.step1:step===2?t.step2:step===3?t.step3:t.finish;noahPanel.append(instruction);const progress=document.createElement('p');progress.textContent=`${t.progress} : ${step===4?3:step-1}/3 · 🪵 ${woodCount()}/12 · 🐑 ${noah.met.length}/2`;noahPanel.append(progress);if(step===4){const verse=document.createElement('p');verse.textContent=t.verse;noahPanel.append(verse)}const restart=document.createElement('button');restart.type='button';restart.textContent=t.reset;restart.onclick=()=>{noah={met:[],done:false};saveNoah();renderNoah()};noahPanel.append(restart)}
+const oldRefresh=refresh;refresh=function(){oldRefresh();renderNoah()};
+const oldInteract=interact;interact=function(){const nearest=inhabitants.map((n,i)=>({n,i,d:Math.hypot(n.root.position.x-pos.x,n.root.position.z-pos.z)})).sort((a,b)=>a.d-b.d)[0];if(nearest&&nearest.d<=3.2){if(nearest.n.kind==='sheep'&&woodCount()>=12){if(!noah.met.includes(nearest.i)){noah.met.push(nearest.i);saveNoah();$('message').textContent=noahText[lang].sheep}renderNoah()}else if(nearest.n.kind==='guide'&&noahStep()===3){noah.done=true;saveNoah();$('message').textContent=noahText[lang].guide;renderNoah();return}}oldInteract()};
+talkButton.onclick=()=>interact();
+renderNoah();
+
 notice.textContent=lang==='fr'?'Explore ton monde !':'Erkunde deine Welt!';setTimeout(()=>{notice.textContent=''},4000);refresh();requestAnimationFrame(frame);

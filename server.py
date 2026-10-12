@@ -433,7 +433,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"19.5","build":"bibelcraft-aventure"}
+ return {"version":"19.6","build":"bibelcraft-noe"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
