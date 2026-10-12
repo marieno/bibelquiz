@@ -499,7 +499,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"21.2","build":"bible-obby-five-worlds"}
+ return {"version":"21.3","build":"bible-obby-distinct-levels"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
