@@ -10,6 +10,7 @@ import database
 from env_loader import load_private_env
 load_private_env()
 import mailer
+import craft_rooms
 
 log = logging.getLogger("bibelquiz.recovery")
 
@@ -21,6 +22,31 @@ app=FastAPI(title="BibelQuiz")
 database.init()
 database.account_migrate()
 database.multiplayer_init()
+
+class CraftIdentity(BaseModel):
+    name: str
+    code: str = ""
+class CraftPosition(BaseModel):
+    token: str
+    x: float
+    z: float
+
+@app.post("/api/craft/create")
+def craft_create(data: CraftIdentity):
+    if not 1 <= len(data.name.strip()) <= 24: raise HTTPException(400,"Invalid name")
+    return craft_rooms.create(data.name.strip())
+
+@app.post("/api/craft/join")
+def craft_join(data: CraftIdentity):
+    if not 1 <= len(data.name.strip()) <= 24: raise HTTPException(400,"Invalid name")
+    try: return craft_rooms.join(data.code.strip(),data.name.strip())
+    except ValueError as exc: raise HTTPException(400,str(exc))
+
+@app.post("/api/craft/{code}/sync")
+def craft_sync(code: str, data: CraftPosition):
+    if not all(map(__import__('math').isfinite,[data.x,data.z])): raise HTTPException(400,"Invalid coordinates")
+    try: return craft_rooms.sync(code,data.token,data.x,data.z)
+    except ValueError as exc: raise HTTPException(403,str(exc))
 
 class Auth(BaseModel):
     username:str
@@ -433,7 +459,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"19.8","build":"bibelcraft-village"}
+ return {"version":"20.0","build":"bibelcraft-multiplayer-lobby"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):

@@ -134,3 +134,7 @@ interact=function(){const d=Math.hypot(resident.root.position.x-pos.x,resident.r
 talkButton.onclick=()=>interact();
 const refreshDavid=refresh;refresh=function(){refreshDavid();renderVillage()};
 renderVillage();
+
+// V20.0: private shared lobby and remote avatars. Blocks remain local until V20.1.
+import {setupMultiplayer} from './multiplayer.js';
+setupMultiplayer({THREE,scene,pos});
