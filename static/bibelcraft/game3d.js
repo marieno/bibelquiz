@@ -231,3 +231,50 @@ dialogueButton.onclick=startBiblicalConversation;
 function refreshBiblicalDialogueLabel(){dialogueButton.textContent=bibleDialogues[lang].button}
 $('lang').addEventListener('change',refreshBiblicalDialogueLabel);
 refreshBiblicalDialogueLabel();
+
+
+// V20.6 — Three stylized biblical discovery regions within the existing world.
+// These are imaginative learning environments, not archaeological reconstructions.
+const regionData={
+ fr:[
+  {name:'Bethléem',ref:'Luc 2:1–7',intro:'Découvre le récit de la naissance de Jésus.',goal:'Approche-toi de la maison et observe le village.',lesson:'Jésus est né à Bethléem. Lis Luc 2:1–7 en famille.'},
+  {name:'Jérusalem',ref:'Luc 19:28–40',intro:'Découvre l’entrée de Jésus à Jérusalem.',goal:'Explore la porte de la ville.',lesson:'La foule a accueilli Jésus. Lis Luc 19:28–40 en famille.'},
+  {name:'Le Jourdain',ref:'Matthieu 3:13–17',intro:'Découvre le baptême de Jésus.',goal:'Approche-toi du fleuve.',lesson:'Jésus fut baptisé dans le Jourdain. Lis Matthieu 3:13–17 en famille.'}
+ ],
+ de:[
+  {name:'Bethlehem',ref:'Lukas 2,1–7',intro:'Entdecke die Geschichte von Jesu Geburt.',goal:'Geh zum Haus und erkunde das Dorf.',lesson:'Jesus wurde in Bethlehem geboren. Lest Lukas 2,1–7.'},
+  {name:'Jerusalem',ref:'Lukas 19,28–40',intro:'Entdecke Jesu Einzug in Jerusalem.',goal:'Erkunde das Stadttor.',lesson:'Die Menschen begrüßten Jesus. Lest Lukas 19,28–40.'},
+  {name:'Der Jordan',ref:'Matthäus 3,13–17',intro:'Entdecke Jesu Taufe.',goal:'Geh zum Fluss.',lesson:'Jesus wurde im Jordan getauft. Lest Matthäus 3,13–17.'}
+ ]
+};
+const regionPositions=[[-10,-10],[10,-10],[10,10]];
+const regionMarkers=[];
+function regionBox(x,y,z,w,h,d,color){
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color}));
+ mesh.position.set(x,y,z);scene.add(mesh);regionMarkers.push(mesh);return mesh;
+}
+// Landmark geometry is decorative: it cannot overwrite children's blocks.
+regionBox(-10,.7,-10,3,1.4,2.5,0xe4c39a);
+const roof=regionBox(-10,1.65,-10,3.5,.5,3,0x9e6448);
+regionBox(10,.85,-10,1.2,1.7,1,0xc9a77c);
+regionBox(12,.85,-10,1.2,1.7,1,0xc9a77c);
+regionBox(11,1.75,-10,3.2,.5,1,0xc9a77c);
+regionBox(10,.025,10,5,.06,2.5,0x4dadd9);
+for(const [x,z] of regionPositions){const marker=regionBox(x,.12,z,1,.24,1,0xf4d65e);marker.material.transparent=true;marker.material.opacity=.65}
+let visitedRegions=[];
+try{const v=JSON.parse(localStorage.getItem('bibelcraft-regions-v206')||'[]');if(Array.isArray(v))visitedRegions=v.filter(n=>Number.isInteger(n)&&n>=0&&n<3)}catch(e){}
+function saveRegions(){try{localStorage.setItem('bibelcraft-regions-v206',JSON.stringify(visitedRegions))}catch(e){}}
+const regionPanel=document.createElement('section');regionPanel.id='bibelcraft-regions-v206';regionPanel.style.cssText='background:#f0f8ff;border:2px solid #83afd0;border-radius:14px;padding:12px;margin-top:12px';document.querySelector('aside').append(regionPanel);
+let currentRegion=0;
+function renderRegions(){
+ const fr=lang==='fr',r=regionData[lang][currentRegion];regionPanel.replaceChildren();
+ const h=document.createElement('h3');h.textContent=fr?'🗺️ Explorer les lieux bibliques':'🗺️ Biblische Orte erkunden';regionPanel.append(h);
+ const selector=document.createElement('select');selector.setAttribute('aria-label',fr?'Choisir un lieu':'Ort wählen');selector.style.cssText='width:100%;border:1px solid #8aa6bc';
+ regionData[lang].forEach((r,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=(visitedRegions.includes(i)?'✓ ':'')+r.name;selector.append(o)});selector.value=String(currentRegion);selector.onchange=()=>{currentRegion=Number(selector.value);renderRegions()};regionPanel.append(selector);
+ for(const content of [r.ref,r.intro,r.goal]){const p=document.createElement('p');p.textContent=content;regionPanel.append(p)}
+ const travel=document.createElement('button');travel.textContent=fr?'🚶 Visiter ce lieu':'🚶 Diesen Ort besuchen';travel.onclick=()=>{const [x,z]=regionPositions[currentRegion];pos.x=x;pos.z=z+3.5;held.clear();$('message').textContent=fr?'Explore le lieu puis appuie sur « Découvrir ».':'Erkunde den Ort und klicke auf „Entdecken“.'};regionPanel.append(travel);
+ const discover=document.createElement('button');discover.style.marginLeft='6px';discover.textContent=fr?'📖 Découvrir':'📖 Entdecken';discover.onclick=()=>{const [x,z]=regionPositions[currentRegion];if(Math.hypot(pos.x-x,pos.z-z)>6){$('message').textContent=fr?'Approche-toi du lieu avant de le découvrir.':'Geh näher an den Ort heran.';return}if(!visitedRegions.includes(currentRegion)){visitedRegions.push(currentRegion);saveRegions()}$('message').textContent=r.lesson;renderRegions()};regionPanel.append(discover);
+ if(visitedRegions.includes(currentRegion)){const p=document.createElement('p');p.textContent='✓ '+r.lesson;regionPanel.append(p)}
+ const note=document.createElement('small');note.textContent=fr?'Décors imaginés pour le jeu, non reconstitutions historiques.':'Frei gestaltete Spielwelt, keine historische Rekonstruktion.';regionPanel.append(note)
+}
+$('lang').addEventListener('change',renderRegions);renderRegions();
