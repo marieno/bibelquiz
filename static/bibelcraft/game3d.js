@@ -163,3 +163,30 @@ const soloPlant=plantButton.onclick;
 plantButton.onclick=()=>{if(!shared.getSession()){soloPlant();return}const nearby=gardenPlots.map(([x,z],i)=>({i,d:Math.hypot(x-pos.x,z-pos.z)})).filter(p=>p.d<2.5).sort((a,b)=>a.d-b.d);if(!nearby.length){$('message').textContent=villageWords[lang].tooFar;return}const events=new Set(coopState?.events||[]);const next=nearby.find(p=>!events.has('garden_'+p.i));if(next)coopAction('garden_'+next.i);else $('message').textContent=villageWords[lang].already};
 const coopLang=$('lang').onchange;$('lang').onchange=e=>{coopLang(e);renderCoop()};
 renderCoop();coopTimer=setInterval(syncCoop,2000);window.addEventListener('pagehide',()=>clearInterval(coopTimer));
+
+
+// V20.4 — Bible adventures: optional narrated mission board and interactive guide.
+const storyChapters={
+ fr:[
+  {title:'🚢 Noé — La confiance',ref:'Genèse 6:22',story:'Dieu demanda à Noé de construire une arche. Noé suivit ce que Dieu lui avait commandé.',task:'Construis avec 12 blocs de bois et accueille les deux moutons.',lesson:'La confiance se manifeste aussi dans nos actions.',done:()=>noah.done},
+  {title:'🐑 David — Le soin des autres',ref:'1 Samuel 17:34–37',story:'Avant d’affronter Goliath, David prenait soin des brebis de son père.',task:'Retrouve les deux moutons qui se promènent dans la prairie.',lesson:'Prendre soin des plus petits est une responsabilité précieuse.',done:()=>david.found.length===2},
+  {title:'🏡 Le village — L’amour du prochain',ref:'Jean 13:34–35',story:'Jésus a enseigné à ses disciples de s’aimer les uns les autres.',task:'Construis une maison, plante trois graines et partage avec l’habitante.',lesson:'Aimer son prochain se traduit par des gestes concrets.',done:()=>village.shared}
+ ],
+ de:[
+  {title:'🚢 Noah — Vertrauen',ref:'1. Mose 6,22',story:'Gott gab Noah den Auftrag, eine Arche zu bauen. Noah tat, was Gott ihm geboten hatte.',task:'Baue mit 12 Holzblöcken und begrüße die beiden Schafe.',lesson:'Vertrauen zeigt sich auch in unserem Handeln.',done:()=>noah.done},
+  {title:'🐑 David — Fürsorge',ref:'1. Samuel 17,34–37',story:'Bevor David Goliat begegnete, hütete er die Schafe seines Vaters.',task:'Finde die zwei Schafe auf der Wiese.',lesson:'Sich um andere zu kümmern ist wertvoll.',done:()=>david.found.length===2},
+  {title:'🏡 Dorf — Nächstenliebe',ref:'Johannes 13,34–35',story:'Jesus lehrte seine Jünger, einander zu lieben.',task:'Baue ein Haus, pflanze drei Samen und teile mit der Bewohnerin.',lesson:'Nächstenliebe zeigt sich in konkreten Taten.',done:()=>village.shared}
+ ]
+};
+const storyPanel=document.createElement('section');storyPanel.id='bibelcraft-story';storyPanel.style.cssText='background:#eaf4ff;border:2px solid #82b7e4;border-radius:14px;padding:12px;margin-top:12px';document.querySelector('aside').prepend(storyPanel);
+let chapter=0;
+try{chapter=Math.max(0,Math.min(2,Number(localStorage.getItem('bibelcraft-chapter-v204'))||0))}catch(e){}
+function renderStory(){const list=storyChapters[lang],c=list[chapter];storyPanel.replaceChildren();const heading=document.createElement('h3');heading.textContent=lang==='fr'?'📖 Mon aventure biblique':'📖 Mein Bibelabenteuer';const picker=document.createElement('select');picker.setAttribute('aria-label',heading.textContent);list.forEach((item,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=item.title;picker.append(opt)});picker.value=String(chapter);picker.onchange=()=>{chapter=Number(picker.value);try{localStorage.setItem('bibelcraft-chapter-v204',String(chapter))}catch(e){}renderStory()};const ref=document.createElement('p');ref.textContent=c.ref;const story=document.createElement('p');story.textContent=c.story;const task=document.createElement('p');task.textContent='🎯 '+c.task;const status=document.createElement('p');status.textContent=c.done()?(lang==='fr'?'✅ Mission accomplie':'✅ Mission geschafft'):(lang==='fr'?'⏳ Mission en cours':'⏳ Mission läuft');const read=document.createElement('button');read.type='button';read.textContent=lang==='fr'?'💬 Écouter le récit':'💬 Geschichte anhören';read.onclick=()=>{if(!('speechSynthesis' in window)){return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(c.story+' '+c.lesson);u.lang=lang==='fr'?'fr-FR':'de-DE';u.rate=.85;window.speechSynthesis.speak(u)};const lesson=document.createElement('p');lesson.textContent='✨ '+c.lesson;storyPanel.append(heading,picker,ref,story,task,status,lesson,read)}
+renderStory();
+const storyLang=$('lang').onchange;
+$('lang').onchange=e=>{if(typeof storyLang==='function')storyLang(e);renderStory()};
+const storyRefresh=refresh;
+refresh=function(){storyRefresh();renderStory()};
+const storyInteract=interact;
+interact=function(){storyInteract();renderStory()};
+talkButton.onclick=()=>interact();
