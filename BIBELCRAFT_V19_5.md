@@ -1,0 +1,1 @@
+BibelCraft V19.5: moutons, guide violet, interaction 💬/E, mini-défi de géométrie FR/DE. Sauvegarde des constructions locale. Mode solo. Nécessite Internet pour Three.js. Tester sur navigateur et mobile avant production.

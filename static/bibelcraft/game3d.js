@@ -33,4 +33,30 @@ let last=performance.now();function frame(now){const dt=Math.min(.05,(now-last)/
 function actualTarget(){ray.setFromCamera(new THREE.Vector2(0,0),camera);return ray.intersectObjects(group.children,false).find(h=>h.distance<9)||null}
 // Replace target with camera-centered raycast for third-person aiming.
 target=actualTarget;
+
+// BibelCraft V2: friendly inhabitants, animals and an educational exploration trail.
+const inhabitants=[];
+function makeCreature(x,z,kind,color){
+ const root=new THREE.Group();root.position.set(x,0,z);
+ const mat=new THREE.MeshLambertMaterial({color});
+ const torso=new THREE.Mesh(new THREE.BoxGeometry(kind==='sheep'?.95:.55,kind==='sheep'?.65:.85,kind==='sheep'?.65:.42),mat);
+ torso.position.y=kind==='sheep'?.8:1;root.add(torso);
+ const face=new THREE.Mesh(new THREE.BoxGeometry(.43,.43,.43),new THREE.MeshLambertMaterial({color:kind==='sheep'?0x777777:0xf2c9a0}));
+ face.position.set(0,kind==='sheep'?.95:1.68,kind==='sheep'?.46:0);root.add(face);
+ if(kind==='sheep')for(const a of [-.3,.3])for(const b of [-.25,.25]){const leg=new THREE.Mesh(new THREE.BoxGeometry(.16,.42,.16),new THREE.MeshLambertMaterial({color:0x595c62}));leg.position.set(a,.24,b);root.add(leg)}
+ scene.add(root);inhabitants.push({root,kind,originX:x,originZ:z});
+}
+makeCreature(-3,2,'sheep',0xf5f1e8);makeCreature(4,4,'sheep',0xf4e5c4);makeCreature(2,-4,'guide',0x9365b5);
+const learning={fr:{guide:'Bienvenue ! Pour construire une maison solide, combien de côtés possède un carré ?',answers:['3','4','5'],right:1,good:'Bravo ! Un carré a quatre côtés. Continue à construire !',bad:'Essaie encore : compte les côtés d’une brique vue de face.',sheep:'Tu as rencontré un mouton ! Prends soin des animaux et de la création.',far:'Approche-toi du personnage violet ou d’un mouton.',interact:'💬 Parler',dialog:'Défi du guide'},de:{guide:'Willkommen! Wie viele Seiten hat ein Quadrat?',answers:['3','4','5'],right:1,good:'Super! Ein Quadrat hat vier Seiten. Bau weiter!',bad:'Versuche es erneut: Zähle die Seiten eines Quadrats.',sheep:'Du hast ein Schaf getroffen! Kümmere dich um die Tiere und die Schöpfung.',far:'Gehe näher zur violetten Figur oder zu einem Schaf.',interact:'💬 Sprechen',dialog:'Aufgabe des Guides'}};
+const talkButton=document.createElement('button');talkButton.id='talk';talkButton.type='button';$('actions').append(talkButton);
+const dialog=document.createElement('section');dialog.id='learning-dialog';dialog.hidden=true;dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92%,370px);background:#fffdf1;color:#17334c;border:3px solid #e5bd59;border-radius:18px;padding:18px;z-index:5;box-shadow:0 12px 40px #0005';stage.append(dialog);
+function closeDialog(){dialog.hidden=true;dialog.replaceChildren()}
+function openGuide(){const t=learning[lang];dialog.hidden=false;dialog.replaceChildren();const heading=document.createElement('h3');heading.textContent=t.dialog;const question=document.createElement('p');question.textContent=t.guide;dialog.append(heading,question);for(let i=0;i<3;i++){const b=document.createElement('button');b.textContent=t.answers[i];b.style.margin='5px';b.onclick=()=>{const answer=document.createElement('p');answer.textContent=i===t.right?t.good:t.bad;answer.setAttribute('aria-live','polite');dialog.replaceChildren(heading,question,answer);const close=document.createElement('button');close.textContent='OK';close.onclick=closeDialog;dialog.append(close);if(i===t.right){localStorage.setItem('bibelcraft-guide-challenge','done');$('message').textContent=t.good}};dialog.append(b)}const close=document.createElement('button');close.textContent='✕';close.setAttribute('aria-label','Fermer / Schließen');close.onclick=closeDialog;dialog.append(close)}
+function interact(){const nearest=inhabitants.map(n=>({...n,d:Math.hypot(n.root.position.x-pos.x,n.root.position.z-pos.z)})).sort((a,b)=>a.d-b.d)[0];if(!nearest||nearest.d>3.2){$('message').textContent=learning[lang].far;return}if(nearest.kind==='guide')openGuide();else $('message').textContent=learning[lang].sheep}
+talkButton.onclick=interact;
+window.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='e'&&!e.repeat&&dialog.hidden){interact()}});
+$('lang').addEventListener('change',()=>{talkButton.textContent=learning[lang].interact});talkButton.textContent=learning[lang].interact;
+// Lightweight idle animation without timers or network requests.
+function animateInhabitants(t){for(const [i,n] of inhabitants.entries()){n.root.position.y=Math.sin(t*.0015+i)*.045;n.root.rotation.y=Math.sin(t*.0004+i)*.25}requestAnimationFrame(animateInhabitants)}requestAnimationFrame(animateInhabitants);
+
 notice.textContent=lang==='fr'?'Explore ton monde !':'Erkunde deine Welt!';setTimeout(()=>{notice.textContent=''},4000);refresh();requestAnimationFrame(frame);
