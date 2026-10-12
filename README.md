@@ -416,3 +416,7 @@ V18.6 : guides de dessin fixes (Facile : pointillés complets, Moyen : contour p
 
 ## V18.7
 Correction Armor/Fruit: état des cartes, gestion des vies optionnelle, gestion des événements pointer sans accumulation, cache JS renouvelé.
+
+
+## V21.5
+Voir BIBLE_OBBY_V21_5.md.
