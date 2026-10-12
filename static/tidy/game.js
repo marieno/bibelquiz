@@ -70,7 +70,7 @@ function guessMystery(){
  if(lastGuessAt===next){toast(lang==="fr"?"Découvre encore une pièce avant de réessayer.":"Decke erst noch ein Teil auf.");return}
  lastGuessAt=next;let names={lion:lang==="fr"?"Lion":"Löwe",elephant:lang==="fr"?"Éléphant":"Elefant",ark:lang==="fr"?"Arche":"Arche",butterfly:lang==="fr"?"Papillon":"Schmetterling",dolphin:lang==="fr"?"Dauphin":"Delfin",giraffe:lang==="fr"?"Girafe":"Giraffe"},opts=sh([theme,...sh(Object.keys(MYSTERY).filter(x=>x!==theme)).slice(0,3)]);
  G.innerHTML=`<main><h1>🔍 ${t.guessTitle}</h1>${board()}<div class=grid>${opts.map(x=>`<button class=choice data-guess="${x}">${MYSTERY[x]} ${names[x]}</button>`).join("")}</div></main>`;
- document.querySelectorAll("[data-guess]").forEach(b=>b.onclick=()=>{if(b.dataset.guess!==theme){toast(t.wrong);setTimeout(puzzle,500);return}let bonus=next<=3?3:next<=5?2:next<=7?1:0;if(bonus){let r=Number(localStorage.getItem("bq_reserve_hearts")||0)+bonus;localStorage.setItem("bq_reserve_hearts",r);toast(`💛 +${bonus} ${t.reserveWin}`,true)}celebrate();setTimeout(puzzle,650)})
+ document.querySelectorAll("[data-guess]").forEach(b=>b.onclick=()=>{if(b.dataset.guess!==theme){toast(t.wrong);setTimeout(puzzle,500);return}let bonus=next<=3?3:next<=5?2:next<=7?1:0;if(bonus){toast(t.correct||"✨",true)}celebrate();setTimeout(puzzle,650)})
 }
 function puzzle(){
  if(next===10){G.innerHTML=`<main><h1>🏆 ${t.win}</h1>${board()}<div class=final-celebration>✨🎉⭐🎉✨</div><button onclick="location.reload()">${t.newgame}</button></main>`;celebrate();return}
