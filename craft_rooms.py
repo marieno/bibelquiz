@@ -10,6 +10,7 @@ def connect():
  c.execute('PRAGMA busy_timeout=15000')
  c.execute('CREATE TABLE IF NOT EXISTS worlds (code TEXT PRIMARY KEY, revision INTEGER NOT NULL DEFAULT 0, created REAL NOT NULL)')
  c.execute('CREATE TABLE IF NOT EXISTS blocks (code TEXT NOT NULL, x INTEGER NOT NULL, y INTEGER NOT NULL, z INTEGER NOT NULL, kind TEXT NOT NULL, PRIMARY KEY(code,x,y,z))')
+ c.execute('CREATE TABLE IF NOT EXISTS coop (code TEXT NOT NULL, event TEXT NOT NULL, player TEXT NOT NULL, created REAL NOT NULL, PRIMARY KEY(code,event))')
  c.execute('CREATE TABLE IF NOT EXISTS players (token TEXT PRIMARY KEY, code TEXT NOT NULL, name TEXT NOT NULL, x REAL DEFAULT 0,z REAL DEFAULT 5, seen REAL NOT NULL)')
  return c
 def create(name):
@@ -62,3 +63,28 @@ def snapshot(code,token):
   revision=c.execute('SELECT revision FROM worlds WHERE code=?',(code,)).fetchone()[0]
   rows=c.execute('SELECT x,y,z,kind FROM blocks WHERE code=? ORDER BY x,y,z',(code,)).fetchall()
   return {'revision':revision,'blocks':[dict(r) for r in rows]}
+
+
+COOP_EVENTS={'noah_sheep_0':(-3,2),'noah_sheep_1':(4,4),'david_sheep_0':(-3,2),'david_sheep_1':(4,4),'garden_0':(7,2),'garden_1':(8,2),'garden_2':(9,2),'village_share':(7,5),'noah_finish':(2,-4)}
+def coop_state(code,token):
+ with connect() as c:
+  if not c.execute('SELECT 1 FROM players WHERE code=? AND token=? AND seen>?',(code,token,time.time()-40)).fetchone():raise ValueError('Not an active member')
+  events=[r[0] for r in c.execute('SELECT event FROM coop WHERE code=?',(code,))]
+  counts=dict(c.execute('SELECT kind,COUNT(*) FROM blocks WHERE code=? GROUP BY kind',(code,)).fetchall())
+  return {'events':events,'wood':counts.get('wood',0),'brick':counts.get('brick',0)}
+def coop_action(code,token,event):
+ if event not in COOP_EVENTS:raise ValueError('Invalid mission action')
+ with LOCK,connect() as c:
+  c.execute('BEGIN IMMEDIATE')
+  player=c.execute('SELECT x,z FROM players WHERE code=? AND token=? AND seen>?',(code,token,time.time()-40)).fetchone()
+  if not player:raise ValueError('Not an active member')
+  px,pz=COOP_EVENTS[event]
+  if (player['x']-px)**2+(player['z']-pz)**2>3.5**2:raise ValueError('Move closer to the mission target')
+  events={r[0] for r in c.execute('SELECT event FROM coop WHERE code=?',(code,))}
+  counts=dict(c.execute('SELECT kind,COUNT(*) FROM blocks WHERE code=? GROUP BY kind',(code,)).fetchall())
+  if event.startswith('noah_sheep') and counts.get('wood',0)<12:raise ValueError('Build with 12 wood blocks first')
+  if event=='noah_finish' and not {'noah_sheep_0','noah_sheep_1'}<=events:raise ValueError('Find both sheep first')
+  if event.startswith('garden_') and counts.get('brick',0)<8:raise ValueError('Build with 8 brick blocks first')
+  if event=='village_share' and not {'garden_0','garden_1','garden_2'}<=events:raise ValueError('Plant all three plots first')
+  c.execute('INSERT OR IGNORE INTO coop(code,event,player,created) VALUES(?,?,?,?)',(code,event,token,time.time()))
+  return {'recorded':c.total_changes>0}

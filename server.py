@@ -42,6 +42,20 @@ class CraftBlock(BaseModel):
 class CraftSnapshot(BaseModel):
     token: str
 
+class CraftMissionAction(BaseModel):
+    token: str
+    event: str
+
+@app.post("/api/craft/{code}/missions/state")
+def craft_mission_state(code: str, data: CraftSnapshot):
+    try: return craft_rooms.coop_state(code,data.token)
+    except ValueError as exc: raise HTTPException(403,str(exc))
+
+@app.post("/api/craft/{code}/missions/action")
+def craft_mission_action(code: str, data: CraftMissionAction):
+    try: return craft_rooms.coop_action(code,data.token,data.event)
+    except ValueError as exc: raise HTTPException(400,str(exc))
+
 @app.post("/api/craft/{code}/blocks/edit")
 def craft_block_edit(code: str, data: CraftBlock):
     try: return craft_rooms.edit(code,data.token,data.x,data.y,data.z,data.kind,data.remove)
@@ -480,7 +494,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"20.1","build":"bibelcraft-shared-blocks"}
+ return {"version":"20.2","build":"bibelcraft-cooperative-missions"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
