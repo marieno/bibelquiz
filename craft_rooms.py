@@ -26,11 +26,23 @@ def create(name):
 def join(code,name):
  with LOCK,connect() as c:
   if not c.execute('SELECT 1 FROM worlds WHERE code=?',(code,)).fetchone():raise ValueError('Unknown room')
+  c.execute('BEGIN IMMEDIATE')
+  c.execute('DELETE FROM players WHERE code=? AND seen<?',(code,time.time()-40))
   count=c.execute('SELECT COUNT(*) FROM players WHERE code=? AND seen>?',(code,time.time()-40)).fetchone()[0]
   if count>=5:raise ValueError('Room full')
   token=secrets.token_urlsafe(24)
   c.execute('INSERT INTO players(token,code,name,seen) VALUES(?,?,?,?)',(token,code,name,time.time()))
   return {'code':code,'token':token,'player_id':token[:10]}
+def resume(code,token):
+ with LOCK,connect() as c:
+  player=c.execute('SELECT name FROM players WHERE code=? AND token=?',(code,token)).fetchone()
+  if not player:raise ValueError('Session unavailable')
+  count=c.execute('SELECT COUNT(*) FROM players WHERE code=? AND seen>?',(code,time.time()-40)).fetchone()[0]
+  active=c.execute('SELECT seen FROM players WHERE code=? AND token=?',(code,token)).fetchone()[0]>time.time()-40
+  if not active and count>=5:raise ValueError('Room full')
+  c.execute('UPDATE players SET seen=? WHERE code=? AND token=?',(time.time(),code,token))
+  return {'code':code,'token':token,'player_id':token[:10]}
+
 def sync(code,token,x,z):
  with LOCK,connect() as c:
   p=c.execute('SELECT code FROM players WHERE token=? AND code=?',(token,code)).fetchone()

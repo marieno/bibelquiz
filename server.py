@@ -77,6 +77,11 @@ def craft_join(data: CraftIdentity):
     try: return craft_rooms.join(data.code.strip(),data.name.strip())
     except ValueError as exc: raise HTTPException(400,str(exc))
 
+@app.post("/api/craft/{code}/resume")
+def craft_resume(code: str, data: CraftSnapshot):
+    try: return craft_rooms.resume(code,data.token)
+    except ValueError as exc: raise HTTPException(403,str(exc))
+
 @app.post("/api/craft/{code}/sync")
 def craft_sync(code: str, data: CraftPosition):
     if not all(map(__import__('math').isfinite,[data.x,data.z])): raise HTTPException(400,"Invalid coordinates")
@@ -494,7 +499,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"20.6","build":"bibelcraft-regions"}
+ return {"version":"21.0","build":"bibelcraft-family-stability"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
