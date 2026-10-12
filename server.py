@@ -31,6 +31,27 @@ class CraftPosition(BaseModel):
     x: float
     z: float
 
+class CraftBlock(BaseModel):
+    token: str
+    x: int
+    y: int
+    z: int
+    kind: str = 'wood'
+    remove: bool = False
+
+class CraftSnapshot(BaseModel):
+    token: str
+
+@app.post("/api/craft/{code}/blocks/edit")
+def craft_block_edit(code: str, data: CraftBlock):
+    try: return craft_rooms.edit(code,data.token,data.x,data.y,data.z,data.kind,data.remove)
+    except ValueError as exc: raise HTTPException(400,str(exc))
+
+@app.post("/api/craft/{code}/blocks/snapshot")
+def craft_block_snapshot(code: str, data: CraftSnapshot):
+    try: return craft_rooms.snapshot(code,data.token)
+    except ValueError as exc: raise HTTPException(403,str(exc))
+
 @app.post("/api/craft/create")
 def craft_create(data: CraftIdentity):
     if not 1 <= len(data.name.strip()) <= 24: raise HTTPException(400,"Invalid name")
@@ -459,7 +480,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"20.0","build":"bibelcraft-multiplayer-lobby"}
+ return {"version":"20.1","build":"bibelcraft-shared-blocks"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
