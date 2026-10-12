@@ -1,0 +1,1 @@
+BibelCraft V1 : prototype de construction isométrique 2.5D (pas encore Minecraft 3D). Mode solo, blocs, déplacement de la caméra, rotation, sauvegarde locale automatique et mission simple. Pas de multijoueur ni de sauvegarde serveur. Accessible via le menu BibelQuiz ou /static/bibelcraft/index.html.
