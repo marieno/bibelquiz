@@ -433,7 +433,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"19.0","build":"multiplayer-stability"}
+ return {"version":"19.1","build":"multiplayer-stability"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):

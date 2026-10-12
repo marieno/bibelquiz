@@ -131,7 +131,7 @@ function soloSetup(){
  // Existing race.js menu is now used only as the solo setup screen.
  menu();
 }
-let raceStarting=false;
+let raceStarting=false,raceEntering=false,raceLobbyEpoch=0;
 let raceRoom="",racePoll=null,raceSyncTimer=null,raceMe=null,racePlayers=[];
 function multiMenu(){
  const de=lang==="de";
@@ -144,8 +144,9 @@ function multiMenu(){
 async function raceCreate(){let x=await api("/api/race-multi/create",{method:"POST",body:JSON.stringify({difficulty:level})});raceRoom=x.code;await raceSetReady(true,selectedCarColor)}
 async function raceJoin(){try{let x=await api("/api/race-multi/join",{method:"POST",body:JSON.stringify({code:raceCode.value.trim()})});raceRoom=x.code;await raceSetReady(false,selectedCarColor)}catch(e){alert(e.message)}}
 async function raceLobby(){
+ const epoch=++raceLobbyEpoch;
  clearInterval(racePoll);racePoll=null;
- const r=await api("/api/race-multi/"+raceRoom);raceMe=r.me;
+ const r=await api("/api/race-multi/"+raceRoom);if(epoch!==raceLobbyEpoch||raceEntering||running)return;raceMe=r.me;
  const isHost=Number(r.host_user_id)===Number(r.me);
  const mine=r.players.find(x=>Number(x.user_id)===Number(r.me));
  const hostPlayer=r.players.find(p=>Number(p.user_id)===Number(r.host_user_id));
@@ -166,6 +167,7 @@ async function raceLobby(){
  const snap=JSON.stringify(r.players.map(p=>[p.user_id,p.ready,p.car]))+"|"+r.host_user_id+"|"+r.status;
  racePoll=setInterval(async()=>{try{
    const n=await api("/api/race-multi/"+raceRoom);
+   if(epoch!==raceLobbyEpoch||raceEntering||running)return;
    if(n.status==="playing"){clearInterval(racePoll);racePoll=null;await enterStartedRace();return}
    const next=JSON.stringify(n.players.map(p=>[p.user_id,p.ready,p.car]))+"|"+n.host_user_id+"|"+n.status;
    if(next!==snap){clearInterval(racePoll);racePoll=null;raceLobby()}
@@ -177,7 +179,7 @@ function carEmoji(c){return {red:"🔴",blue:"🔵",green:"🟢",yellow:"🟡",p
 function groupLevel(l){return {enfant:"🧒 Kinder",facile:"🌱 Einfach",moyen:"📖 Mittel",difficile:"🔥 Schwer",alle:"🎲 Alle Level"}[l]||l}
 async function raceReady(car){return raceSetReady(true,car)}
 async function raceMultiStart(){
- if(raceStarting)return;
+ if(raceStarting||raceEntering||running)return;
  raceStarting=true;
  try{
   await api(`/api/race-multi/${raceRoom}/start`,{method:"POST",body:"{}"});
@@ -186,18 +188,18 @@ async function raceMultiStart(){
  }catch(e){raceStarting=false;alert(e.message)}
 }
 async function enterStartedRace(){
- if(raceStarting&&running)return;
- raceStarting=true;
+ if(raceEntering||running)return;
+ raceEntering=true;++raceLobbyEpoch;
  if(racePoll){clearInterval(racePoll);racePoll=null}
  root.innerHTML=`<div class=menu><div class=panel><div class=big>🏁</div><h1>${lang==="de"?"Das Rennen startet…":"La course démarre…"}</h1><p>${lang==="de"?"Der Host hat das Rennen gestartet.":"Le Host a lancé la course."}</p></div></div>`;
- try{await raceMultiPlay()}finally{raceStarting=false}
+ try{await raceMultiPlay()}catch(e){console.error("Race start failed",e);root.innerHTML=`<div class="menu"><div class="panel"><h2>${lang==="de"?"Rennen konnte nicht starten":"Impossible de démarrer la course"}</h2><p>${escRace(e.message||String(e))}</p><button class="btn" onclick="raceLobby()">↻ ${lang==="de"?"Erneut versuchen":"Réessayer"}</button></div></div>`}finally{raceEntering=false;raceStarting=false}
 }
 async function raceMultiPlay(){
  let room=await api(`/api/race-multi/${raceRoom}`);
- if(room.status!=="playing"){raceStarting=false;raceLobby();return}
+ if(room.status!=="playing"){throw new Error("RACE_NOT_PLAYING: "+room.status)}
  let q=await api(`/api/race-multi/${raceRoom}/questions`);
  if(!q.questions||!q.questions.length){throw new Error("RACE_QUESTIONS_NOT_READY")}
- questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;renderRace();running=true;last=performance.now();requestAnimationFrame(loop);raceSyncTimer=setInterval(syncRace,800)}
+ questions=q.questions;qi=0;score=0;distance=0;lane=1;turbo=0;speed=0;gas=false;braking=false;pickups=[];nextPickup=70;clearInterval(raceSyncTimer);running=true;renderRace();last=performance.now();requestAnimationFrame(loop);raceSyncTimer=setInterval(syncRace,800)}
 async function syncRace(){if(!raceRoom)return;try{let r=await api(`/api/race-multi/${raceRoom}/sync`,{method:"POST",body:JSON.stringify({distance,speed,score,lane,finished:distance>=TRACK})});racePlayers=r.players;renderOpponents(r);if(r.players.every(p=>p.finished)){clearInterval(raceSyncTimer);showRaceResults(r)}}catch(e){}}
 function renderOpponents(r){
  document.querySelectorAll(".opponent,.offscreen-racer").forEach(x=>x.remove());
