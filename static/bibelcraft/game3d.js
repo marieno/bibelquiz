@@ -104,3 +104,33 @@ const refreshNoah=refresh;refresh=function(){refreshNoah();renderDavid()};
 renderDavid();
 
 notice.textContent=lang==='fr'?'Explore ton monde !':'Erkunde deine Welt!';setTimeout(()=>{notice.textContent=''},4000);refresh();requestAnimationFrame(frame);
+
+
+// V19.8 — Le village de l'entraide (Jean 13:34–35).
+// Une aventure facultative : les autres missions et le mode construction restent disponibles.
+const villageKey='bibelcraft-village-v1';
+const villageWords={
+ fr:{title:'🏡 Le village de l’entraide',intro:'Jésus nous enseigne à nous aimer les uns les autres (Jean 13:34–35). Construis, cultive et partage dans ce village imaginaire.',build:'Construis une maison : place 8 blocs de briques.',garden:'Prépare un jardin : plante 3 graines dans les parcelles.',share:'Approche-toi de l’habitante près du jardin et partage ta récolte avec elle.',done:'Bravo ! Tu as construit, cultivé et partagé. À lire en famille : Jean 13:34–35.',progress:'Étapes terminées',plant:'🌱 Planter',planted:'Une graine plantée !',already:'Cette parcelle est déjà cultivée.',tooFar:'Approche-toi du jardin.',shared:'Merci pour ton aide !',reset:'Recommencer le village',talk:'💬 Parler',resident:'Habitante du village'},
+ de:{title:'🏡 Dorf der Nächstenliebe',intro:'Jesus lehrt uns, einander zu lieben (Johannes 13,34–35). Baue, pflanze und teile in diesem erfundenen Dorf.',build:'Baue ein Haus: Setze 8 Ziegelblöcke.',garden:'Lege einen Garten an: Pflanze 3 Samen in die Beete.',share:'Geh zur Dorfbewohnerin am Garten und teile deine Ernte.',done:'Super! Du hast gebaut, gepflanzt und geteilt. Lest gemeinsam: Johannes 13,34–35.',progress:'Abgeschlossene Schritte',plant:'🌱 Pflanzen',planted:'Ein Samen wurde gepflanzt!',already:'Dieses Beet ist schon bepflanzt.',tooFar:'Geh näher zum Garten.',shared:'Danke für deine Hilfe!',reset:'Dorf neu starten',talk:'💬 Sprechen',resident:'Dorfbewohnerin'}
+};
+let village={plots:[],shared:false};
+try{const v=JSON.parse(localStorage.getItem(villageKey)||'{}');if(Array.isArray(v.plots))village.plots=[...new Set(v.plots.filter(i=>Number.isInteger(i)&&i>=0&&i<3))];village.shared=v.shared===true}catch(e){}
+function saveVillage(){try{localStorage.setItem(villageKey,JSON.stringify(village))}catch(e){}}
+const villagePanel=document.createElement('section');villagePanel.id='village-mission';villagePanel.style.cssText='border:2px solid #9bc8a3;border-radius:14px;padding:12px;margin-top:12px;background:#e9f9ee';document.querySelector('aside').append(villagePanel);
+const gardenPlots=[[7,2],[8,2],[9,2]];
+const gardenMeshes=[];
+const soilMaterial=new THREE.MeshLambertMaterial({color:0x795337});
+const cropMaterial=new THREE.MeshLambertMaterial({color:0x36a354});
+gardenPlots.forEach(([x,z],i)=>{const soil=new THREE.Mesh(new THREE.BoxGeometry(.85,.15,.85),soilMaterial);soil.position.set(x,.09,z);scene.add(soil);const crop=new THREE.Mesh(new THREE.BoxGeometry(.22,.55,.22),cropMaterial);crop.position.set(x,.4,z);crop.visible=village.plots.includes(i);scene.add(crop);gardenMeshes.push(crop)});
+makeCreature(7,5,'villager',0x4aaf89);
+const resident=inhabitants[inhabitants.length-1];
+const plantButton=document.createElement('button');plantButton.id='plant-village';plantButton.type='button';plantButton.style.cssText='background:#d9f5cb';document.querySelector('aside .bar').append(plantButton);
+function brickCount(){return [...blocks.values()].filter(b=>b.type==='brick').length}
+function villageStage(){if(brickCount()<8)return 0;if(village.plots.length<3)return 1;if(!village.shared)return 2;return 3}
+function renderVillage(){const t=villageWords[lang],step=villageStage();plantButton.textContent=t.plant;villagePanel.replaceChildren();const h=document.createElement('h3');h.textContent=t.title;const intro=document.createElement('p');intro.textContent=t.intro;const task=document.createElement('p');task.textContent=[t.build,t.garden,t.share,t.done][step];const progress=document.createElement('p');progress.textContent=`${t.progress} : ${step}/3 · 🧱 ${Math.min(8,brickCount())}/8 · 🌱 ${village.plots.length}/3`;villagePanel.append(h,intro,task,progress);const reset=document.createElement('button');reset.type='button';reset.textContent=t.reset;reset.onclick=()=>{village={plots:[],shared:false};gardenMeshes.forEach(c=>c.visible=false);saveVillage();renderVillage()};villagePanel.append(reset)}
+plantButton.onclick=()=>{const t=villageWords[lang];if(villageStage()!==1){$('message').textContent=[t.build,t.garden,t.share,t.done][villageStage()];return}const available=gardenPlots.map(([x,z],i)=>({i,d:Math.hypot(x-pos.x,z-pos.z)})).filter(a=>a.d<2.5).sort((a,b)=>a.d-b.d);if(!available.length){$('message').textContent=t.tooFar;return}const plot=available.find(a=>!village.plots.includes(a.i));if(!plot){$('message').textContent=t.already;return}village.plots.push(plot.i);gardenMeshes[plot.i].visible=true;saveVillage();$('message').textContent=t.planted;renderVillage()};
+const interactDavid=interact;
+interact=function(){const d=Math.hypot(resident.root.position.x-pos.x,resident.root.position.z-pos.z);if(d<3.2){const t=villageWords[lang];if(villageStage()===2){village.shared=true;saveVillage();$('message').textContent=t.shared;renderVillage()}else $('message').textContent=[t.build,t.garden,t.share,t.done][villageStage()];return}interactDavid()};
+talkButton.onclick=()=>interact();
+const refreshDavid=refresh;refresh=function(){refreshDavid();renderVillage()};
+renderVillage();
