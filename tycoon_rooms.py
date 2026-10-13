@@ -59,7 +59,9 @@ def action(token,kind,cell=None,building=None,quest=None):
    ready=[str(i) for i,v in enumerate(s['grid']) if v=='farm' and int(time.time()*1000)-s['crops'].get(str(i),int(time.time()*1000))>=30000]
    require(ready,'CROPS_GROWING')
    for i in ready:s['crops'][i]=int(time.time()*1000)
-   s['food']+=15*len(ready);s['wood']+=2*len(ready);s['harvests']+=len(ready)
+   s['food']+=15*len(ready);s['harvests']+=len(ready)
+  elif kind=='chop':
+   s['wood']+=3
   elif kind=='feed':
    require(count('coop')+count('pen')>0 and s['food']>=5);s['food']-=5;s['animalsFed']+=1;s['coins']+=5+(5 if count('market') else 0)
   elif kind=='sell':
