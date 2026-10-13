@@ -11,6 +11,7 @@ from env_loader import load_private_env
 load_private_env()
 import mailer
 import craft_rooms
+import tycoon_rooms
 
 log = logging.getLogger("bibelquiz.recovery")
 
@@ -499,7 +500,7 @@ def race_questions(level:str,authorization:str|None=Header(None)):
 
 @app.get("/api/version")
 def app_version():
- return {"version":"23.2","build":"bible-tycoon-missions"}
+ return {"version":"23.3","build":"bible-tycoon-multiplayer"}
 
 @app.post("/api/group/create")
 def group_create(a:GroupCreate,authorization:str|None=Header(None)):
@@ -718,3 +719,24 @@ def internal_email_result(mail_id:int,a:WorkerResult,authorization:str|None=Head
 app.mount("/static",StaticFiles(directory=ROOT/"static"),name="static")
 @app.get("/")
 def home():return FileResponse(ROOT/"static"/"index.html")
+
+# Bible Tycoon: private cooperative village, server-authoritative operations.
+class TycoonJoin(BaseModel):
+ name: str
+ code: str = ""
+class TycoonToken(BaseModel):
+ token: str
+class TycoonAction(BaseModel):
+ token: str
+ kind: str
+ cell: int | None = None
+ building: str | None = None
+ quest: str | None = None
+@app.post("/api/tycoon/create")
+def tycoon_create(req:TycoonJoin):return tycoon_rooms.create(req.name)
+@app.post("/api/tycoon/join")
+def tycoon_join(req:TycoonJoin):return tycoon_rooms.join(req.code,req.name)
+@app.post("/api/tycoon/snapshot")
+def tycoon_snapshot(req:TycoonToken):return tycoon_rooms.snapshot(req.token)
+@app.post("/api/tycoon/action")
+def tycoon_action(req:TycoonAction):return tycoon_rooms.action(req.token,req.kind,req.cell,req.building,req.quest)
